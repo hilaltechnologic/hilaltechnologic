@@ -38,3 +38,43 @@ Build, slipstream, and auto-deploy your own Windows ISO — powered by GitHub Ac
    - Create new ISO
    - Upload to BunnyCDN Storage
 5. ✅ Grab your direct ISO link:
+   ```
+   https://<yourzone>.b-cdn.net/windows/Win10-Custom.iso
+   ```
+
+---
+
+## 🧪 Customizations
+
+You can edit:
+- `autounattend.xml` → change time zone, username, password, locale
+- `scripts/build.ps1` → inject custom apps, tweaks, registry patches
+- `virtio/` → include more or fewer drivers
+
+---
+
+## 🔐 Default Credentials (Change if Needed)
+
+| User         | Password     |
+|--------------|--------------|
+| Administrator | Password123 |
+
+---
+
+## 📄 License
+
+This project is MIT licensed.  
+Build responsibly, and don’t use for shady ISO distribution. 🙏
+
+---
+
+## 💡 Credits
+
+Inspired by:
+- KitKnox, TinyPXE, Ghost Spectre
+- Microsoft Deployment Toolkit
+- BunnyCDN, GitHub Actions
+
+---
+
+> “Innovate or Evaporate” — Powered by Hilal Technologic 💻🔥
