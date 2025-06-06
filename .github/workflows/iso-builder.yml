@@ -1,0 +1,37 @@
+name: Build and Upload ISO to BunnyCDN
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-upload:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download base ISO
+        run: |
+          curl -Lo WIN11.ISO https://cuandemy.b-cdn.net/WIN11.ISO
+
+      - name: Extract VirtIO driver
+        run: |
+          curl -Lo virtio-win.iso https://fedorapeople.org/groups/virt/virtio-win/latest-virtio/virtio-win.iso
+          mkdir virtio
+          PowerShell Mount-DiskImage -ImagePath virtio-win.iso
+          $VirtDrive = (Get-Volume -FileSystemLabel "VirtIO")
+          robocopy "$($VirtDrive.DriveLetter):\" virtio /E
+          PowerShell Dismount-DiskImage -ImagePath virtio-win.iso
+
+      - name: Run build.ps1
+        shell: pwsh
+        run: .\scripts\build.ps1
+
+      - name: Upload to BunnyCDN via FTP
+        uses: sebastianpopp/bunnycdn-storage-deploy@v1
+        with:
+          source: 'ISO-OUT/Win11-Custom.iso'
+          storageZoneName: ${{ secrets.BUNNY_STORAGE_NAME }}
+          accessKey: ${{ secrets.BUNNY_STORAGE_PASS }}
+          uploadPath: '/windows/'
