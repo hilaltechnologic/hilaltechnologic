@@ -19,7 +19,7 @@ pygmentsCodefencesGuessSyntax = true
     # id = "XXX"
 
 [Params]
-  homeTitle = "Hilal Technologic" # Set a different text for the header on the home page
+  homeTitle = "Hilal Technologic: Blog Teknologi Ringan, AI & Digital Tools" # Set a different text for the header on the home page
   subtitle = "Selamat datang di HilalTechnologic ⚙️"
   mainSections = ["post","posts"]
   logo = "img/avatar-icon.png" # Expecting square dimensions
