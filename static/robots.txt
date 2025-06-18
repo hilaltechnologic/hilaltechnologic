@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /tags/
+Disallow: /page/
+Allow: /
+
+Sitemap: https://hilaltechnologic.info/sitemap.xml
