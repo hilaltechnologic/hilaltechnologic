@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on Hilal Technologic</title>
+    <link>https://hilaltechnologic.info/tags/</link>
+    <description>Recent content in Tags on Hilal Technologic</description>
+    <generator>Hugo</generator>
+    <language>id</language>
+    <managingEditor>dev@hilaltechnologic.info (Hilal Technologic)</managingEditor>
+    <webMaster>dev@hilaltechnologic.info (Hilal Technologic)</webMaster>
+    <lastBuildDate>Mon, 20 Mar 2017 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://hilaltechnologic.info/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Example</title>
+      <link>https://hilaltechnologic.info/tags/example/</link>
+      <pubDate>Mon, 20 Mar 2017 00:00:00 +0000</pubDate><author>dev@hilaltechnologic.info (Hilal Technologic)</author>
+      <guid>https://hilaltechnologic.info/tags/example/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Photoswipe</title>
+      <link>https://hilaltechnologic.info/tags/photoswipe/</link>
+      <pubDate>Mon, 20 Mar 2017 00:00:00 +0000</pubDate><author>dev@hilaltechnologic.info (Hilal Technologic)</author>
+      <guid>https://hilaltechnologic.info/tags/photoswipe/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Bigimg</title>
+      <link>https://hilaltechnologic.info/tags/bigimg/</link>
+      <pubDate>Tue, 07 Mar 2017 00:00:00 +0000</pubDate><author>dev@hilaltechnologic.info (Hilal Technologic)</author>
+      <guid>https://hilaltechnologic.info/tags/bigimg/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Math</title>
+      <link>https://hilaltechnologic.info/tags/math/</link>
+      <pubDate>Sun, 05 Mar 2017 00:00:00 +0000</pubDate><author>dev@hilaltechnologic.info (Hilal Technologic)</author>
+      <guid>https://hilaltechnologic.info/tags/math/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Code</title>
+      <link>https://hilaltechnologic.info/tags/code/</link>
+      <pubDate>Tue, 08 Mar 2016 00:00:00 +0000</pubDate><author>dev@hilaltechnologic.info (Hilal Technologic)</author>
+      <guid>https://hilaltechnologic.info/tags/code/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Markdown</title>
+      <link>https://hilaltechnologic.info/tags/markdown/</link>
+      <pubDate>Fri, 20 Feb 2015 00:00:00 +0000</pubDate><author>dev@hilaltechnologic.info (Hilal Technologic)</author>
+      <guid>https://hilaltechnologic.info/tags/markdown/</guid>
+      <description></description>
+    </item>
+  </channel>
+</rss>

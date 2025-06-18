@@ -1,4 +1,4 @@
-baseurl = "https://hilaltechnologic.info"
+baseurl = "https://hilaltechnologic.info/"
 DefaultContentLanguage = "id"
 title = "Hilal Technologic"
 # Using theme as git submodule
