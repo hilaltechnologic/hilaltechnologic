@@ -46,7 +46,14 @@
   <meta name="author" content="{{ . }}"/>
 {{- end }}
 
-  <link rel="canonical" href="{{ .Permalink | absURL }}">
+<!-- Tambahan SEO Meta -->
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+<meta name="X-Robots-Tag" content="all" />
+<meta name="keywords" content="Teknologi, AI, Software Ringan, Hilal Technologic, Tips Digital, Blog Teknologi Indonesia" />
+<meta name="publisher" content="Hilal Technologic" />
+
+<!-- Canonical tag -->
+<link rel="canonical" href="{{ .Permalink | absURL }}">
 
 {{- partial "seo/main.html" . }}  
 {{- with .Site.Params.favicon }}
