@@ -1,2 +1,2 @@
-## Front Page Content
-`HilalTechnologic` Tempat kamu belajar teknologi ringan, AI, software gratis, dan trik digital buat laptop kentang sekalipun. No ribet, no loading lama, cuma cuan & efisiensi!
+## HilalTechnologic
+Temukan artikel teknologi ringan, AI, dan tips digital anti ribet. Cocok buat laptop kentang, pelajar, dan pejuang produktivitas harian.
