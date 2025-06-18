@@ -1,0 +1,57 @@
+# Hugo build output
+/public/
+/resources/
+
+# OS junk files
+.DS_Store
+Thumbs.db
+
+# Hugo .cache (buat Netlify atau build local)
+.cache/
+
+# Node.js build tools
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+log.txt
+
+# Hugo config backups
+config.toml.bak
+config.yaml.bak
+config.json.bak
+
+# VSCode & IDE junk
+.vscode/
+.idea/
+
+# Build artifacts
+dist/
+build/
+.tmp/
+temp/
+
+# System files
+ehthumbs.db
+Desktop.ini
+
+# Mac crash logs
+*.log
+
+# Netlify / CF Pages output
+.netlify/
+_functions/
+.wrangler/
+functions/
+
+# Environment vars
+.env
+.env.*
+
+# Hugo cache (Hugo 0.112+ support)
+.hugo_build.lock
