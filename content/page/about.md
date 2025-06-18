@@ -1,16 +1,26 @@
 ---
-title: About me
-subtitle: Why you'd want to go on a date with me
+title: Tentang Hilal Technologic
+subtitle: Kenalan sama HilalTechnologic — blog teknologi ringan, AI, dan digital life buat semua kalangan.
 comments: false
 ---
 
-My name is Inigo Montoya. I have the following qualities:
+**HilalTechnologic** adalah blog yang lahir dari keresahan:
 
-- I rock a great mustache
-- I'm extremely loyal to my family
+> “Kenapa info teknologi itu seringkali ribet banget padahal yang butuh justru orang awam?”
 
-What else do you need?
+Dari situ gue (Hilal) bikin blog ini — tempat buat ngebahas:
+- Teknologi yang **masuk akal**
+- AI tools yang bisa dipake sehari-hari
+- Software ringan yang gak makan RAM
+- Tips digital yang realistis dan manusiawi
 
-### my history
+Gue percaya teknologi itu harus adaptif, bukan eksklusif.  
+Misi blog ini simpel: **Bikin lo makin paham teknologi tanpa harus jadi geek**.
 
-To be honest, I'm having some trouble remembering right now, so why don't you just watch [my movie](https://en.wikipedia.org/wiki/The_Princess_Bride_%28film%29) and it will answer **all** your questions.
+---
+
+Kalau ada saran, masukan, atau mau kolaborasi, langsung aja kontak:
+📧 dev@hilaltechnologic.info  
+📸 Instagram: @hilaltechnologic
+
+Terima kasih udah mampir, bro!
