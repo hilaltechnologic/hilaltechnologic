@@ -1,0 +1,122 @@
+---
+import type { SEOProps } from '../utils/seo';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const seo: SEOProps = {
+  title: 'Syarat & Ketentuan',
+  description: 'Syarat dan ketentuan penggunaan website ini yang mengatur hak dan kewajiban pengguna.',
+  type: 'website',
+  noindex: false,
+};
+---
+
+<BaseLayout seo={seo}>
+  <Fragment slot="header">
+    <Header />
+  </Fragment>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-br from-primary-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 py-16">
+      <div class="container mx-auto px-4 text-center">
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+          Syarat & Ketentuan
+        </h1>
+        <p class="text-xl text-gray-800 dark:text-gray-100 max-w-3xl mx-auto">
+          Aturan dan ketentuan yang mengatur penggunaan website ini
+        </p>
+      </div>
+    </section>
+
+    <!-- Content Section -->
+    <section class="py-16 bg-white dark:bg-gray-900">
+      <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto">
+          <div class="prose prose-lg prose-gray dark:prose-invert max-w-none">
+            
+            <h2>📘 Syarat & Ketentuan</h2>
+
+            <p>Selamat datang di <strong>Hilal Technologic</strong>!<br/>
+            Dengan mengakses dan menggunakan situs ini (<a href="https://hilaltechnologic.info">https://hilaltechnologic.info</a>), lo dianggap setuju dan tunduk pada Syarat & Ketentuan yang kami tetapkan di bawah ini. Kalo nggak setuju, ya monggo tutup tab ini bro. No hard feelings.</p>
+
+            <h3>1. Penggunaan Konten</h3>
+
+            <p>Semua konten di situs ini—baik itu teks, gambar, logo, script, dan elemen visual lainnya—adalah milik kami atau dilindungi oleh lisensi.<br/>
+            <strong>Lo boleh baca, share, atau ambil referensi</strong>, asal:</p>
+
+            <ul>
+              <li>Tetap menyebut sumber <strong>Hilal Technologic</strong></li>
+              <li>Nggak dipakai buat tujuan komersial tanpa izin</li>
+              <li>Nggak dimodifikasi jadi misleading</li>
+            </ul>
+
+            <p><strong>Reupload mentah-mentah? Kita blacklist lo dari server astral.</strong></p>
+
+            <h3>2. Komentar & Partisipasi Pengguna</h3>
+
+            <p>Kami senang lo aktif komentar, diskusi, bahkan debat sehat. Tapi...</p>
+
+            <ul>
+              <li><strong>Dilarang keras</strong> spam, promosi ilegal, fitnah, hoax, atau komentar berbau SARA</li>
+              <li>Kami berhak menghapus komentar yang melanggar etika atau aturan kami</li>
+              <li>IP lo bisa kena log kalau lo rese—jangan main-main</li>
+            </ul>
+
+            <h3>3. Akses & Layanan</h3>
+
+            <p>Kami berusaha menjaga situs tetap online dan cepat. Tapi:</p>
+
+            <ul>
+              <li>Kadang bisa down karena update, error, atau lagi diserang alien (DDoS)</li>
+              <li>Kami <strong>nggak bertanggung jawab</strong> kalau lo kehilangan data, waktu, atau peluang karena gangguan layanan</li>
+              <li>Semua konten bisa berubah tanpa pemberitahuan—versi beta, bro</li>
+            </ul>
+
+            <h3>4. Tautan ke Pihak Ketiga</h3>
+
+            <p>Kalau lo klik link ke situs luar, lo keluar dari zona kendali kami.</p>
+
+            <ul>
+              <li>Kami <strong>nggak bertanggung jawab</strong> atas isi, keamanan, atau kebijakan mereka</li>
+              <li>Pastikan lo baca syarat & privasi di situs tujuan</li>
+            </ul>
+
+            <h3>5. Hak Kekayaan Intelektual</h3>
+
+            <p>Seluruh branding, desain, dan sistem di situs ini adalah properti kami (kecuali yang disebut punya pihak ketiga). Dilarang menggunakan, meniru, atau menyamar atas nama kami tanpa izin resmi.<br/>
+            <strong>Kreativitas kami = martabat kami.</strong></p>
+
+            <h3>6. Perubahan Syarat</h3>
+
+            <p>Syarat ini bisa diubah kapan saja sesuai perkembangan teknologi, hukum, atau mood admin.<br/>
+            Lo dianggap menyetujui versi terbaru begitu tetap mengakses situs ini setelah perubahan dipublikasikan.</p>
+
+            <hr/>
+
+            <h3>📮 Kontak Kami</h3>
+
+            <p>Punya pertanyaan soal syarat ini?<br/>
+            Jangan ragu email ke: <a href="mailto:admin@hilaltechnologic.info">admin@hilaltechnologic.info</a><br/>
+            Atau isi formulir di halaman <a href="/kontak">Kontak Kami</a></p>
+
+            <div class="mt-12 p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
+              <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                <strong>Terakhir diperbarui:</strong> 25 Juni 2025
+              </p>
+              <p class="text-sm text-gray-600 dark:text-gray-400">
+                Jika Anda memiliki pertanyaan tentang syarat dan ketentuan ini, silakan hubungi kami melalui halaman <a href="/kontak" class="text-primary-600 dark:text-primary-400 hover:underline">kontak</a>.
+              </p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Fragment slot="footer">
+    <Footer />
+  </Fragment>
+</BaseLayout>

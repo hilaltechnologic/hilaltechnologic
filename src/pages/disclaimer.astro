@@ -1,0 +1,91 @@
+---
+import type { SEOProps } from '../utils/seo';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const seo: SEOProps = {
+  title: 'Disclaimer',
+  description: 'Disclaimer dan penyangkalan tanggung jawab atas konten dan informasi yang disajikan di website ini.',
+  type: 'website',
+  noindex: false,
+};
+---
+
+<BaseLayout seo={seo}>
+  <Fragment slot="header">
+    <Header />
+  </Fragment>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-br from-primary-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 py-16">
+      <div class="container mx-auto px-4 text-center">
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+          Disclaimer
+        </h1>
+        <p class="text-xl text-gray-800 dark:text-gray-100 max-w-3xl mx-auto">
+          Penyangkalan tanggung jawab atas konten dan informasi di website ini
+        </p>
+      </div>
+    </section>
+
+    <!-- Content Section -->
+    <section class="py-16 bg-white dark:bg-gray-900">
+      <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto">
+          <div class="prose prose-lg prose-gray dark:prose-invert max-w-none">
+            
+            <h2>📜 Disclaimer</h2>
+
+            <p>Selamat datang di <strong>Hilal Technologic</strong> – tempat kamu menjelajahi dunia teknologi, digital, dan segala hal geeky lainnya!</p>
+
+            <h3>1. Konten Informasi</h3>
+
+            <p>Semua informasi yang tersedia di situs ini dipublikasikan dengan itikad baik dan untuk tujuan informasi umum semata. Kami berusaha semaksimal mungkin untuk menjaga informasi tetap akurat dan terkini. Namun, <strong>Hilal Technologic</strong> tidak memberikan jaminan atas kelengkapan, keandalan, dan ketepatan informasi tersebut.</p>
+
+            <p><strong>Segala risiko yang timbul dari penggunaan informasi di situs ini sepenuhnya menjadi tanggung jawab pengguna.</strong> Kalau lo ngambil keputusan bisnis, teknikal, atau pribadi berdasarkan artikel di sini, itu keputusan lo bro — bukan tanggung jawab kami.</p>
+
+            <h3>2. Tautan Eksternal</h3>
+
+            <p>Situs ini mungkin mengandung tautan ke situs eksternal yang tidak kami kelola. Walau kami hanya menyarankan link yang kredibel dan bermanfaat, kami <strong>tidak punya kontrol atas konten dan kebijakan situs-situs tersebut.</strong></p>
+
+            <p>Klik link eksternal? Itu atas kebijakan lo sendiri, ya bro. Kami tidak bertanggung jawab atas hal-hal yang mungkin terjadi di luar domain kami.</p>
+
+            <h3>3. Iklan & Sponsor</h3>
+
+            <p>Kami bekerja sama dengan beberapa mitra iklan untuk mendukung operasional situs. Konten iklan mungkin muncul dalam bentuk banner, teks, atau artikel bersponsor.</p>
+
+            <p><strong>Hilal Technologic tidak menjamin</strong> isi, produk, atau layanan yang ditawarkan oleh pihak ketiga. Jadi kalau lo tertarik sama tawaran iklan, pastikan lo cek dulu dengan kritis sebelum ambil tindakan.</p>
+
+            <h3>4. Hak Cipta & Konten</h3>
+
+            <p>Semua konten, termasuk artikel, gambar, dan logo di situs ini adalah milik <strong>Hilal Technologic</strong>, kecuali dinyatakan sebaliknya. Dilarang keras menyalin, memodifikasi, atau menyebarluaskan tanpa izin tertulis dari kami. Mau repost? DM dulu, bro.</p>
+
+            <h3>5. Perubahan</h3>
+
+            <p>Isi halaman ini bisa kami ubah kapan saja tanpa pemberitahuan. Disarankan untuk sering cek halaman ini biar tetap update sama disclaimer terbaru.</p>
+
+            <hr />
+
+            <p>Kalau ada pertanyaan lebih lanjut, lo bisa langsung kontak kita via halaman <a href="/kontak">Kontak Kami</a> atau email: <a href="mailto:admin@hilaltechnologic.info">admin@hilaltechnologic.info</a></p>
+
+            <div class="mt-12 p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
+              <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                <strong>Terakhir diperbarui:</strong> 25 Juni 2024
+              </p>
+              <p class="text-sm text-gray-600 dark:text-gray-400">
+                Jika Anda memiliki pertanyaan tentang disclaimer ini, silakan hubungi kami melalui halaman <a href="/kontak" class="text-primary-600 dark:text-primary-400 hover:underline">kontak</a>.
+              </p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Fragment slot="footer">
+    <Footer />
+  </Fragment>
+</BaseLayout>
