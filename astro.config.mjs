@@ -8,8 +8,9 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://hilaltechnologic.info', // Ganti dengan domain Anda
   output: 'static',
+  trailingSlash: 'always',
   build: {
-    format: 'directory'
+    format: 'file'
   },
   integrations: [
     tailwind({
