@@ -1,2 +1,16 @@
-# Cloudflare Pages redirects
-/*    /index.html   200
+# Handle direct routes
+/  /index.html  200
+/blog/  /blog/index.html  200
+/kategori/  /kategori/index.html  200
+/arsip/  /arsip/index.html  200
+
+# Handle dynamic routes
+/blog/*  /blog/:splat/index.html  200
+/kategori/*  /kategori/:splat/index.html  200
+/arsip/*  /arsip/:splat/index.html  200
+
+# Proper 404 page
+/404.html      /404.html                       404
+
+# SPA fallback
+/*  /index.html  200

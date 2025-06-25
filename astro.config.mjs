@@ -7,11 +7,18 @@ import sitemap from '@astrojs/sitemap';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://hilaltechnologic.info', // Ganti dengan domain Anda
+  output: 'static',
+  build: {
+    format: 'directory'
+  },
   integrations: [
     tailwind({
       applyBaseStyles: false, // Kita akan menggunakan custom base styles
     }),
-    mdx(),
+    mdx({
+      optimize: true,
+      extendMarkdownConfig: false,
+    }),
     sitemap({
       filter: (page) => !page.includes('draft'), // Exclude draft pages
       changefreq: 'weekly',
@@ -38,10 +45,17 @@ export default defineConfig({
       config: {
         limitInputPixels: 268402689 // ~16K x 16K
       }
-    },
-    // Format gambar yang didukung
-    formats: ['avif', 'webp', 'jpeg'],
-    // Kualitas default
-    quality: 80
+    }
+  },
+  vite: {
+    build: {
+      rollupOptions: {
+        output: {
+          entryFileNames: '_astro/[name].[hash].js',
+          chunkFileNames: '_astro/[name].[hash].js',
+          assetFileNames: '_astro/[name].[hash][extname]'
+        }
+      }
+    }
   }
 });
