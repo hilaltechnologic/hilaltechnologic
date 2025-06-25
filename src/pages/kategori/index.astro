@@ -71,7 +71,7 @@ const formatDate = (date: Date) => {
         <div class="flex flex-wrap justify-center gap-2 max-w-4xl mx-auto">
           {categories.map(category => (
             <a
-              href={`/kategori/${category.slug}`}
+              href={`/kategori/${category.slug}/`}
               class="px-4 py-2 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-full hover:bg-primary-100 dark:hover:bg-primary-900 transition-colors border border-gray-200 dark:border-gray-700"
             >
               {category.name} ({category.count})
@@ -89,7 +89,7 @@ const formatDate = (date: Date) => {
             <div class="card p-6">
               <div class="flex items-center justify-between mb-4">
                 <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
-                  <a href={`/kategori/${category.slug}`} class="hover:text-primary-600 dark:hover:text-primary-400">
+                <a href={`/kategori/${category.slug}/`} class="hover:text-primary-600 dark:hover:text-primary-400">
                     {category.name}
                   </a>
                 </h2>
@@ -106,7 +106,7 @@ const formatDate = (date: Date) => {
                   {category.posts.map(post => (
                     <article class="border-l-4 border-primary-500 pl-4">
                       <h4 class="font-medium text-gray-900 dark:text-white mb-1">
-                        <a href={`/blog/${post.slug}`} class="hover:text-primary-600 dark:hover:text-primary-400">
+                        <a href={`/blog/${post.slug}/`} class="hover:text-primary-600 dark:hover:text-primary-400">
                           {post.data.title}
                         </a>
                       </h4>
@@ -121,7 +121,7 @@ const formatDate = (date: Date) => {
                   
                   {category.count > 3 && (
                     <a
-                      href={`/kategori/${category.slug}`}
+                      href={`/kategori/${category.slug}/`}
                       class="inline-flex items-center text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 text-sm font-medium"
                     >
                       Lihat semua artikel
