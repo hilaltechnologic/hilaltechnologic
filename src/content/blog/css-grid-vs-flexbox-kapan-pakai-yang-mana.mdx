@@ -12,8 +12,6 @@ featured: true
 readingTime: "7 menit baca"
 ---
 
-import Code from '../../components/Code.astro';
-
 # CSS Grid vs Flexbox: Kapan Pakai yang Mana?
 
 Lo bingung mau pakai CSS Grid atau Flexbox buat layout website? Tenang bro, artikel ini bakal jelasin perbedaan, kelebihan, dan kapan waktu yang tepat buat pakai masing-masing.
@@ -40,13 +38,13 @@ Flexbox cocok untuk layout linear, seperti:
 
 ### Contoh Flexbox:
 
-<Code>
+```css
 .container {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-</Code>
+```
 
 ---
 
@@ -61,13 +59,13 @@ CSS Grid cocok untuk layout kompleks dua dimensi, seperti:
 
 ### Contoh CSS Grid:
 
-<Code>
+```css
 .container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-gap: 20px;
 }
-</Code>
+```
 
 ---
 
@@ -78,7 +76,7 @@ Seringkali lo bakal pakai keduanya sekaligus. Misalnya:
 - Gunakan Grid untuk layout utama halaman
 - Gunakan Flexbox untuk mengatur elemen dalam grid item
 
-<Code>
+```css
 .grid-container {
   display: grid;
   grid-template-columns: 1fr 3fr;
@@ -90,7 +88,7 @@ Seringkali lo bakal pakai keduanya sekaligus. Misalnya:
   justify-content: center;
   align-items: center;
 }
-</Code>
+```
 
 ---
 
@@ -124,7 +122,7 @@ CSS Grid dan Flexbox bukan lawan, tapi partner. Pahami kekuatan masing-masing da
 - Jangan pakai Flexbox untuk layout dua dimensi kompleks
 - Kombinasi keduanya sering jadi solusi terbaik
 
-Mulai praktek sekarang dan lihat perbedaan besar di layout website lo!
+Mulai praktek sekarang dan lihat perbedaan besar di layout website lo.
 
 ---
 

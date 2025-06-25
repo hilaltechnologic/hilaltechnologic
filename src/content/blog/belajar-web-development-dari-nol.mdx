@@ -12,15 +12,13 @@ featured: true
 readingTime: "12 menit baca"
 ---
 
-import Code from '../../components/Code.astro';
-
 # 🚀 Panduan Lengkap Belajar Web Development dari Nol sampai Hero
 
 Lo pengen jadi web developer tapi bingung mulai dari mana? Tenang bro, artikel ini bakal jadi GPS lo dalam perjalanan belajar web development. Dari yang nol banget sampai bisa bikin website keren kayak Netflix atau Instagram.
 
 > "Every expert was once a beginner. Every pro was once an amateur." 
 
-Siap-siap, kita bakal bahas roadmap lengkap yang udah terbukti bikin ribuan orang sukses jadi web developer!
+Siap-siap, kita bakal bahas roadmap lengkap yang udah terbukti bikin ribuan orang sukses jadi web developer.
 
 ---
 
@@ -29,10 +27,10 @@ Siap-siap, kita bakal bahas roadmap lengkap yang udah terbukti bikin ribuan oran
 Web development adalah seni dan sains membangun website atau aplikasi web. Bayangin lo lagi bikin rumah:
 
 - **Frontend** = Interior design (yang dilihat user)
-- **Backend** = Fondasi & instalasi listrik (yang nggak keliatan tapi penting)
+- **Backend** = Fondasi dan instalasi listrik (yang nggak keliatan tapi penting)
 - **Database** = Gudang penyimpanan barang
 
-Simple kan? Sekarang mari kita mulai perjalanan lo!
+Simple kan. Sekarang mari kita mulai perjalanan lo.
 
 ---
 
@@ -48,7 +46,7 @@ HTML itu kayak kerangka rumah. Tanpa HTML, website lo cuma mimpi.
 - Forms dan input
 - Semantic HTML
 
-<Code>
+```html
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -56,13 +54,13 @@ HTML itu kayak kerangka rumah. Tanpa HTML, website lo cuma mimpi.
     <title>Website Pertama Gue</title>
 </head>
 <body>
-    <h1>Hello World!</h1>
-    <p>Ini website pertama gue, bro!</p>
+    <h1>Hello World</h1>
+    <p>Ini website pertama gue, bro</p>
 </body>
 </html>
-</Code>
+```
 
-**Waktu Belajar:** 2-3 minggu
+**Waktu Belajar:** 2-3 minggu  
 **Resource:** MDN Web Docs, freeCodeCamp
 
 ### CSS - Styling yang Bikin Cantik
@@ -76,7 +74,7 @@ Kalau HTML itu kerangka, CSS itu cat dan dekorasinya.
 - Responsive design
 - Animations
 
-<Code>
+```css
 .hero-section {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     height: 100vh;
@@ -90,9 +88,9 @@ Kalau HTML itu kerangka, CSS itu cat dan dekorasinya.
     color: white;
     text-align: center;
 }
-</Code>
+```
 
-**Waktu Belajar:** 3-4 minggu
+**Waktu Belajar:** 3-4 minggu  
 **Tips:** Bikin 5-10 project kecil buat latihan
 
 ---
@@ -101,7 +99,7 @@ Kalau HTML itu kerangka, CSS itu cat dan dekorasinya.
 
 ### JavaScript - Otak Website
 
-Ini dia yang bikin website lo hidup! JavaScript itu bahasa pemrograman yang wajib dikuasai.
+Ini dia yang bikin website lo hidup. JavaScript itu bahasa pemrograman yang wajib dikuasai.
 
 **Fundamental yang Wajib:**
 - Variables dan data types
@@ -111,13 +109,13 @@ Ini dia yang bikin website lo hidup! JavaScript itu bahasa pemrograman yang waji
 - Async/await dan Promises
 - ES6+ features
 
-<Code>
+```javascript
 // Contoh DOM manipulation
 const button = document.getElementById('myButton');
 const output = document.getElementById('output');
 
 button.addEventListener('click', () => {
-    output.textContent = 'Button diklik, bro!';
+    output.textContent = 'Button diklik, bro';
     output.style.color = '#ff6b6b';
 });
 
@@ -131,9 +129,9 @@ async function fetchData() {
         console.error('Error:', error);
     }
 }
-</Code>
+```
 
-**Waktu Belajar:** 6-8 minggu
+**Waktu Belajar:** 6-8 minggu  
 **Project Ideas:**
 - Calculator
 - Todo List
@@ -142,9 +140,9 @@ async function fetchData() {
 
 ---
 
-## 🛠️ Phase 3: Tools & Workflow (Bulan 5)
+## 🛠️ Phase 3: Tools dan Workflow (Bulan 5)
 
-### Git & GitHub - Version Control
+### Git dan GitHub - Version Control
 
 Git itu kayak save game di PlayStation. Lo bisa balik ke versi sebelumnya kalau ada yang rusak.
 
@@ -154,7 +152,7 @@ Git itu kayak save game di PlayStation. Lo bisa balik ke versi sebelumnya kalau 
 - Pull requests
 - Collaboration workflow
 
-<Code>
+```bash
 # Setup repository baru
 git init
 git add .
@@ -167,9 +165,9 @@ git checkout -b feature/new-feature
 git add .
 git commit -m "Add new feature"
 git push origin feature/new-feature
-</Code>
+```
 
-### Package Managers & Build Tools
+### Package Managers dan Build Tools
 
 - **npm/yarn** - Buat manage dependencies
 - **Webpack/Vite** - Bundling dan optimization
@@ -181,13 +179,13 @@ git push origin feature/new-feature
 
 ### Pilih Framework Lo
 
-**React** - Paling populer, job opportunities banyak
+**React** - Paling populer, job opportunities banyak  
 **Vue** - Mudah dipelajari, dokumentasi bagus  
 **Angular** - Enterprise-grade, full framework
 
 **Rekomendasi untuk pemula: React**
 
-<Code>
+```jsx
 // React Component Example
 import React, { useState } from 'react';
 
@@ -208,7 +206,7 @@ function Counter() {
 }
 
 export default Counter;
-</Code>
+```
 
 **Yang Harus Dipelajari:**
 - Component-based architecture
@@ -221,11 +219,11 @@ export default Counter;
 
 ## 🔧 Phase 5: Backend Basics (Bulan 9-11)
 
-### Node.js & Express
+### Node.js dan Express
 
-Saatnya belajar backend! Node.js memungkinkan lo pakai JavaScript di server.
+Saatnya belajar backend. Node.js memungkinkan lo pakai JavaScript di server.
 
-<Code>
+```javascript
 // Express server sederhana
 const express = require('express');
 const app = express();
@@ -235,7 +233,7 @@ app.use(express.json());
 
 // Route GET
 app.get('/api/users', (req, res) => {
-    res.json({ message: 'Hello from backend!' });
+    res.json({ message: 'Hello from backend' });
 });
 
 // Route POST
@@ -248,14 +246,14 @@ app.post('/api/users', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
-</Code>
+```
 
 ### Database
 
-**SQL (PostgreSQL/MySQL)** - Untuk data terstruktur
+**SQL (PostgreSQL/MySQL)** - Untuk data terstruktur  
 **NoSQL (MongoDB)** - Untuk data fleksibel
 
-<Code>
+```javascript
 // MongoDB dengan Mongoose
 const mongoose = require('mongoose');
 
@@ -274,11 +272,11 @@ const newUser = new User({
 });
 
 await newUser.save();
-</Code>
+```
 
 ---
 
-## 🚀 Phase 6: Advanced & Specialization (Bulan 12+)
+## 🚀 Phase 6: Advanced dan Specialization (Bulan 12+)
 
 ### Pilih Spesialisasi Lo
 
@@ -315,8 +313,8 @@ Tutorial cuma kasih lo teori. Project kasih lo pengalaman.
 - Local meetups
 - Twitter dev community
 
-### 4. **Don't Tutorial Hell**
-Jangan terjebak nonton tutorial terus tanpa praktek.
+### 4. **Jangan Tutorial Hell**
+Jangan terjebat nonton tutorial terus tanpa praktek.
 
 ### 5. **Learn in Public**
 Share progress lo di social media. Bikin blog, post di LinkedIn.
@@ -327,9 +325,9 @@ Share progress lo di social media. Bikin blog, post di LinkedIn.
 
 | Bulan | Focus Area | Skills |
 |-------|------------|--------|
-| 1-2 | HTML & CSS | Struktur dan styling dasar |
+| 1-2 | HTML dan CSS | Struktur dan styling dasar |
 | 3-4 | JavaScript | Programming fundamentals |
-| 5 | Tools & Git | Development workflow |
+| 5 | Tools dan Git | Development workflow |
 | 6-8 | Frontend Framework | React/Vue/Angular |
 | 9-11 | Backend Basics | Node.js, Database |
 | 12+ | Specialization | Advanced topics |
@@ -391,7 +389,7 @@ Web development itu marathon, bukan sprint. Nggak ada yang jadi expert dalam sem
 
 Mulai hari ini, commit 1 jam setiap hari buat belajar. Dalam 6 bulan, lo bakal kaget sama progress lo sendiri.
 
-**Ready to become a web development hero? Let's code! 🚀**
+**Ready to become a web development hero? Let's code 🚀**
 
 ---
 

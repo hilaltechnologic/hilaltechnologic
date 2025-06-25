@@ -12,15 +12,13 @@ featured: true
 readingTime: "8 menit baca"
 ---
 
-import Code from '../../components/Code.astro';
-
 # ⚡ 10 Tips Jitu Bikin Website Loading Super Cepat
 
-Website lo loading lama? User kabur sebelum halaman kebuka? Tenang bro, artikel ini bakal ngasih lo 10 tips ampuh buat bikin website lo secepat kilat!
+Website lo loading lama? User kabur sebelum halaman kebuka? Tenang bro, artikel ini bakal ngasih lo 10 tips ampuh buat bikin website lo secepat kilat.
 
 > "A 1-second delay in page response can result in a 7% reduction in conversions." - Amazon
 
-Jadi, setiap detik itu literally uang. Mari kita optimasi website lo sampai user bilang "Wah, cepet banget!"
+Jadi, setiap detik itu literally uang. Mari kita optimasi website lo sampai user bilang "Wah, cepet banget."
 
 ---
 
@@ -33,7 +31,7 @@ Sebelum masuk ke tips, lo harus tau kenapa speed itu crucial:
 - **Conversion Rate** - Website cepat = sales naik
 - **Bounce Rate** - Loading lama = user kabur
 
-**Fun Fact:** 53% user akan ninggalin website yang loading lebih dari 3 detik!
+**Fun Fact:** 53% user akan ninggalin website yang loading lebih dari 3 detik.
 
 ---
 
@@ -43,23 +41,24 @@ Gambar biasanya jadi biang keladi website lambat. Ini cara ngatasinnya:
 
 ### Format Gambar Modern
 
-<Code>
+```html
 <!-- Gunakan format modern -->
 <picture>
   <source srcset="hero.avif" type="image/avif">
   <source srcset="hero.webp" type="image/webp">
   <img src="hero.jpg" alt="Hero image" loading="lazy">
 </picture>
-</Code>
+```
 
 ### Lazy Loading
 
-<Code>
+```html
 <!-- Native lazy loading -->
 <img src="image.jpg" alt="Description" loading="lazy">
+```
 
-<!-- Atau pakai Intersection Observer -->
-<script>
+```javascript
+// Atau pakai Intersection Observer
 const images = document.querySelectorAll('img[data-src]');
 const imageObserver = new IntersectionObserver((entries, observer) => {
   entries.forEach(entry => {
@@ -73,8 +72,7 @@ const imageObserver = new IntersectionObserver((entries, observer) => {
 });
 
 images.forEach(img => imageObserver.observe(img));
-</script>
-</Code>
+```
 
 **Tools untuk Optimasi:**
 - TinyPNG/TinyJPG
@@ -83,11 +81,11 @@ images.forEach(img => imageObserver.observe(img));
 
 ---
 
-## 📦 Tip #2: Minify & Compress Assets
+## 📦 Tip #2: Minify dan Compress Assets
 
-### CSS & JavaScript Minification
+### CSS dan JavaScript Minification
 
-<Code>
+```css
 /* Before - CSS biasa */
 .header {
     background-color: #ffffff;
@@ -97,24 +95,26 @@ images.forEach(img => imageObserver.observe(img));
 
 /* After - CSS minified */
 .header{background-color:#fff;padding:20px 15px;margin-bottom:30px}
-</Code>
+```
 
 ### Gzip Compression
 
-<Code>
+```javascript
 // Express.js dengan compression
 const compression = require('compression');
 const express = require('express');
 const app = express();
 
 app.use(compression());
+```
 
-// Nginx config
+```nginx
+# Nginx config
 gzip on;
 gzip_vary on;
 gzip_min_length 1024;
 gzip_types text/plain text/css text/xml text/javascript application/javascript;
-</Code>
+```
 
 **Tools:**
 - Webpack/Vite (auto minification)
@@ -127,23 +127,25 @@ gzip_types text/plain text/css text/xml text/javascript application/javascript;
 
 Cache itu kayak memory jangka pendek browser. Sekali download, nggak perlu download lagi.
 
-<Code>
+```javascript
 // Express.js cache headers
 app.use(express.static('public', {
   maxAge: '1y', // Cache static files for 1 year
   etag: false
 }));
+```
 
-// Nginx cache config
+```nginx
+# Nginx cache config
 location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
     expires 1y;
     add_header Cache-Control "public, immutable";
 }
-</Code>
+```
 
 ### Service Worker untuk Advanced Caching
 
-<Code>
+```javascript
 // service-worker.js
 const CACHE_NAME = 'my-site-cache-v1';
 const urlsToCache = [
@@ -165,7 +167,7 @@ self.addEventListener('fetch', event => {
       .then(response => response || fetch(event.request))
   );
 });
-</Code>
+```
 
 ---
 
@@ -177,15 +179,15 @@ CDN itu kayak warung di setiap sudut kota. User dapet konten dari server terdeka
 - **Cloudflare** - Free tier bagus
 - **AWS CloudFront** - Enterprise grade
 - **Vercel** - Perfect untuk static sites
-- **Netlify** - Great for JAMstack
+- **Netlify** - Great untuk JAMstack
 
-<Code>
+```html
 <!-- CDN untuk libraries -->
 <script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js"></script>
 
 <!-- Self-hosted assets via CDN -->
 <img src="https://cdn.yoursite.com/images/hero.webp" alt="Hero">
-</Code>
+```
 
 ---
 
@@ -195,7 +197,7 @@ Setiap request = round trip ke server. Makin sedikit makin cepat.
 
 ### CSS Sprites
 
-<Code>
+```css
 /* Gabungin multiple icons jadi satu file */
 .icon {
     background-image: url('sprites.png');
@@ -205,11 +207,11 @@ Setiap request = round trip ke server. Makin sedikit makin cepat.
 .icon-home { background-position: 0 0; }
 .icon-user { background-position: -20px 0; }
 .icon-settings { background-position: -40px 0; }
-</Code>
+```
 
 ### Inline Critical CSS
 
-<Code>
+```html
 <!-- Critical CSS langsung di HTML -->
 <style>
   .hero { background: #000; color: #fff; height: 100vh; }
@@ -218,7 +220,7 @@ Setiap request = round trip ke server. Makin sedikit makin cepat.
 
 <!-- Non-critical CSS di-load async -->
 <link rel="preload" href="styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-</Code>
+```
 
 ---
 
@@ -228,18 +230,20 @@ Backend yang lambat = frontend yang lambat juga.
 
 ### Index Database Fields
 
-<Code>
+```sql
 -- SQL: Tambah index di kolom yang sering di-query
 CREATE INDEX idx_user_email ON users(email);
 CREATE INDEX idx_post_created_at ON posts(created_at);
+```
 
--- MongoDB: Index compound
+```javascript
+// MongoDB: Index compound
 db.users.createIndex({ "email": 1, "status": 1 });
-</Code>
+```
 
 ### Query Optimization
 
-<Code>
+```javascript
 // Bad - N+1 Query Problem
 const posts = await Post.findAll();
 for (let post of posts) {
@@ -250,15 +254,15 @@ for (let post of posts) {
 const posts = await Post.findAll({
   include: [{ model: User, as: 'author' }]
 });
-</Code>
+```
 
 ---
 
-## 🎨 Tip #7: Optimize CSS & JavaScript Loading
+## 🎨 Tip #7: Optimize CSS dan JavaScript Loading
 
 ### Critical Resource Hints
 
-<Code>
+```html
 <!-- Preload critical resources -->
 <link rel="preload" href="critical.css" as="style">
 <link rel="preload" href="hero-image.webp" as="image">
@@ -268,11 +272,11 @@ const posts = await Post.findAll({
 
 <!-- DNS prefetch for external domains -->
 <link rel="dns-prefetch" href="//fonts.googleapis.com">
-</Code>
+```
 
-### Async & Defer Scripts
+### Async dan Defer Scripts
 
-<Code>
+```html
 <!-- Defer: Execute after HTML parsing -->
 <script src="main.js" defer></script>
 
@@ -281,7 +285,7 @@ const posts = await Post.findAll({
 
 <!-- Module scripts (modern browsers) -->
 <script type="module" src="app.js"></script>
-</Code>
+```
 
 ---
 
@@ -289,7 +293,7 @@ const posts = await Post.findAll({
 
 ### Skeleton Screens
 
-<Code>
+```css
 .skeleton {
   background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
   background-size: 200% 100%;
@@ -300,11 +304,11 @@ const posts = await Post.findAll({
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
-</Code>
+```
 
 ### Code Splitting
 
-<Code>
+```javascript
 // React lazy loading
 import { lazy, Suspense } from 'react';
 
@@ -323,16 +327,16 @@ const loadModule = async () => {
   const module = await import('./heavyModule.js');
   module.init();
 };
-</Code>
+```
 
 ---
 
 ## 🔧 Tip #9: Server-Side Optimizations
 
-### HTTP/2 & HTTP/3
+### HTTP/2 dan HTTP/3
 
-<Code>
-// Nginx HTTP/2 config
+```nginx
+# Nginx HTTP/2 config
 server {
     listen 443 ssl http2;
     server_name yoursite.com;
@@ -341,11 +345,11 @@ server {
     ssl_certificate /path/to/cert.pem;
     ssl_certificate_key /path/to/key.pem;
 }
-</Code>
+```
 
 ### Response Compression
 
-<Code>
+```javascript
 // Node.js dengan Brotli compression
 const express = require('express');
 const compression = require('compression');
@@ -360,11 +364,11 @@ app.use(compression({
     return compression.filter(req, res);
   }
 }));
-</Code>
+```
 
 ---
 
-## 📊 Tip #10: Monitor & Measure Performance
+## 📊 Tip #10: Monitor dan Measure Performance
 
 ### Core Web Vitals
 
@@ -375,7 +379,7 @@ Yang harus lo pantau:
 
 ### Performance Monitoring Tools
 
-<Code>
+```javascript
 // Web Vitals library
 import {getCLS, getFID, getFCP, getLCP, getTTFB} from 'web-vitals';
 
@@ -393,7 +397,7 @@ const observer = new PerformanceObserver((list) => {
 });
 
 observer.observe({entryTypes: ['measure', 'navigation']});
-</Code>
+```
 
 **Tools untuk Testing:**
 - **Google PageSpeed Insights**
@@ -410,7 +414,7 @@ Ini yang bisa lo lakuin hari ini juga:
 - ✅ Compress semua gambar
 - ✅ Enable Gzip compression
 - ✅ Add lazy loading ke images
-- ✅ Minify CSS & JS
+- ✅ Minify CSS dan JS
 - ✅ Set up browser caching
 - ✅ Remove unused CSS/JS
 - ✅ Optimize fonts loading
@@ -498,9 +502,9 @@ Website cepat bukan cuma soal teknis, tapi soal user experience dan business imp
 
 **Pro Tip:** Set performance budget dan stick to it. Misalnya: "Total page size nggak boleh lebih dari 1MB" atau "Load time harus di bawah 3 detik."
 
-Start implementing tips ini satu per satu, dan lo bakal liat dramatic improvement di website speed lo!
+Start implementing tips ini satu per satu, dan lo bakal liat dramatic improvement di website speed lo.
 
-**Ready to make your website lightning fast? Let's optimize! ⚡**
+**Ready to make your website lightning fast? Let's optimize ⚡**
 
 ---
 
