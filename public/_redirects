@@ -1,16 +1,12 @@
-# Handle direct routes
-/  /index.html  200
-/blog/  /blog/index.html  200
-/kategori/  /kategori/index.html  200
-/arsip/  /arsip/index.html  200
+# Handle dynamic routes first
+/blog/:slug  /blog/:slug/  200
+/kategori/:slug  /kategori/:slug/  200
+/arsip/:year/:month  /arsip/:year/:month/  200
 
-# Handle dynamic routes
-/blog/*  /blog/:splat/index.html  200
-/kategori/*  /kategori/:splat/index.html  200
-/arsip/*  /arsip/:splat/index.html  200
+# Handle directory routes
+/blog  /blog/  301
+/kategori  /kategori/  301
+/arsip  /arsip/  301
 
-# Proper 404 page
-/404.html      /404.html                       404
-
-# SPA fallback
-/*  /index.html  200
+# 404 fallback
+/*  /404.html  404
