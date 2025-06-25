@@ -10,8 +10,10 @@ export default defineConfig({
   output: 'static',
   trailingSlash: 'always',
   build: {
-    format: 'directory'
+    format: 'directory',
+    assets: '_astro'
   },
+  base: '/',
   integrations: [
     tailwind({
       applyBaseStyles: false, // Kita akan menggunakan custom base styles
