@@ -1,0 +1,153 @@
+---
+// Cookie Consent Component untuk privacy compliance
+---
+
+<div id="cookie-consent" class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-lg transform translate-y-full transition-transform duration-300 z-50">
+  <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between">
+    <div class="text-sm text-gray-700 dark:text-gray-300 mb-4 md:mb-0">
+      🍪 Website ini menggunakan cookies untuk meningkatkan pengalaman pengguna dan analisis. Dengan menggunakan website ini, Anda menyetujui penggunaan cookies sesuai dengan 
+      <a href="/kebijakan-privasi" class="text-blue-600 dark:text-blue-400 hover:underline">Kebijakan Privasi</a> kami.
+    </div>
+    <div class="flex gap-3">
+      <button id="reject-cookies" class="px-4 py-2 text-sm bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+        Tolak
+      </button>
+      <button id="accept-cookies" class="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+        Setuju
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Cookie Consent Manager
+  class CookieConsentManager {
+    private consentKey = 'cookie-consent-v1';
+    private analyticsKey = 'analytics-enabled';
+    private element: HTMLElement | null;
+    private acceptButton: HTMLElement | null;
+    private rejectButton: HTMLElement | null;
+
+    constructor() {
+      this.element = document.getElementById('cookie-consent');
+      this.acceptButton = document.getElementById('accept-cookies');
+      this.rejectButton = document.getElementById('reject-cookies');
+      this.init();
+    }
+
+    private init(): void {
+      // Check if consent already given
+      if (!this.hasConsent()) {
+        this.showBanner();
+      }
+
+      // Setup event listeners
+      this.setupEventListeners();
+    }
+
+    private setupEventListeners(): void {
+      this.acceptButton?.addEventListener('click', () => {
+        this.acceptCookies();
+        this.hideBanner();
+      });
+
+      this.rejectButton?.addEventListener('click', () => {
+        this.rejectCookies();
+        this.hideBanner();
+      });
+    }
+
+    private showBanner(): void {
+      if (this.element) {
+        // Small delay to allow for smooth animation
+        setTimeout(() => {
+          this.element?.classList.remove('translate-y-full');
+        }, 100);
+      }
+    }
+
+    private hideBanner(): void {
+      if (this.element) {
+        this.element.classList.add('translate-y-full');
+      }
+    }
+
+    private hasConsent(): boolean {
+      return localStorage.getItem(this.consentKey) !== null;
+    }
+
+    private acceptCookies(): void {
+      localStorage.setItem(this.consentKey, 'accepted');
+      localStorage.setItem(this.analyticsKey, 'true');
+      this.enableAnalytics();
+    }
+
+    private rejectCookies(): void {
+      localStorage.setItem(this.consentKey, 'rejected');
+      localStorage.setItem(this.analyticsKey, 'false');
+      this.disableAnalytics();
+    }
+
+    private enableAnalytics(): void {
+      // Enable Google Analytics
+      if (typeof window.gtag !== 'undefined') {
+        window.gtag('consent', 'update', {
+          'analytics_storage': 'granted'
+        });
+      }
+
+      // Enable custom analytics
+      if (window.analyticsTracker) {
+        window.analyticsTracker.enableTracking();
+      }
+
+      // Dispatch custom event
+      window.dispatchEvent(new CustomEvent('analytics-enabled'));
+    }
+
+    private disableAnalytics(): void {
+      // Disable Google Analytics
+      if (typeof window.gtag !== 'undefined') {
+        window.gtag('consent', 'update', {
+          'analytics_storage': 'denied'
+        });
+      }
+
+      // Disable custom analytics
+      if (window.analyticsTracker) {
+        window.analyticsTracker.disableTracking();
+      }
+
+      // Dispatch custom event
+      window.dispatchEvent(new CustomEvent('analytics-disabled'));
+    }
+
+    // Public method to check if analytics is enabled
+    public isAnalyticsEnabled(): boolean {
+      return localStorage.getItem(this.analyticsKey) === 'true';
+    }
+  }
+
+  // Initialize cookie consent manager
+  const cookieManager = new CookieConsentManager();
+
+  // Expose cookie manager globally
+  (window as any).cookieManager = cookieManager;
+</script>
+
+<style>
+  /* Optional: Add custom styles here */
+  #cookie-consent {
+    border-top: 1px solid #e5e7eb;
+  }
+
+  .dark #cookie-consent {
+    border-top: 1px solid #374151;
+  }
+
+  @media (max-width: 768px) {
+    #cookie-consent .container {
+      text-align: center;
+    }
+  }
+</style>

@@ -3,6 +3,9 @@ import type { SEOProps } from '../utils/seo';
 import { generateSEOTags, getCurrentUrl } from '../utils/seo';
 import { generateSchemaOrg, generateWebSiteSchema, generateOrganizationSchema } from '../utils/schema';
 import { SITE_CONFIG } from '../config/site';
+import GoogleAnalytics from '../components/GoogleAnalytics.astro';
+import AnalyticsEvents from '../components/AnalyticsEvents.astro';
+import CookieConsent from '../components/CookieConsent.astro';
 import '../styles/global.css';
 
 interface Props {
@@ -112,6 +115,10 @@ const organizationSchema = isHomepage ? generateOrganizationSchema() : null;
     <!-- Sitemap -->
     <link rel="sitemap" href="/sitemap-index.xml" />
     
+    <!-- Analytics -->
+    <GoogleAnalytics />
+    <AnalyticsEvents />
+    
     <!-- Dark mode script -->
     <script is:inline>
       if (
@@ -131,6 +138,9 @@ const organizationSchema = isHomepage ? generateOrganizationSchema() : null;
       <slot />
     </main>
     <slot name="footer" />
+    
+    <!-- Cookie Consent Banner -->
+    <CookieConsent />
     
     <!-- Dark mode toggle script -->
     <script>
