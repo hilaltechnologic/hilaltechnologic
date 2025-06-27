@@ -1,0 +1,483 @@
+---
+title: "Deploy Website Gratis: Perbandingan Vercel vs Netlify vs GitHub Pages"
+description: "Panduan lengkap cara deploy website gratis menggunakan Vercel, Netlify, dan GitHub Pages. Perbandingan fitur, kelebihan dan kekurangan, serta tutorial step-by-step."
+publishedDate: 2025-01-31
+author:
+  name: "Hilal Technologic"
+  url: "https://hilaltechnologic.info/author/admin"
+tags: ["web development", "hosting", "vercel", "netlify", "github pages", "deployment", "tutorial", "static site"]
+image: "/images/blog/deploy-website-gratis-cover.webp"
+imageAlt: "Deploy Website Gratis Tutorial Cover"
+featured: true
+draft: false
+readingTime: "15 menit baca"
+---
+
+# 🚀 Deploy Website Gratis: Vercel vs Netlify vs GitHub Pages
+
+Di era modern ini, ada banyak pilihan platform untuk deploy website secara gratis. Tiga platform yang paling populer adalah Vercel, Netlify, dan GitHub Pages. Di artikel ini, kita akan membandingkan ketiganya dan belajar cara deploy website di masing-masing platform.
+
+## 📋 Yang Akan Kita Bahas
+
+1. Perbandingan fitur ketiga platform
+2. Kelebihan dan kekurangan masing-masing
+3. Tutorial step-by-step deployment
+4. Tips dan best practices
+5. Use cases: kapan menggunakan platform tertentu
+
+## 🔍 Perbandingan Platform
+
+### Vercel
+
+**Kelebihan:**
+- ✅ Optimized untuk Next.js
+- ✅ Edge Network yang cepat
+- ✅ Preview Deployments
+- ✅ Serverless Functions
+- ✅ Environment Variables yang aman
+- ✅ Analytics bawaan
+- ✅ Integrasi Git yang mulus
+
+**Kekurangan:**
+- ❌ Free tier terbatas untuk team
+- ❌ Beberapa fitur advanced berbayar
+- ❌ Fokus utama ke Next.js
+
+### Netlify
+
+**Kelebihan:**
+- ✅ Form handling bawaan
+- ✅ Split testing
+- ✅ Identity service
+- ✅ Functions serverless
+- ✅ Deploy previews
+- ✅ CMS gratis
+- ✅ Mendukung banyak framework
+
+**Kekurangan:**
+- ❌ Build minutes terbatas di free tier
+- ❌ Bandwidth terbatas
+- ❌ Beberapa fitur enterprise only
+
+### GitHub Pages
+
+**Kelebihan:**
+- ✅ 100% gratis
+- ✅ Integrasi langsung dengan GitHub
+- ✅ Custom domain gratis
+- ✅ Jekyll support bawaan
+- ✅ Simple dan straightforward
+- ✅ Dokumentasi lengkap
+- ✅ Komunitas besar
+
+**Kekurangan:**
+- ❌ Fitur terbatas
+- ❌ Tidak ada serverless functions
+- ❌ Static sites only
+- ❌ Build options terbatas
+
+## 🚀 Tutorial Deploy
+
+### 1. Deploy di Vercel
+
+#### Prerequisites
+- GitHub/GitLab/Bitbucket account
+- Project di repository
+- Node.js terinstall (untuk project JavaScript)
+
+#### Langkah-langkah:
+
+1. **Push project ke GitHub**
+```bash
+git init
+git add .
+git commit -m "Initial commit"
+git remote add origin https://github.com/username/repo.git
+git push -u origin main
+```
+
+2. **Import project di Vercel**
+- Buka [vercel.com](https://vercel.com)
+- Login dengan GitHub
+- Klik "New Project"
+- Pilih repository
+- Klik "Import"
+
+3. **Konfigurasi Project**
+```json
+// vercel.json
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": { "distDir": "build" }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}
+```
+
+4. **Environment Variables (optional)**
+```bash
+# .env
+API_KEY=your_api_key
+DATABASE_URL=your_database_url
+```
+
+5. **Deploy!**
+- Vercel akan otomatis build dan deploy
+- Setiap push ke main branch akan trigger deployment baru
+
+### 2. Deploy di Netlify
+
+#### Prerequisites
+- GitHub/GitLab/Bitbucket account
+- Project di repository
+- netlify.toml file (optional)
+
+#### Langkah-langkah:
+
+1. **Siapkan netlify.toml**
+```toml
+[build]
+  command = "npm run build"
+  publish = "build"
+  functions = "functions"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[build.environment]
+  NODE_VERSION = "16"
+```
+
+2. **Deploy via Netlify UI**
+- Buka [netlify.com](https://netlify.com)
+- Login dengan GitHub
+- Klik "New site from Git"
+- Pilih repository
+- Konfigurasi build settings
+- Klik "Deploy site"
+
+3. **Deploy dengan Netlify CLI**
+```bash
+# Install Netlify CLI
+npm install netlify-cli -g
+
+# Login ke Netlify
+netlify login
+
+# Initialize project
+netlify init
+
+# Deploy
+netlify deploy --prod
+```
+
+4. **Forms Setup (optional)**
+```html
+<form name="contact" netlify>
+  <input type="text" name="name" />
+  <input type="email" name="email" />
+  <button type="submit">Send</button>
+</form>
+```
+
+5. **Functions Setup (optional)**
+```javascript
+// functions/hello.js
+exports.handler = async function(event, context) {
+  return {
+    statusCode: 200,
+    body: JSON.stringify({message: "Hello World"})
+  };
+}
+```
+
+### 3. Deploy di GitHub Pages
+
+#### Prerequisites
+- GitHub account
+- Repository dengan nama username.github.io (untuk user site)
+- atau repository biasa (untuk project site)
+
+#### Langkah-langkah:
+
+1. **Buat Repository**
+- Untuk user site: username.github.io
+- Untuk project site: any-name
+
+2. **Setup GitHub Pages**
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+          
+      - name: Install and Build
+        run: |
+          npm install
+          npm run build
+          
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@4.1.4
+        with:
+          branch: gh-pages
+          folder: build
+```
+
+3. **Konfigurasi di repository settings**
+- Buka repository settings
+- Scroll ke "GitHub Pages" section
+- Pilih source branch (gh-pages)
+- Save
+
+4. **Custom Domain (optional)**
+```txt
+# CNAME
+www.yourdomain.com
+```
+
+## 🎯 Use Cases: Kapan Pakai Apa?
+
+### Vercel Cocok Untuk:
+- Project Next.js
+- Aplikasi yang butuh serverless functions
+- Project yang butuh preview deployments
+- Aplikasi yang butuh analytics detail
+
+### Netlify Cocok Untuk:
+- JAMstack websites
+- Project yang butuh form handling
+- Aplikasi dengan authentication
+- Sites yang butuh A/B testing
+
+### GitHub Pages Cocok Untuk:
+- Portfolio websites
+- Documentation sites
+- Project pages
+- Blog statis
+
+## ⚡ Performance Tips
+
+### 1. Build Optimization
+```json
+// package.json
+{
+  "scripts": {
+    "build": "NODE_ENV=production webpack --config webpack.prod.js",
+    "analyze": "source-map-explorer 'build/static/js/*.js'"
+  }
+}
+```
+
+### 2. Cache Control
+```nginx
+# netlify.toml
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"
+```
+
+### 3. Asset Optimization
+```yaml
+# vercel.json
+{
+  "images": {
+    "sizes": [640, 750, 828, 1080, 1200],
+    "domains": ["images.yourdomain.com"]
+  }
+}
+```
+
+## 🔒 Security Best Practices
+
+### 1. Environment Variables
+```bash
+# Vercel
+vercel secrets add my-secret-key "123456"
+
+# Netlify
+netlify env:set API_KEY "123456"
+```
+
+### 2. Headers Configuration
+```toml
+# netlify.toml
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    Content-Security-Policy = "default-src 'self'"
+```
+
+### 3. Access Control
+```json
+// vercel.json
+{
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "https://yourdomain.com"
+        }
+      ]
+    }
+  ]
+}
+```
+
+## 🎯 Monitoring dan Analytics
+
+### 1. Vercel Analytics
+```javascript
+// pages/_app.js
+import { Analytics } from '@vercel/analytics/react';
+
+function MyApp({ Component, pageProps }) {
+  return (
+    <>
+      <Component {...pageProps} />
+      <Analytics />
+    </>
+  );
+}
+```
+
+### 2. Netlify Analytics
+```javascript
+// Automatically included with Netlify Analytics subscription
+```
+
+### 3. Custom Analytics
+```javascript
+// Google Analytics example
+import ReactGA from 'react-ga';
+
+ReactGA.initialize('UA-000000-01');
+ReactGA.pageview(window.location.pathname);
+```
+
+## 🚀 Continuous Integration/Deployment
+
+### 1. GitHub Actions dengan Vercel
+```yaml
+# .github/workflows/vercel.yml
+name: Vercel Production Deployment
+on:
+  push:
+    branches: [main]
+jobs:
+  Deploy-Production:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: amondnet/vercel-action@v20
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.ORG_ID}}
+          vercel-project-id: ${{ secrets.PROJECT_ID}}
+          vercel-args: '--prod'
+```
+
+### 2. Netlify Build Hooks
+```bash
+curl -X POST -d {} https://api.netlify.com/build_hooks/HOOK_ID
+```
+
+### 3. GitHub Pages Automation
+```yaml
+# .github/workflows/gh-pages.yml
+name: GitHub Pages Deploy
+on:
+  push:
+    branches: [main]
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Build
+        run: |
+          npm install
+          npm run build
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build
+```
+
+## 🎯 Kesimpulan
+
+### Pilih Vercel jika:
+- Menggunakan Next.js
+- Butuh serverless functions
+- Fokus pada performance
+- Butuh preview deployments
+
+### Pilih Netlify jika:
+- Butuh form handling
+- Ingin fitur CMS
+- Perlu A/B testing
+- Butuh authentication
+
+### Pilih GitHub Pages jika:
+- Project static sederhana
+- Documentation site
+- Personal portfolio
+- Blog statis
+
+## 🔗 Resources
+
+1. **Documentation**
+   - [Vercel Docs](https://vercel.com/docs)
+   - [Netlify Docs](https://docs.netlify.com)
+   - [GitHub Pages Docs](https://docs.github.com/pages)
+
+2. **Tools**
+   - [Netlify CLI](https://cli.netlify.com)
+   - [Vercel CLI](https://vercel.com/cli)
+   - [GitHub Actions](https://github.com/features/actions)
+
+3. **Templates**
+   - [Next.js Templates](https://vercel.com/templates)
+   - [Netlify Templates](https://templates.netlify.com)
+   - [GitHub Pages Themes](https://pages.github.com/themes)
+
+## 🔗 Artikel Terkait
+
+- [Animasi CSS yang Bikin Website Lo Terlihat Premium](https://hilaltechnologic.info/blog/animasi-css-premium-website)
+- [Tips Optimasi Website Loading Cepat](https://hilaltechnologic.info/blog/tips-optimasi-website-loading-cepat)
+- [Membuat Dark Mode dengan CSS Variables dan JavaScript](https://hilaltechnologic.info/blog/membuat-dark-mode-css-variables-javascript)
+
+---
+
+> Ditulis dengan ❤️ oleh [Hilal Technologic](https://hilaltechnologic.info)
