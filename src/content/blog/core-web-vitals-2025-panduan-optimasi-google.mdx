@@ -1,0 +1,1209 @@
+---
+title: "Core Web Vitals 2025: Panduan Optimasi Website untuk Google Ranking"
+description: "Panduan lengkap Core Web Vitals 2025 untuk meningkatkan ranking Google. Tutorial optimasi LCP, FID, CLS, INP dengan tools dan teknik terbaru."
+publishedDate: 2025-01-31
+author:
+  name: "Hilal Technologic"
+  url: "https://hilaltechnologic.info/author/admin"
+tags: ["core web vitals", "seo", "google ranking", "web performance", "lcp", "fid", "cls", "inp", "page experience"]
+image: "/images/blog/core-web-vitals-2025-cover.webp"
+imageAlt: "Core Web Vitals 2025 Optimization Guide Cover"
+featured: true
+draft: false
+readingTime: "22 menit baca"
+---
+
+# 📊 Core Web Vitals 2025: Panduan Optimasi Website untuk Google Ranking
+
+Core Web Vitals telah menjadi faktor ranking resmi Google sejak 2021, dan di tahun 2025 ini semakin penting untuk SEO. Google terus memperbarui metrik dan threshold, termasuk pengenalan INP (Interaction to Next Paint) yang menggantikan FID. Mari pelajari cara optimasi lengkap untuk semua metrik Core Web Vitals.
+
+> "Page experience signals in ranking will roll out in May 2021. Top stories will require good page experience in addition to E-A-T and content policies." - Google Search Central
+
+## 🎯 Yang Akan Kita Pelajari
+
+- 📊 Memahami Core Web Vitals 2025
+- ⚡ Optimasi Largest Contentful Paint (LCP)
+- 🖱️ Optimasi Interaction to Next Paint (INP)
+- 📐 Optimasi Cumulative Layout Shift (CLS)
+- 🛠️ Tools dan measurement techniques
+- 📈 Real-world case studies
+
+---
+
+## 📊 Core Web Vitals 2025: What's New?
+
+### Metrik Utama 2025
+
+1. **Largest Contentful Paint (LCP)** - Loading Performance
+2. **Interaction to Next Paint (INP)** - Interactivity (menggantikan FID)
+3. **Cumulative Layout Shift (CLS)** - Visual Stability
+
+### Threshold Terbaru 2025
+
+| Metrik | Good | Needs Improvement | Poor |
+|--------|------|-------------------|------|
+| LCP | ≤ 2.5s | 2.5s - 4.0s | > 4.0s |
+| INP | ≤ 200ms | 200ms - 500ms | > 500ms |
+| CLS | ≤ 0.1 | 0.1 - 0.25 | > 0.25 |
+
+---
+
+## ⚡ Optimasi Largest Contentful Paint (LCP)
+
+LCP mengukur seberapa cepat konten utama halaman dimuat. Target: **≤ 2.5 detik**.
+
+### 1. Identifikasi LCP Element
+
+```javascript
+// Detect LCP element
+const observer = new PerformanceObserver((list) => {
+  const entries = list.getEntries();
+  const lastEntry = entries[entries.length - 1];
+  
+  console.log('LCP Element:', lastEntry.element);
+  console.log('LCP Time:', lastEntry.startTime);
+});
+
+observer.observe({ entryTypes: ['largest-contentful-paint'] });
+```
+
+### 2. Optimasi LCP Images
+
+```html
+<!-- Priority hints untuk LCP image -->
+<img 
+  src="hero-image.webp" 
+  alt="Hero Image"
+  fetchpriority="high"
+  loading="eager"
+>
+
+<!-- Preload LCP image -->
+<link rel="preload" as="image" href="hero-image.webp">
+
+<!-- Responsive images untuk LCP -->
+<img 
+  src="hero-800.webp"
+  srcset="
+    hero-400.webp 400w,
+    hero-800.webp 800w,
+    hero-1200.webp 1200w
+  "
+  sizes="100vw"
+  alt="Hero"
+  fetchpriority="high"
+>
+```
+
+### 3. Optimasi LCP Text
+
+```css
+/* Preload critical fonts */
+@font-face {
+  font-family: 'Primary';
+  src: url('primary.woff2') format('woff2');
+  font-display: swap;
+}
+
+/* Optimize text rendering */
+.lcp-text {
+  font-family: 'Primary', system-ui, sans-serif;
+  font-size: clamp(2rem, 5vw, 4rem);
+  line-height: 1.2;
+  text-rendering: optimizeSpeed;
+}
+```
+
+```html
+<!-- Preload critical fonts -->
+<link 
+  rel="preload" 
+  href="primary.woff2" 
+  as="font" 
+  type="font/woff2" 
+  crossorigin
+>
+```
+
+### 4. Server-Side Optimizations
+
+```javascript
+// Express.js optimizations
+const express = require('express');
+const compression = require('compression');
+const app = express();
+
+// Enable compression
+app.use(compression({
+  level: 6,
+  threshold: 1024
+}));
+
+// Set cache headers
+app.use(express.static('public', {
+  maxAge: '1y',
+  etag: false
+}));
+
+// HTTP/2 Server Push
+app.get('/', (req, res) => {
+  // Push critical resources
+  res.push('/css/critical.css');
+  res.push('/images/hero.webp');
+  res.push('/fonts/primary.woff2');
+  
+  res.sendFile('index.html');
+});
+```
+
+### 5. Critical CSS Inlining
+
+```javascript
+// Critical CSS extraction
+const critical = require('critical');
+
+critical.generate({
+  inline: true,
+  base: 'dist/',
+  src: 'index.html',
+  dest: 'index-optimized.html',
+  width: 1300,
+  height: 900,
+  minify: true,
+  extract: true,
+  ignore: {
+    atrule: ['@font-face'],
+    rule: [/some-unused-class/],
+    decl: (node, value) => /url\(/.test(value)
+  }
+});
+```
+
+---
+
+## 🖱️ Optimasi Interaction to Next Paint (INP)
+
+INP menggantikan FID di 2024 dan mengukur responsivitas keseluruhan halaman. Target: **≤ 200ms**.
+
+### 1. Measuring INP
+
+```javascript
+// Measure INP
+import { onINP } from 'web-vitals';
+
+onINP((metric) => {
+  console.log('INP:', metric.value);
+  
+  // Send to analytics
+  gtag('event', 'web_vitals', {
+    event_category: 'Web Vitals',
+    event_label: metric.id,
+    value: Math.round(metric.value),
+    custom_parameter_1: metric.name
+  });
+});
+```
+
+### 2. Reduce JavaScript Execution Time
+
+```javascript
+// Code splitting untuk mengurangi main thread blocking
+const LazyComponent = React.lazy(() => 
+  import('./HeavyComponent').then(module => ({
+    default: module.HeavyComponent
+  }))
+);
+
+// Defer non-critical JavaScript
+function deferScript(src) {
+  const script = document.createElement('script');
+  script.src = src;
+  script.defer = true;
+  document.head.appendChild(script);
+}
+
+// Use requestIdleCallback untuk heavy operations
+function heavyOperation() {
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(() => {
+      // Heavy computation here
+      processLargeDataset();
+    });
+  } else {
+    setTimeout(processLargeDataset, 0);
+  }
+}
+```
+
+### 3. Optimize Event Handlers
+
+```javascript
+// Debounce expensive operations
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
+// Throttle scroll events
+function throttle(func, limit) {
+  let inThrottle;
+  return function() {
+    const args = arguments;
+    const context = this;
+    if (!inThrottle) {
+      func.apply(context, args);
+      inThrottle = true;
+      setTimeout(() => inThrottle = false, limit);
+    }
+  }
+}
+
+// Optimized event listeners
+const searchInput = document.getElementById('search');
+const debouncedSearch = debounce(performSearch, 300);
+searchInput.addEventListener('input', debouncedSearch);
+
+const scrollHandler = throttle(handleScroll, 16); // ~60fps
+window.addEventListener('scroll', scrollHandler, { passive: true });
+```
+
+### 4. Web Workers untuk Heavy Tasks
+
+```javascript
+// main.js - Offload heavy computation to Web Worker
+const worker = new Worker('heavy-computation.js');
+
+worker.postMessage({ data: largeDataset });
+
+worker.onmessage = function(e) {
+  const result = e.data;
+  updateUI(result);
+};
+
+// heavy-computation.js
+self.onmessage = function(e) {
+  const data = e.data;
+  
+  // Heavy computation
+  const result = processLargeDataset(data);
+  
+  self.postMessage(result);
+};
+```
+
+### 5. Optimize Third-Party Scripts
+
+```html
+<!-- Load third-party scripts efficiently -->
+<script>
+  // Load Google Analytics asynchronously
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'GA_MEASUREMENT_ID');
+  
+  // Defer loading
+  const script = document.createElement('script');
+  script.src = 'https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID';
+  script.async = true;
+  document.head.appendChild(script);
+</script>
+
+<!-- Use facade pattern untuk heavy embeds -->
+<div class="youtube-facade" data-video-id="VIDEO_ID">
+  <img src="youtube-thumbnail.jpg" alt="Video Thumbnail">
+  <button class="play-button">▶️ Play Video</button>
+</div>
+```
+
+---
+
+## 📐 Optimasi Cumulative Layout Shift (CLS)
+
+CLS mengukur stabilitas visual halaman. Target: **≤ 0.1**.
+
+### 1. Reserve Space untuk Images
+
+```css
+/* Aspect ratio untuk prevent layout shift */
+.image-container {
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  overflow: hidden;
+}
+
+.image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Alternative dengan padding-bottom */
+.image-wrapper {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+}
+
+.image-wrapper img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+```
+
+### 2. Font Loading Optimization
+
+```css
+/* Prevent FOIT (Flash of Invisible Text) */
+@font-face {
+  font-family: 'CustomFont';
+  src: url('font.woff2') format('woff2');
+  font-display: swap; /* or fallback */
+}
+
+/* Size adjust untuk font fallback */
+@font-face {
+  font-family: 'CustomFont';
+  src: url('font.woff2') format('woff2');
+  font-display: swap;
+  size-adjust: 100.06%;
+  ascent-override: 105%;
+  descent-override: 35%;
+  line-gap-override: 10%;
+}
+```
+
+### 3. Dynamic Content Handling
+
+```javascript
+// Reserve space untuk dynamic content
+class LayoutStabilizer {
+  constructor() {
+    this.placeholders = new Map();
+  }
+
+  reserveSpace(element, estimatedHeight) {
+    const placeholder = document.createElement('div');
+    placeholder.style.height = `${estimatedHeight}px`;
+    placeholder.style.backgroundColor = '#f0f0f0';
+    placeholder.className = 'content-placeholder';
+    
+    element.parentNode.insertBefore(placeholder, element);
+    this.placeholders.set(element, placeholder);
+  }
+
+  replaceWithContent(element) {
+    const placeholder = this.placeholders.get(element);
+    if (placeholder) {
+      placeholder.parentNode.replaceChild(element, placeholder);
+      this.placeholders.delete(element);
+    }
+  }
+}
+
+// Usage
+const stabilizer = new LayoutStabilizer();
+
+// Reserve space before loading content
+stabilizer.reserveSpace(dynamicElement, 200);
+
+// Replace when content is ready
+fetch('/api/content')
+  .then(response => response.text())
+  .then(html => {
+    dynamicElement.innerHTML = html;
+    stabilizer.replaceWithContent(dynamicElement);
+  });
+```
+
+### 4. Ads dan Embeds Optimization
+
+```css
+/* Reserve space untuk ads */
+.ad-container {
+  width: 100%;
+  height: 250px; /* Fixed height */
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed #ccc;
+}
+
+.ad-container.loaded {
+  background: none;
+  border: none;
+}
+
+/* Responsive ads dengan aspect ratio */
+.responsive-ad {
+  aspect-ratio: 728 / 90; /* Leaderboard */
+  width: 100%;
+  max-width: 728px;
+}
+```
+
+### 5. Animation Optimizations
+
+```css
+/* Use transform instead of changing layout properties */
+.slide-in {
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+}
+
+.slide-in.active {
+  transform: translateX(0);
+}
+
+/* Avoid animating these properties */
+.avoid-cls {
+  /* ❌ Don't animate these */
+  /* width, height, padding, margin, top, left */
+  
+  /* ✅ Animate these instead */
+  transform: scale(1.1);
+  opacity: 0.8;
+}
+```
+
+---
+
+## 🛠️ Tools dan Measurement
+
+### 1. Real User Monitoring (RUM)
+
+```javascript
+// Comprehensive Web Vitals monitoring
+import { onCLS, onFID, onFCP, onLCP, onTTFB, onINP } from 'web-vitals';
+
+function sendToAnalytics(metric) {
+  // Send to Google Analytics 4
+  gtag('event', metric.name, {
+    value: Math.round(metric.value),
+    event_label: metric.id,
+    custom_parameter_1: metric.navigationType,
+    custom_parameter_2: metric.rating
+  });
+  
+  // Send to custom analytics
+  fetch('/analytics', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      metric: metric.name,
+      value: metric.value,
+      id: metric.id,
+      url: window.location.href,
+      timestamp: Date.now()
+    })
+  });
+}
+
+// Monitor all Core Web Vitals
+onCLS(sendToAnalytics);
+onFID(sendToAnalytics);
+onFCP(sendToAnalytics);
+onLCP(sendToAnalytics);
+onTTFB(sendToAnalytics);
+onINP(sendToAnalytics);
+```
+
+### 2. Performance Observer
+
+```javascript
+// Advanced performance monitoring
+class PerformanceMonitor {
+  constructor() {
+    this.metrics = new Map();
+    this.init();
+  }
+
+  init() {
+    // Monitor LCP
+    this.observeLCP();
+    
+    // Monitor CLS
+    this.observeCLS();
+    
+    // Monitor Long Tasks
+    this.observeLongTasks();
+    
+    // Monitor Resource Loading
+    this.observeResources();
+  }
+
+  observeLCP() {
+    const observer = new PerformanceObserver((list) => {
+      const entries = list.getEntries();
+      const lastEntry = entries[entries.length - 1];
+      
+      this.metrics.set('lcp', {
+        value: lastEntry.startTime,
+        element: lastEntry.element,
+        url: lastEntry.url
+      });
+    });
+    
+    observer.observe({ entryTypes: ['largest-contentful-paint'] });
+  }
+
+  observeCLS() {
+    let clsValue = 0;
+    let clsEntries = [];
+
+    const observer = new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        if (!entry.hadRecentInput) {
+          clsValue += entry.value;
+          clsEntries.push(entry);
+        }
+      }
+      
+      this.metrics.set('cls', {
+        value: clsValue,
+        entries: clsEntries
+      });
+    });
+
+    observer.observe({ entryTypes: ['layout-shift'] });
+  }
+
+  observeLongTasks() {
+    const observer = new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        console.warn('Long Task detected:', {
+          duration: entry.duration,
+          startTime: entry.startTime
+        });
+      }
+    });
+
+    observer.observe({ entryTypes: ['longtask'] });
+  }
+
+  getMetrics() {
+    return Object.fromEntries(this.metrics);
+  }
+}
+
+// Initialize monitoring
+const monitor = new PerformanceMonitor();
+```
+
+### 3. Lighthouse CI Integration
+
+```yaml
+# .github/workflows/lighthouse.yml
+name: Lighthouse CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Build project
+        run: npm run build
+        
+      - name: Run Lighthouse CI
+        run: |
+          npm install -g @lhci/cli@0.12.x
+          lhci autorun
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+```
+
+```javascript
+// lighthouserc.js
+module.exports = {
+  ci: {
+    collect: {
+      url: ['http://localhost:3000'],
+      startServerCommand: 'npm start',
+      numberOfRuns: 3
+    },
+    assert: {
+      assertions: {
+        'categories:performance': ['error', { minScore: 0.9 }],
+        'categories:accessibility': ['error', { minScore: 0.9 }],
+        'categories:best-practices': ['error', { minScore: 0.9 }],
+        'categories:seo': ['error', { minScore: 0.9 }],
+        'first-contentful-paint': ['error', { maxNumericValue: 2000 }],
+        'largest-contentful-paint': ['error', { maxNumericValue: 2500 }],
+        'cumulative-layout-shift': ['error', { maxNumericValue: 0.1 }]
+      }
+    },
+    upload: {
+      target: 'temporary-public-storage'
+    }
+  }
+};
+```
+
+---
+
+## 📈 Real-World Case Studies
+
+### Case Study 1: E-commerce Site Optimization
+
+**Before:**
+- LCP: 4.2s
+- INP: 350ms
+- CLS: 0.18
+
+**Optimizations Applied:**
+1. Hero image preloading
+2. Critical CSS inlining
+3. JavaScript code splitting
+4. Image aspect ratio reservation
+
+**After:**
+- LCP: 2.1s (50% improvement)
+- INP: 180ms (49% improvement)
+- CLS: 0.08 (56% improvement)
+
+```javascript
+// Implementation example
+// 1. Hero image preloading
+const heroImage = new Image();
+heroImage.src = 'hero-optimized.webp';
+heroImage.onload = () => {
+  document.querySelector('.hero').style.backgroundImage = `url(${heroImage.src})`;
+};
+
+// 2. Critical CSS inlining
+const criticalCSS = `
+  .hero { height: 60vh; background: #f0f0f0; }
+  .nav { height: 60px; background: white; }
+`;
+const style = document.createElement('style');
+style.textContent = criticalCSS;
+document.head.appendChild(style);
+
+// 3. Lazy load non-critical components
+const ProductGrid = lazy(() => import('./ProductGrid'));
+```
+
+### Case Study 2: News Website
+
+**Challenge:** Dynamic content causing CLS
+
+**Solution:**
+```css
+/* Skeleton loading untuk articles */
+.article-skeleton {
+  height: 200px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+```
+
+**Results:**
+- CLS reduced from 0.25 to 0.05
+- User engagement increased by 23%
+- Bounce rate decreased by 15%
+
+---
+
+## 🎯 Advanced Optimization Techniques
+
+### 1. Resource Hints Optimization
+
+```html
+<!-- Strategic resource hints -->
+<head>
+  <!-- Critical resources -->
+  <link rel="preload" href="critical.css" as="style">
+  <link rel="preload" href="hero.webp" as="image">
+  <link rel="preload" href="font.woff2" as="font" type="font/woff2" crossorigin>
+  
+  <!-- Future navigation -->
+  <link rel="prefetch" href="/about">
+  <link rel="prefetch" href="/contact">
+  
+  <!-- External connections -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://api.example.com">
+  
+  <!-- DNS prefetch for analytics -->
+  <link rel="dns-prefetch" href="https://www.google-analytics.com">
+</head>
+```
+
+### 2. Service Worker Caching
+
+```javascript
+// sw.js - Advanced caching strategy
+const CACHE_NAME = 'core-web-vitals-v1';
+const STATIC_CACHE = 'static-v1';
+const DYNAMIC_CACHE = 'dynamic-v1';
+
+// Cache strategies
+const cacheStrategies = {
+  staleWhileRevalidate: async (request) => {
+    const cache = await caches.open(DYNAMIC_CACHE);
+    const cachedResponse = await cache.match(request);
+    
+    const fetchPromise = fetch(request).then(response => {
+      cache.put(request, response.clone());
+      return response;
+    });
+    
+    return cachedResponse || fetchPromise;
+  },
+  
+  cacheFirst: async (request) => {
+    const cache = await caches.open(STATIC_CACHE);
+    const cachedResponse = await cache.match(request);
+    
+    if (cachedResponse) {
+      return cachedResponse;
+    }
+    
+    const response = await fetch(request);
+    cache.put(request, response.clone());
+    return response;
+  }
+};
+
+self.addEventListener('fetch', event => {
+  const { request } = event;
+  const url = new URL(request.url);
+  
+  // Static assets - cache first
+  if (url.pathname.match(/\.(css|js|png|jpg|jpeg|webp|svg|woff2)$/)) {
+    event.respondWith(cacheStrategies.cacheFirst(request));
+  }
+  // API calls - stale while revalidate
+  else if (url.pathname.startsWith('/api/')) {
+    event.respondWith(cacheStrategies.staleWhileRevalidate(request));
+  }
+});
+```
+
+### 3. Image Optimization Pipeline
+
+```javascript
+// Automated image optimization
+const sharp = require('sharp');
+const fs = require('fs').promises;
+const path = require('path');
+
+class ImageOptimizer {
+  constructor(options = {}) {
+    this.quality = options.quality || 85;
+    this.formats = options.formats || ['webp', 'avif'];
+    this.sizes = options.sizes || [400, 800, 1200];
+  }
+
+  async optimizeImage(inputPath, outputDir) {
+    const filename = path.parse(inputPath).name;
+    const results = [];
+
+    for (const format of this.formats) {
+      for (const size of this.sizes) {
+        const outputPath = path.join(outputDir, `${filename}-${size}.${format}`);
+        
+        await sharp(inputPath)
+          .resize(size, null, { 
+            withoutEnlargement: true,
+            fit: 'inside'
+          })
+          .toFormat(format, { quality: this.quality })
+          .toFile(outputPath);
+          
+        results.push(outputPath);
+      }
+    }
+
+    return results;
+  }
+
+  generateSrcSet(baseName, format) {
+    return this.sizes
+      .map(size => `${baseName}-${size}.${format} ${size}w`)
+      .join(', ');
+  }
+}
+
+// Usage
+const optimizer = new ImageOptimizer();
+await optimizer.optimizeImage('hero.jpg', 'dist/images/');
+```
+
+---
+
+## 🔍 Monitoring dan Alerting
+
+### 1. Real-Time Monitoring Dashboard
+
+```javascript
+// Performance dashboard
+class PerformanceDashboard {
+  constructor() {
+    this.metrics = new Map();
+    this.thresholds = {
+      lcp: 2500,
+      inp: 200,
+      cls: 0.1
+    };
+    this.init();
+  }
+
+  init() {
+    this.setupMetricsCollection();
+    this.setupAlerting();
+    this.renderDashboard();
+  }
+
+  setupMetricsCollection() {
+    // Collect metrics from all users
+    onLCP(metric => this.recordMetric('lcp', metric));
+    onINP(metric => this.recordMetric('inp', metric));
+    onCLS(metric => this.recordMetric('cls', metric));
+  }
+
+  recordMetric(name, metric) {
+    const data = {
+      value: metric.value,
+      timestamp: Date.now(),
+      url: window.location.href,
+      userAgent: navigator.userAgent,
+      connection: navigator.connection?.effectiveType
+    };
+
+    // Store locally
+    this.metrics.set(name, data);
+
+    // Send to monitoring service
+    this.sendToMonitoring(name, data);
+
+    // Check thresholds
+    this.checkThreshold(name, metric.value);
+  }
+
+  checkThreshold(metricName, value) {
+    const threshold = this.thresholds[metricName];
+    if (value > threshold) {
+      this.triggerAlert(metricName, value, threshold);
+    }
+  }
+
+  triggerAlert(metric, value, threshold) {
+    console.warn(`🚨 Performance Alert: ${metric} = ${value}ms (threshold: ${threshold}ms)`);
+    
+    // Send alert to monitoring service
+    fetch('/api/alerts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: 'performance',
+        metric,
+        value,
+        threshold,
+        url: window.location.href,
+        timestamp: Date.now()
+      })
+    });
+  }
+}
+
+// Initialize dashboard
+new PerformanceDashboard();
+```
+
+### 2. Performance Budget Enforcement
+
+```javascript
+// Performance budget checker
+const performanceBudget = {
+  'largest-contentful-paint': 2500,
+  'interaction-to-next-paint': 200,
+  'cumulative-layout-shift': 0.1,
+  'first-contentful-paint': 1500,
+  'total-blocking-time': 200
+};
+
+class BudgetEnforcer {
+  constructor(budget) {
+    this.budget = budget;
+    this.violations = [];
+  }
+
+  checkBudget(metrics) {
+    this.violations = [];
+
+    Object.entries(this.budget).forEach(([metric, budget]) => {
+      const actual = metrics[metric];
+      if (actual > budget) {
+        this.violations.push({
+          metric,
+          actual,
+          budget,
+          violation: actual - budget,
+          percentage: ((actual - budget) / budget * 100).toFixed(1)
+        });
+      }
+    });
+
+    return this.violations;
+  }
+
+  generateReport() {
+    if (this.violations.length === 0) {
+      return '✅ All performance budgets met!';
+    }
+
+    let report = '❌ Performance Budget Violations:\n\n';
+    this.violations.forEach(violation => {
+      report += `${violation.metric}:\n`;
+      report += `  Actual: ${violation.actual}ms\n`;
+      report += `  Budget: ${violation.budget}ms\n`;
+      report += `  Over by: ${violation.violation}ms (${violation.percentage}%)\n\n`;
+    });
+
+    return report;
+  }
+}
+
+// Usage in CI/CD
+const enforcer = new BudgetEnforcer(performanceBudget);
+const violations = enforcer.checkBudget(lighthouseMetrics);
+
+if (violations.length > 0) {
+  console.error(enforcer.generateReport());
+  process.exit(1); // Fail the build
+}
+```
+
+---
+
+## 🎯 Kesimpulan
+
+Core Web Vitals 2025 semakin penting untuk SEO dan user experience. Berikut prioritas optimasi:
+
+### 1. **Quick Wins (High Impact, Low Effort)**
+- ✅ Optimize images (WebP, proper sizing)
+- ✅ Add resource hints (preload, preconnect)
+- ✅ Enable compression
+- ✅ Set proper cache headers
+
+### 2. **Medium Priority (High Impact, Medium Effort)**
+- ✅ Implement critical CSS inlining
+- ✅ Code splitting untuk JavaScript
+- ✅ Image aspect ratio reservation
+- ✅ Font loading optimization
+
+### 3. **Advanced Optimizations (Medium Impact, High Effort)**
+- ✅ Service Worker implementation
+- ✅ Advanced caching strategies
+- ✅ Real User Monitoring
+- ✅ Performance budgets
+
+### 4. **Key Metrics to Track**
+- 📊 LCP ≤ 2.5s
+- 📊 INP ≤ 200ms
+- 📊 CLS ≤ 0.1
+- 📊 FCP ≤ 1.5s
+
+## 🔗 Tools & Resources
+
+1. **Testing Tools**
+   - [PageSpeed Insights](https://pagespeed.web.dev)
+   - [Lighthouse](https://developers.google.com/web/tools/lighthouse)
+   - [WebPageTest](https://webpagetest.org)
+   - [Chrome DevTools](https://developer.chrome.com/docs/devtools/)
+   - [Web Vitals Extension](https://chrome.google.com/webstore/detail/web-vitals/ahfhijdlegdabablpippeagghigmibma)
+
+2. **Monitoring Services**
+   - [Google Search Console](https://search.google.com/search-console)
+   - [Real User Monitoring (RUM)](https://web.dev/vitals-measurement-getting-started/)
+   - [SpeedCurve](https://speedcurve.com)
+   - [Pingdom](https://pingdom.com)
+
+3. **Optimization Libraries**
+   - [web-vitals](https://github.com/GoogleChrome/web-vitals) - Official Web Vitals library
+   - [Critical](https://github.com/addyosmani/critical) - Critical CSS extraction
+   - [Sharp](https://sharp.pixelplumbing.com) - Image optimization
+   - [Workbox](https://developers.google.com/web/tools/workbox) - Service Worker toolkit
+
+4. **Performance Budgets**
+   - [Lighthouse CI](https://github.com/GoogleChrome/lighthouse-ci)
+   - [Bundle Analyzer](https://github.com/webpack-contrib/webpack-bundle-analyzer)
+   - [Size Limit](https://github.com/ai/size-limit)
+
+## 🚀 Action Plan: Implementasi Step-by-Step
+
+### Week 1: Assessment & Quick Wins
+1. **Audit Current Performance**
+   ```bash
+   # Run Lighthouse audit
+   lighthouse https://yoursite.com --output=json --output-path=./audit.json
+   
+   # Install Web Vitals monitoring
+   npm install web-vitals
+   ```
+
+2. **Implement Basic Optimizations**
+   - Enable compression (Gzip/Brotli)
+   - Add resource hints untuk critical resources
+   - Optimize images dengan WebP format
+   - Set proper cache headers
+
+### Week 2: LCP Optimization
+1. **Identify LCP Elements**
+2. **Preload Critical Resources**
+3. **Optimize Server Response Time**
+4. **Implement Critical CSS**
+
+### Week 3: INP Optimization
+1. **Code Splitting Implementation**
+2. **Optimize Event Handlers**
+3. **Defer Non-Critical JavaScript**
+4. **Implement Web Workers untuk heavy tasks**
+
+### Week 4: CLS Optimization
+1. **Reserve Space untuk Images**
+2. **Optimize Font Loading**
+3. **Handle Dynamic Content**
+4. **Fix Animation Issues**
+
+### Week 5: Monitoring & Maintenance
+1. **Setup Real User Monitoring**
+2. **Implement Performance Budgets**
+3. **Create Alerting System**
+4. **Regular Performance Reviews**
+
+## 📊 Performance Checklist
+
+### ✅ LCP Optimization Checklist
+- [ ] LCP element identified
+- [ ] Critical images preloaded
+- [ ] Hero images optimized (WebP/AVIF)
+- [ ] Critical CSS inlined
+- [ ] Server response time < 200ms
+- [ ] CDN implemented
+- [ ] Resource hints added
+
+### ✅ INP Optimization Checklist
+- [ ] JavaScript code split
+- [ ] Event handlers optimized (debounce/throttle)
+- [ ] Third-party scripts deferred
+- [ ] Web Workers implemented untuk heavy tasks
+- [ ] Long tasks identified dan fixed
+- [ ] Input responsiveness tested
+
+### ✅ CLS Optimization Checklist
+- [ ] Image dimensions specified
+- [ ] Font loading optimized
+- [ ] Ad spaces reserved
+- [ ] Dynamic content handled properly
+- [ ] Animations use transform/opacity only
+- [ ] Layout shifts measured dan tracked
+
+### ✅ Monitoring Checklist
+- [ ] Web Vitals library implemented
+- [ ] Real User Monitoring setup
+- [ ] Performance budgets defined
+- [ ] Alerting system configured
+- [ ] Regular performance reviews scheduled
+
+## 🎯 Common Mistakes to Avoid
+
+### 1. **LCP Mistakes**
+```javascript
+// ❌ Don't do this
+<img src="hero.jpg" loading="lazy"> // LCP image shouldn't be lazy
+
+// ✅ Do this instead
+<img src="hero.webp" fetchpriority="high" loading="eager">
+```
+
+### 2. **INP Mistakes**
+```javascript
+// ❌ Don't do this - blocking main thread
+function heavyCalculation() {
+  for (let i = 0; i < 1000000; i++) {
+    // Heavy computation
+  }
+}
+
+// ✅ Do this instead - use Web Worker
+const worker = new Worker('heavy-calculation.js');
+worker.postMessage(data);
+```
+
+### 3. **CLS Mistakes**
+```css
+/* ❌ Don't do this - causes layout shift */
+.dynamic-content {
+  height: auto;
+}
+
+/* ✅ Do this instead - reserve space */
+.dynamic-content {
+  min-height: 200px;
+  aspect-ratio: 16 / 9;
+}
+```
+
+## 🔮 Future of Core Web Vitals
+
+### Upcoming Changes 2025-2026
+1. **New Metrics in Development**
+   - Responsiveness improvements beyond INP
+   - Visual completeness metrics
+   - Smoothness measurements
+
+2. **Enhanced Measurement**
+   - Better mobile performance tracking
+   - Cross-origin resource impact
+   - User-centric performance scoring
+
+3. **AI-Powered Optimization**
+   - Automated performance suggestions
+   - Predictive performance modeling
+   - Smart resource prioritization
+
+## 🔗 Artikel Terkait
+
+- [Tips Optimasi Website Loading Cepat](https://hilaltechnologic.info/blog/tips-optimasi-website-loading-cepat)
+- [Deploy Website Gratis: Vercel vs Netlify vs GitHub Pages](https://hilaltechnologic.info/blog/deploy-website-gratis-vercel-netlify-github-pages)
+- [Animasi CSS yang Bikin Website Lo Terlihat Premium](https://hilaltechnologic.info/blog/animasi-css-premium-website)
+
+---
+
+> Ditulis dengan ❤️ oleh [Hilal Technologic](https://hilaltechnologic.info)

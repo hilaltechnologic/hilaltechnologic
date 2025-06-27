@@ -75,8 +75,8 @@ export const SITE_CONFIG = {
   locale: 'id_ID',
   
   // Analytics (optional)
-  googleAnalytics: '', // GA4 Measurement ID
-  googleSiteVerification: '', // Google Search Console verification
+  googleAnalytics: 'G-GP3FQFYJ6W', // GA4 Measurement ID
+  googleSiteVerification: 'ajHackFsUur9XVseIEfo2KoIO9d6NA-daOLzXSXiXV8', // Google Search Console verification
   
   // RSS
   rss: {
