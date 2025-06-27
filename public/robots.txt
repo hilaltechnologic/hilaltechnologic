@@ -10,9 +10,3 @@ Disallow: /private/
 Disallow: /api/
 Disallow: /cgi-bin/
 Disallow: /tmp/
-
-# Crawl-delay
-Crawl-delay: 10
-
-# Host
-Host: https://hilaltechnologic.info
