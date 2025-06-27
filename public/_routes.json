@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "include": [
+    "/*"
+  ],
+  "exclude": [
+    "/_astro/*"
+  ],
+  "routes": [
+    {
+      "src": "^/blog/([^/]+)/?$",
+      "dest": "/blog/$1/index.html"
+    },
+    {
+      "src": "^/kategori/([^/]+)/?$",
+      "dest": "/kategori/$1/index.html"
+    },
+    {
+      "src": "^/arsip/(\\d{4})/(\\d{2})/?$",
+      "dest": "/arsip/$1/$2/index.html"
+    }
+  ]
+}
