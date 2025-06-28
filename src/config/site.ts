@@ -76,7 +76,23 @@ export const SITE_CONFIG = {
   
   // Analytics (optional)
   googleAnalytics: 'G-GP3FQFYJ6W', // GA4 Measurement ID
+  googleTagManager: 'GTM-WXDGG6KQ', // Replace with your actual GTM ID
   googleSiteVerification: 'ajHackFsUur9XVseIEfo2KoIO9d6NA-daOLzXSXiXV8', // Google Search Console verification
+  
+  // GTM Configuration
+  gtm: {
+    id: 'GTM-WXDGG6KQ', // Replace with your actual GTM ID
+    enableInDevelopment: false,
+    autoTracking: {
+      scrollDepth: true,
+      outboundLinks: true,
+      fileDownloads: true,
+      formSubmissions: true,
+      videoEngagement: true,
+      pagePerformance: true,
+      webVitals: true
+    }
+  },
   
   // RSS
   rss: {
