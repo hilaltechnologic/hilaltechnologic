@@ -122,18 +122,22 @@ const organizationSchema = isHomepage ? generateOrganizationSchema() : null;
     <AnalyticsEvents />
     
     <!-- Google Tag Manager -->
-    <GoogleTagManager 
-      gtmId={SITE_CONFIG.gtm.id}
-      enableInDevelopment={SITE_CONFIG.gtm.enableInDevelopment}
-    />
-    <GTMEvents
-      enableAutoTracking={true}
-      trackScrollDepth={SITE_CONFIG.gtm.autoTracking.scrollDepth}
-      trackOutboundLinks={SITE_CONFIG.gtm.autoTracking.outboundLinks}
-      trackFileDownloads={SITE_CONFIG.gtm.autoTracking.fileDownloads}
-      trackFormSubmissions={SITE_CONFIG.gtm.autoTracking.formSubmissions}
-      trackVideoEngagement={SITE_CONFIG.gtm.autoTracking.videoEngagement}
-    />
+    {SITE_CONFIG.gtm.enabled && SITE_CONFIG.gtm.id && (
+      <>
+        <GoogleTagManager 
+          gtmId={SITE_CONFIG.gtm.id}
+          enableInDevelopment={SITE_CONFIG.gtm.enableInDevelopment}
+        />
+        <GTMEvents
+          enableAutoTracking={true}
+          trackScrollDepth={SITE_CONFIG.gtm.autoTracking.scrollDepth}
+          trackOutboundLinks={SITE_CONFIG.gtm.autoTracking.outboundLinks}
+          trackFileDownloads={SITE_CONFIG.gtm.autoTracking.fileDownloads}
+          trackFormSubmissions={SITE_CONFIG.gtm.autoTracking.formSubmissions}
+          trackVideoEngagement={SITE_CONFIG.gtm.autoTracking.videoEngagement}
+        />
+      </>
+    )}
     
     <!-- Dark mode script -->
     <script is:inline>

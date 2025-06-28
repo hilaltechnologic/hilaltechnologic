@@ -16,7 +16,13 @@ const {
 
 // Check if we should load GTM
 const isDevelopment = import.meta.env.DEV;
-const shouldLoadGTM = !isDevelopment || enableInDevelopment;
+const hasValidId = gtmId && gtmId.trim() !== '';
+const shouldLoadGTM = hasValidId && (!isDevelopment || enableInDevelopment);
+
+// Log warning if GTM ID is missing
+if (!hasValidId) {
+  console.warn('GTM is disabled: No valid GTM ID provided. Add your GTM ID in site.ts config.');
+}
 
 // Default dataLayer with consent mode
 const defaultDataLayer = {

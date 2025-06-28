@@ -76,13 +76,14 @@ export const SITE_CONFIG = {
   
   // Analytics (optional)
   googleAnalytics: 'G-GP3FQFYJ6W', // GA4 Measurement ID
-  googleTagManager: 'GTM-WXDGG6KQ', // Replace with your actual GTM ID
+  googleTagManager: 'GTM-WXDGG6KQ', // Add your GTM ID here (e.g., 'GTM-XXXXXXX')
   googleSiteVerification: 'ajHackFsUur9XVseIEfo2KoIO9d6NA-daOLzXSXiXV8', // Google Search Console verification
   
   // GTM Configuration
   gtm: {
-    id: 'GTM-WXDGG6KQ', // Replace with your actual GTM ID
+    id: 'GTM-WXDGG6KQ', // Add your GTM Container ID here (e.g., 'GTM-XXXXXXX')
     enableInDevelopment: false,
+    enabled: true, // Set to true when you have a valid GTM ID
     autoTracking: {
       scrollDepth: true,
       outboundLinks: true,
