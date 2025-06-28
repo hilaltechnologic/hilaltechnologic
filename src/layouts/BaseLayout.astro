@@ -5,8 +5,6 @@ import { generateSchemaOrg, generateWebSiteSchema, generateOrganizationSchema } 
 import { SITE_CONFIG } from '../config/site';
 import GoogleAnalytics from '../components/GoogleAnalytics.astro';
 import AnalyticsEvents from '../components/AnalyticsEvents.astro';
-import GoogleTagManager from '../components/GoogleTagManager.astro';
-import GTMEvents from '../components/GTMEvents.astro';
 import CookieConsent from '../components/CookieConsent.astro';
 import '../styles/global.css';
 
@@ -120,24 +118,6 @@ const organizationSchema = isHomepage ? generateOrganizationSchema() : null;
     <!-- Analytics -->
     <GoogleAnalytics />
     <AnalyticsEvents />
-    
-    <!-- Google Tag Manager -->
-    {SITE_CONFIG.gtm.enabled && SITE_CONFIG.gtm.id && (
-      <>
-        <GoogleTagManager 
-          gtmId={SITE_CONFIG.gtm.id}
-          enableInDevelopment={SITE_CONFIG.gtm.enableInDevelopment}
-        />
-        <GTMEvents
-          enableAutoTracking={true}
-          trackScrollDepth={SITE_CONFIG.gtm.autoTracking.scrollDepth}
-          trackOutboundLinks={SITE_CONFIG.gtm.autoTracking.outboundLinks}
-          trackFileDownloads={SITE_CONFIG.gtm.autoTracking.fileDownloads}
-          trackFormSubmissions={SITE_CONFIG.gtm.autoTracking.formSubmissions}
-          trackVideoEngagement={SITE_CONFIG.gtm.autoTracking.videoEngagement}
-        />
-      </>
-    )}
     
     <!-- Dark mode script -->
     <script is:inline>

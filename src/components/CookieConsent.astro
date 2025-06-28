@@ -20,12 +20,6 @@
 </div>
 
 <script>
-  // GTM Helper interface
-  interface GTMHelper {
-    grantConsent: () => void;
-    denyConsent: () => void;
-  }
-
   // Cookie Consent Manager
   class CookieConsentManager {
     private consentKey = 'cookie-consent-v1';
@@ -107,11 +101,6 @@
         window.analyticsTracker.enableTracking();
       }
 
-      // Enable GTM tracking
-      if ((window as any).gtmHelper) {
-        (window as any).gtmHelper.grantConsent();
-      }
-
       // Dispatch custom event
       window.dispatchEvent(new CustomEvent('analytics-enabled'));
     }
@@ -127,11 +116,6 @@
       // Disable custom analytics
       if (window.analyticsTracker) {
         window.analyticsTracker.disableTracking();
-      }
-
-      // Disable GTM tracking
-      if ((window as any).gtmHelper) {
-        (window as any).gtmHelper.denyConsent();
       }
 
       // Dispatch custom event
