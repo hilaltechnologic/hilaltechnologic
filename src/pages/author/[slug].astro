@@ -1,0 +1,248 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { getCollection } from 'astro:content';
+import { SITE_CONFIG } from '../../config/site';
+
+export async function getStaticPaths() {
+  // Define authors
+  const authors = [
+    {
+      slug: 'admin',
+      name: 'Hilal Technologic',
+      bio: 'Tech enthusiast dan content creator yang berfokus pada web development, tutorial programming, dan teknologi terkini. Berbagi pengalaman dan pengetahuan melalui artikel-artikel berkualitas.',
+      avatar: '/images/team/hilal-avatar.webp',
+      email: 'admin@hilaltechnologic.info',
+      website: 'https://hilaltechnologic.info',
+      social: {
+        twitter: 'https://twitter.com/hilaltech',
+        github: 'https://github.com/hilaltech',
+        linkedin: 'https://linkedin.com/in/hilaltech',
+        youtube: 'https://youtube.com/@hilaltechnologic'
+      },
+      expertise: ['Web Development', 'JavaScript', 'React', 'Astro', 'Node.js', 'SEO'],
+      joinDate: '2023-01-01',
+      location: 'Indonesia'
+    }
+  ];
+
+  return authors.map(author => ({
+    params: { slug: author.slug },
+    props: { author }
+  }));
+}
+
+const { author } = Astro.props;
+
+// Get all blog posts by this author
+const allPosts = await getCollection('blog');
+const authorPosts = allPosts
+  .filter(post => post.data.author?.name === author.name)
+  .sort((a, b) => new Date(b.data.publishedDate).getTime() - new Date(a.data.publishedDate).getTime());
+
+const totalPosts = authorPosts.length;
+
+// SEO data
+const seoData = {
+  title: `${author.name} - Author Profile`,
+  description: `Profil lengkap ${author.name}. ${author.bio}`,
+  type: 'article' as const,
+  image: author.avatar || '/images/blog/hilal-blog.webp',
+  imageAlt: `${author.name} profile photo`,
+  author: author.name,
+  publishedTime: author.joinDate,
+  modifiedTime: new Date().toISOString(),
+  tags: author.expertise
+};
+---
+
+<BaseLayout seo={seoData}>
+  <Header slot="header" />
+  
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+    <div class="container mx-auto px-4 max-w-6xl">
+      
+      <!-- Author Header -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 mb-8">
+        <div class="flex flex-col md:flex-row items-center md:items-start gap-8">
+          
+          <!-- Avatar -->
+          <div class="flex-shrink-0">
+            <img 
+              src={author.avatar || '/images/team/default-avatar.webp'} 
+              alt={author.name}
+              class="w-32 h-32 rounded-full object-cover border-4 border-blue-500 shadow-lg"
+              loading="eager"
+            />
+          </div>
+          
+          <!-- Author Info -->
+          <div class="flex-1 text-center md:text-left">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              {author.name}
+            </h1>
+            
+            <p class="text-lg text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
+              {author.bio}
+            </p>
+            
+            <!-- Stats -->
+            <div class="flex flex-wrap justify-center md:justify-start gap-6 mb-6">
+              <div class="text-center">
+                <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">{totalPosts}</div>
+                <div class="text-sm text-gray-500 dark:text-gray-400">Artikel</div>
+              </div>
+              <div class="text-center">
+                <div class="text-2xl font-bold text-green-600 dark:text-green-400">{author.expertise.length}</div>
+                <div class="text-sm text-gray-500 dark:text-gray-400">Keahlian</div>
+              </div>
+              <div class="text-center">
+                <div class="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                  {new Date().getFullYear() - new Date(author.joinDate).getFullYear()}+
+                </div>
+                <div class="text-sm text-gray-500 dark:text-gray-400">Tahun</div>
+              </div>
+            </div>
+            
+            <!-- Contact Info -->
+            <div class="flex flex-wrap justify-center md:justify-start gap-4 mb-6">
+              {author.location && (
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                  📍 {author.location}
+                </span>
+              )}
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                📅 Bergabung {new Date(author.joinDate).toLocaleDateString('id-ID', { year: 'numeric', month: 'long' })}
+              </span>
+            </div>
+            
+            <!-- Social Links -->
+            <div class="flex flex-wrap justify-center md:justify-start gap-4">
+              {author.website && (
+                <a 
+                  href={author.website} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  🌐 Website
+                </a>
+              )}
+              {author.email && (
+                <a 
+                  href={`mailto:${author.email}`}
+                  class="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                >
+                  ✉️ Email
+                </a>
+              )}
+              {author.social?.github && (
+                <a 
+                  href={author.social.github} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-colors"
+                >
+                  GitHub
+                </a>
+              )}
+              {author.social?.linkedin && (
+                <a 
+                  href={author.social.linkedin} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center px-4 py-2 bg-blue-700 text-white rounded-lg hover:bg-blue-800 transition-colors"
+                >
+                  LinkedIn
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Expertise Section -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 mb-8">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Keahlian & Teknologi</h2>
+        <div class="flex flex-wrap gap-3">
+          {author.expertise.map(skill => (
+            <span class="px-4 py-2 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm font-medium">
+              {skill}
+            </span>
+          ))}
+        </div>
+      </div>
+      
+      <!-- Latest Articles -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Artikel Terbaru</h2>
+          <a 
+            href="/blog" 
+            class="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium"
+          >
+            Lihat Semua →
+          </a>
+        </div>
+        
+        {authorPosts.length > 0 ? (
+          <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {authorPosts.slice(0, 6).map(post => (
+              <article class="group">
+                <a href={`/blog/${post.slug}`} class="block">
+                  <div class="aspect-video mb-4 overflow-hidden rounded-lg bg-gray-200 dark:bg-gray-700">
+                    {post.data.image && (
+                      <img 
+                        src={post.data.image} 
+                        alt={post.data.imageAlt || post.data.title}
+                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        loading="lazy"
+                      />
+                    )}
+                  </div>
+                  <h3 class="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-2 line-clamp-2">
+                    {post.data.title}
+                  </h3>
+                  <p class="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2">
+                    {post.data.description}
+                  </p>
+                  <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                    <time datetime={post.data.publishedDate.toISOString()}>
+                      {post.data.publishedDate.toLocaleDateString('id-ID', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })}
+                    </time>
+                    {post.data.readingTime && (
+                      <span>{post.data.readingTime}</span>
+                    )}
+                  </div>
+                </a>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div class="text-center py-12">
+            <div class="text-gray-400 dark:text-gray-500 text-6xl mb-4">📝</div>
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Belum Ada Artikel</h3>
+            <p class="text-gray-600 dark:text-gray-300">Author ini belum mempublikasikan artikel.</p>
+          </div>
+        )}
+      </div>
+      
+    </div>
+  </div>
+  
+  <Footer slot="footer" />
+</BaseLayout>
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>
