@@ -134,19 +134,39 @@ const defaultDataLayer = {
       // Auto-track page views for SPA navigation
       let currentPath = window.location.pathname;
       
-      // Listen for navigation changes
-      const observer = new MutationObserver(function() {
-        if (window.location.pathname !== currentPath) {
-          currentPath = window.location.pathname;
-          window.gtmHelper.trackPageView(currentPath, document.title);
+      // Initialize navigation tracking when DOM is ready
+      function initNavigationTracking() {
+        if (document.body) {
+          // Listen for navigation changes
+          const observer = new MutationObserver(function() {
+            if (window.location.pathname !== currentPath) {
+              currentPath = window.location.pathname;
+              window.gtmHelper.trackPageView(currentPath, document.title);
+            }
+          });
+          
+          // Start observing
+          try {
+            observer.observe(document.body, {
+              childList: true,
+              subtree: true
+            });
+            console.log('GTM navigation tracking initialized');
+          } catch (error) {
+            console.warn('GTM navigation tracking failed to initialize:', error);
+          }
+        } else {
+          // Retry if body is not ready
+          setTimeout(initNavigationTracking, 100);
         }
-      });
+      }
       
-      // Start observing
-      observer.observe(document.body, {
-        childList: true,
-        subtree: true
-      });
+      // Initialize when DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initNavigationTracking);
+      } else {
+        initNavigationTracking();
+      }
     </script>
   </>
 )}
