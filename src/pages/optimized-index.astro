@@ -1,0 +1,266 @@
+---
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import { generatePageSEO } from '../utils/seo';
+import OptimizedLayout from '../layouts/OptimizedLayout.astro';
+import ContentEnhancer from '../components/ContentEnhancer.astro';
+import LazyAnalytics from '../components/LazyAnalytics.astro';
+
+// Get blog posts
+const posts = await getCollection('blog');
+const featuredPosts = posts
+  .filter((post: CollectionEntry<'blog'>) => !post.data.draft && post.data.featured)
+  .sort((a: CollectionEntry<'blog'>, b: CollectionEntry<'blog'>) => 
+    b.data.publishedDate.valueOf() - a.data.publishedDate.valueOf()
+  )
+  .slice(0, 3);
+
+const recentPosts = posts
+  .filter((post: CollectionEntry<'blog'>) => !post.data.draft)
+  .sort((a: CollectionEntry<'blog'>, b: CollectionEntry<'blog'>) => 
+    b.data.publishedDate.valueOf() - a.data.publishedDate.valueOf()
+  )
+  .slice(0, 6);
+
+// SEO
+const seo = generatePageSEO(
+  'Hilal Technologic - Blog Teknologi & Web Development Indonesia',
+  'Platform blog teknologi terdepan dengan tutorial web development, tips programming, dan pembahasan framework modern seperti Astro, React, Vue untuk developer Indonesia.',
+  '/',
+  {
+    type: 'website',
+    keywords: ['blog teknologi', 'web development', 'tutorial programming', 'astro framework', 'react', 'vue', 'javascript', 'typescript', 'tailwind css', 'developer indonesia']
+  }
+);
+
+// Format date
+const formatDate = (date: Date) => {
+  return date.toLocaleDateString('id-ID', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+};
+---
+
+<OptimizedLayout seo={seo}>
+  <header>
+    <nav>
+      <a href="/">Hilal Technologic</a>
+      <a href="/blog">Blog</a>
+      <a href="/kategori">Kategori</a>
+      <a href="/tentang">Tentang</a>
+      <a href="/kontak">Kontak</a>
+    </nav>
+  </header>
+
+  <section>
+    <h1>Hilal Technologic - Platform Blog Teknologi Indonesia</h1>
+    
+    <ContentEnhancer 
+      type="homepage"
+      keywords={['web development', 'programming', 'javascript', 'astro', 'react', 'vue', 'tailwind css']}
+    />
+    
+    <p>
+      Selamat datang di Hilal Technologic, platform blog teknologi yang didedikasikan untuk 
+      developer Indonesia. Kami menyajikan konten berkualitas tinggi tentang web development, 
+      programming, dan teknologi terbaru yang dapat membantu Anda meningkatkan skill dan 
+      pengetahuan dalam dunia development.
+    </p>
+    
+    <p>
+      Blog ini menyediakan tutorial lengkap, tips praktis, dan pembahasan mendalam tentang 
+      berbagai teknologi modern seperti Astro, React, Vue, JavaScript, TypeScript, dan 
+      Tailwind CSS. Semua artikel ditulis berdasarkan pengalaman nyata dan best practices 
+      yang direkomendasikan oleh industry.
+    </p>
+    
+    <p>
+      Dengan fokus pada pembelajaran praktis, setiap artikel dilengkapi dengan contoh kode 
+      yang dapat langsung diterapkan, penjelasan step-by-step yang mudah diikuti, dan 
+      resource tambahan untuk pembelajaran lanjutan. Kami percaya bahwa belajar programming 
+      harus menyenangkan dan dapat diakses oleh semua orang.
+    </p>
+  </section>
+
+  {featuredPosts.length > 0 && (
+    <section>
+      <h2>Artikel Unggulan Pilihan Editor</h2>
+      <p>
+        Berikut adalah kumpulan artikel terbaik yang telah dipilih khusus oleh tim editor kami. 
+        Artikel-artikel ini mencakup topik-topik penting dalam web development dan programming 
+        yang wajib dikuasai oleh developer modern.
+      </p>
+      
+      {featuredPosts.map((post: CollectionEntry<'blog'>) => (
+        <article>
+          <h3>
+            <a href={`/blog/${post.slug}/`}>{post.data.title}</a>
+          </h3>
+          <p>{post.data.description}</p>
+          <p>
+            Artikel ini membahas secara detail tentang {post.data.title.toLowerCase()} 
+            dengan pendekatan praktis dan contoh kode yang mudah dipahami. 
+            Anda akan mempelajari konsep dasar hingga implementasi advanced 
+            yang dapat langsung diterapkan dalam project development Anda.
+          </p>
+          <p>
+            Dipublikasikan pada {formatDate(post.data.publishedDate)} dalam kategori 
+            {post.data.tags?.slice(0, 2).join(', ')}. Artikel ini telah dibaca oleh 
+            ribuan developer dan mendapat feedback positif dari komunitas.
+          </p>
+          {post.data.tags && (
+            <p>
+              Topik yang dibahas: {post.data.tags.join(', ')}. 
+              Setiap topik dijelaskan dengan detail dan disertai contoh praktis 
+              yang dapat membantu Anda memahami konsep dengan lebih baik.
+            </p>
+          )}
+        </article>
+      ))}
+    </section>
+  )}
+
+  <section>
+    <h2>Artikel Terbaru dari Blog Kami</h2>
+    <p>
+      Temukan artikel-artikel terbaru yang membahas teknologi dan trend development terkini. 
+      Kami secara rutin mengupdate blog dengan konten fresh yang relevan dengan kebutuhan 
+      developer masa kini. Setiap artikel ditulis dengan riset mendalam dan testing langsung 
+      untuk memastikan akurasi informasi.
+    </p>
+    
+    {recentPosts.map((post: CollectionEntry<'blog'>) => (
+      <article>
+        <h3>
+          <a href={`/blog/${post.slug}/`}>{post.data.title}</a>
+        </h3>
+        <p>{post.data.description}</p>
+        <p>
+          Dalam artikel {post.data.title}, Anda akan menemukan pembahasan komprehensif 
+          tentang topik yang sedang trending di dunia development. Artikel ini ditulis 
+          berdasarkan pengalaman praktis dan dilengkapi dengan contoh kode yang telah 
+          ditest dan dapat langsung diimplementasikan.
+        </p>
+        <p>
+          Dipublikasikan {formatDate(post.data.publishedDate)}. 
+          {post.data.readingTime && `Estimasi waktu baca: ${post.data.readingTime}.`}
+          Artikel ini cocok untuk developer dengan berbagai level pengalaman, 
+          dari pemula hingga advanced.
+        </p>
+      </article>
+    ))}
+  </section>
+
+  <section>
+    <h2>Mengapa Memilih Hilal Technologic?</h2>
+    <p>
+      Hilal Technologic bukan hanya sekedar blog teknologi biasa. Kami berkomitmen untuk 
+      memberikan value terbaik bagi developer Indonesia melalui konten berkualitas tinggi 
+      dan pendekatan pembelajaran yang praktis.
+    </p>
+    
+    <h3>Konten Berkualitas Tinggi</h3>
+    <p>
+      Setiap artikel melalui proses riset mendalam, testing langsung, dan review oleh 
+      expert untuk memastikan akurasi dan relevansi informasi. Kami tidak hanya copy-paste 
+      dari sumber lain, tetapi memberikan insight original berdasarkan pengalaman nyata 
+      dalam development.
+    </p>
+    
+    <h3>Tutorial Praktis dan Applicable</h3>
+    <p>
+      Semua tutorial dilengkapi dengan contoh kode yang dapat dijalankan, step-by-step 
+      guide yang mudah diikuti, dan penjelasan detail tentang setiap konsep. Anda tidak 
+      hanya belajar teori, tetapi juga praktik langsung yang dapat diterapkan dalam 
+      project real-world.
+    </p>
+    
+    <h3>Update Teknologi Terbaru</h3>
+    <p>
+      Dunia teknologi berkembang sangat cepat. Kami selalu mengikuti perkembangan terbaru 
+      dan menyajikan informasi up-to-date tentang framework, tools, dan best practices 
+      yang sedang trending di industry. Dengan mengikuti blog kami, Anda akan selalu 
+      update dengan teknologi terkini.
+    </p>
+    
+    <h3>Komunitas Developer Indonesia</h3>
+    <p>
+      Kami membangun komunitas developer Indonesia yang saling support dan berbagi 
+      pengetahuan. Melalui comment section dan social media, Anda dapat berdiskusi 
+      dengan developer lain, bertanya tentang masalah yang dihadapi, dan sharing 
+      pengalaman development.
+    </p>
+  </section>
+
+  <section>
+    <h2>Topik yang Kami Bahas</h2>
+    <p>
+      Blog Hilal Technologic mencakup berbagai topik penting dalam web development 
+      dan programming yang relevan dengan kebutuhan developer Indonesia saat ini.
+    </p>
+    
+    <h3>Web Development Modern</h3>
+    <p>
+      Pembahasan lengkap tentang web development modern menggunakan framework terbaru 
+      seperti Astro, React, Vue, Svelte, dan Next.js. Kami membahas dari konsep dasar 
+      hingga implementasi advanced dengan contoh project real-world yang dapat Anda 
+      ikuti step-by-step.
+    </p>
+    
+    <h3>JavaScript dan TypeScript</h3>
+    <p>
+      Tutorial mendalam tentang JavaScript ES6+, TypeScript, dan konsep-konsep advanced 
+      seperti async/await, promises, modules, dan design patterns. Semua dijelaskan 
+      dengan contoh praktis dan use case yang sering ditemui dalam development sehari-hari.
+    </p>
+    
+    <h3>CSS dan Styling Modern</h3>
+    <p>
+      Panduan lengkap tentang CSS modern, Tailwind CSS, CSS Grid, Flexbox, animations, 
+      dan responsive design. Kami juga membahas CSS-in-JS, styled-components, dan 
+      berbagai teknik styling yang sedang trending di industry.
+    </p>
+    
+    <h3>Performance dan Optimization</h3>
+    <p>
+      Tips dan teknik untuk mengoptimasi performa website, SEO, Core Web Vitals, 
+      lazy loading, code splitting, dan berbagai strategi optimization lainnya. 
+      Semua teknik dijelaskan dengan measurement tools dan best practices yang 
+      direkomendasikan oleh Google dan industry leaders.
+    </p>
+  </section>
+
+  <footer>
+    <p>
+      © 2024 Hilal Technologic. Platform blog teknologi untuk developer Indonesia. 
+      Semua konten ditulis dengan passion dan dedikasi untuk memajukan ekosistem 
+      development di Indonesia. Mari bersama-sama belajar dan berkembang dalam 
+      dunia teknologi yang terus berevolusi.
+    </p>
+    <p>
+      Hubungi kami di hilal@technologist.com untuk kolaborasi, feedback, atau 
+      pertanyaan seputar konten blog. Kami selalu terbuka untuk diskusi dan 
+      saran untuk meningkatkan kualitas konten yang kami sajikan.
+    </p>
+  </footer>
+
+  <LazyAnalytics enableGA={true} enableGTM={false} />
+</OptimizedLayout>
+
+<style>
+  body { font-family: system-ui, sans-serif; line-height: 1.6; color: #333; max-width: 1200px; margin: 0 auto; padding: 20px; }
+  nav { display: flex; gap: 20px; margin-bottom: 40px; padding: 20px 0; border-bottom: 1px solid #eee; }
+  nav a { text-decoration: none; color: #0066cc; font-weight: 500; }
+  nav a:hover { color: #004499; }
+  h1 { font-size: 2.5rem; margin-bottom: 30px; color: #222; }
+  h2 { font-size: 2rem; margin: 40px 0 20px; color: #333; }
+  h3 { font-size: 1.5rem; margin: 30px 0 15px; color: #444; }
+  p { margin-bottom: 20px; text-align: justify; }
+  section { margin-bottom: 50px; }
+  article { margin-bottom: 40px; padding: 20px; border: 1px solid #eee; border-radius: 8px; }
+  article h3 a { color: #0066cc; text-decoration: none; }
+  article h3 a:hover { color: #004499; }
+  footer { margin-top: 60px; padding-top: 40px; border-top: 1px solid #eee; color: #666; }
+</style>

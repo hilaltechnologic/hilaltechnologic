@@ -9,8 +9,11 @@ export default defineConfig({
   site: 'https://hilaltechnologic.info', // Ganti dengan domain Anda
   output: 'static',
   trailingSlash: 'always',
+  compressHTML: true,
   build: {
-    format: 'directory'
+    format: 'directory',
+    inlineStylesheets: 'never',
+    assets: '_assets'
   },
   integrations: [
     tailwind({
@@ -50,11 +53,19 @@ export default defineConfig({
   },
   vite: {
     build: {
+      cssMinify: true,
+      minify: true,
       rollupOptions: {
         output: {
           entryFileNames: '_astro/[name].[hash].js',
           chunkFileNames: '_astro/[name].[hash].js',
-          assetFileNames: '_astro/[name].[hash][extname]'
+          assetFileNames: '_astro/[name].[hash][extname]',
+          manualChunks: {
+            'analytics': [
+              './src/components/GoogleAnalytics.astro',
+              './src/components/AnalyticsEvents.astro'
+            ]
+          }
         }
       }
     }

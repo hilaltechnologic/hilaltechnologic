@@ -1,0 +1,81 @@
+---
+import type { SEOProps } from '../utils/seo';
+import { generateSEOTags, getCurrentUrl } from '../utils/seo';
+import { generateSchemaOrg } from '../utils/schema';
+import { SITE_CONFIG } from '../config/site';
+import '../styles/global.css';
+
+interface Props {
+  seo: SEOProps;
+  minimal?: boolean;
+}
+
+const { seo, minimal = false } = Astro.props;
+const currentUrl = getCurrentUrl(Astro.url);
+const seoTags = generateSEOTags(seo, currentUrl);
+
+// Generate minimal Schema.org JSON-LD
+const schemaData = generateSchemaOrg({
+  type: seo.type === 'article' ? 'BlogPosting' : 'WebPage',
+  title: seo.title,
+  description: seo.description,
+  url: seoTags.canonical,
+  image: seo.image,
+  datePublished: seo.publishedTime,
+  dateModified: seo.modifiedTime,
+  author: seo.author ? { name: seo.author, url: seo.author } : undefined
+});
+---
+
+<!DOCTYPE html>
+<html lang={SITE_CONFIG.language}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href={SITE_CONFIG.favicon} />
+    
+    <title>{seoTags.title}</title>
+    <meta name="description" content={seoTags.description} />
+    <link rel="canonical" href={seoTags.canonical} />
+    
+    {!minimal && (
+      <>
+        <meta name="keywords" content={seoTags.keywords} />
+        <meta name="author" content={seoTags.author} />
+        <meta name="robots" content={seoTags.robots} />
+        
+        <meta property="og:title" content={seoTags.openGraph.title} />
+        <meta property="og:description" content={seoTags.openGraph.description} />
+        <meta property="og:type" content={seoTags.openGraph.type} />
+        <meta property="og:url" content={seoTags.openGraph.url} />
+        <meta property="og:image" content={seoTags.openGraph.image} />
+        
+        <meta name="twitter:card" content={seoTags.twitter.card} />
+        <meta name="twitter:title" content={seoTags.twitter.title} />
+        <meta name="twitter:description" content={seoTags.twitter.description} />
+        <meta name="twitter:image" content={seoTags.twitter.image} />
+      </>
+    )}
+    
+    <script type="application/ld+json" set:html={JSON.stringify(schemaData)} />
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <script>
+      if(localStorage.getItem('theme')==='dark'||(!localStorage.getItem('theme')&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark')}
+    </script>
+  </head>
+  <body>
+    <slot name="header" />
+    <main>
+      <slot />
+    </main>
+    <slot name="footer" />
+    
+    <script>
+      function toggleDarkMode(){const html=document.documentElement;html.classList.toggle('dark');localStorage.setItem('theme',html.classList.contains('dark')?'dark':'light')}
+      (window as any).toggleDarkMode=toggleDarkMode;
+    </script>
+  </body>
+</html>
