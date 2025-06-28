@@ -54,13 +54,29 @@ const formatDate = (date: Date) => {
     <section class="bg-gradient-to-br from-primary-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 py-20">
       <div class="container mx-auto px-4 text-center">
         <h1 class="text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
-          Selamat Datang di <span class="text-primary-600">Hilal Technologic</span>
+          Selamat Datang di <span class="text-primary-600">HilalTechnologic.info</span>
         </h1>
-        <p class="text-xl md:text-2xl text-gray-800 dark:text-gray-100 mb-8 max-w-3xl mx-auto">
-          Halo! Kalau lo nyasar ke sini, berarti lo haus akan hal-hal berbau teknologi—dan percayalah, lo nyasar ke tempat yang bener.
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-gray-100 mb-4">Portal Teknologi untuk Semua Kalangan</h2>
+        <div class="prose prose-lg dark:prose-invert max-w-4xl mx-auto text-left">
+          <p class="text-xl text-gray-800 dark:text-gray-100 mb-6">
+            Di era digital yang terus berkembang, teknologi bukan lagi sesuatu yang asing atau hanya milik segelintir orang. Ia telah menjadi bagian dari kehidupan sehari-hari—dari cara kita bekerja, belajar, berkomunikasi, hingga menghibur diri. Namun, sering kali, informasi tentang teknologi terasa terlalu rumit, teknis, dan tidak ramah bagi pemula. Di sinilah <strong>HilalTechnologic.info</strong> hadir sebagai jembatan: membawa teknologi lebih dekat kepada semua orang, tanpa ribet, tanpa jargon yang membingungkan.
+          </p>
+          
+          <p class="text-lg text-gray-700 dark:text-gray-200 mb-6">
+            HilalTechnologic.info adalah blog teknologi yang dirancang untuk memberikan wawasan, tutorial, ulasan, dan informasi terkini seputar dunia digital dan inovasi teknologi. Tujuan utama kami adalah membuat dunia teknologi bisa diakses dan dipahami oleh siapa saja—baik pelajar, mahasiswa, pekerja kantoran, guru, hingga pengusaha muda yang ingin lebih akrab dengan perkembangan zaman.
+          </p>
 
-Hilal Technologic gue bikin sebagai tempat nongkrong digital buat siapa pun yang pengen ngerti teknologi tanpa harus jadi profesor coding atau tech reviewer yang ngomongnya ribet. Di sini, lo bakal nemuin konten yang relate, berguna, dan gampang dipraktekin.
-        </p>
+          <div class="bg-primary-50 dark:bg-gray-800 p-6 rounded-lg mb-6">
+            <h3 class="text-2xl font-bold text-primary-800 dark:text-primary-300 mb-4">Apa yang Bisa Kamu Temukan di HilalTechnologic.info?</h3>
+            <ul class="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-200">
+              <li><strong>Tutorial Teknologi Praktis:</strong> Panduan langkah demi langkah menggunakan aplikasi, software, atau perangkat digital populer.</li>
+              <li><strong>Ulasan Gadget dan Aplikasi:</strong> Review jujur dan mendalam tentang smartphone, laptop, aksesori, serta aplikasi terkini.</li>
+              <li><strong>Berita & Tren Teknologi:</strong> Update tentang inovasi terbaru dari dunia teknologi.</li>
+              <li><strong>Karir & Pendidikan Teknologi:</strong> Tips belajar coding dan peluang karir di bidang teknologi.</li>
+              <li><strong>Opini & Refleksi Digital:</strong> Artikel reflektif tentang dampak teknologi dalam kehidupan.</li>
+            </ul>
+          </div>
+        </div>
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
           <a href="/blog" class="btn-primary text-lg px-8 py-3">
             Jelajahi Blog
@@ -310,5 +326,39 @@ Hilal Technologic gue bikin sebagai tempat nongkrong digital buat siapa pun yang
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+  }
+
+  /* Prose Styling */
+  .prose {
+    max-width: 65ch;
+    color: inherit;
+  }
+
+  .prose p {
+    margin-bottom: 1.5em;
+    line-height: 1.75;
+  }
+
+  .prose strong {
+    color: inherit;
+    font-weight: 600;
+  }
+
+  .prose ul {
+    margin-top: 1.25em;
+    margin-bottom: 1.25em;
+  }
+
+  .prose li {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+  }
+
+  .dark .prose {
+    color: #e5e7eb;
+  }
+
+  .dark .prose strong {
+    color: #f3f4f6;
   }
 </style>
