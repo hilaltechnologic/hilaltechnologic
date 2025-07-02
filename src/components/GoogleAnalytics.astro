@@ -1,0 +1,87 @@
+---
+const GA_MEASUREMENT_ID = 'G-GP3FQFYJ6W';
+const isDev = import.meta.env.DEV;
+---
+
+{!isDev && (
+  <>
+    <!-- Google tag (gtag.js) with Consent Mode -->
+    <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}></script>
+    <script is:inline define:vars={{ GA_MEASUREMENT_ID }}>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      
+      // Initialize with consent denied by default
+      gtag('consent', 'default', {
+        'analytics_storage': 'denied',
+        'ad_storage': 'denied',
+        'functionality_storage': 'denied',
+        'personalization_storage': 'denied',
+        'security_storage': 'granted',
+        'wait_for_update': 2000
+      });
+      
+      gtag('js', new Date());
+      
+      gtag('config', GA_MEASUREMENT_ID, {
+        // Enhanced measurement
+        enhanced_measurement: true,
+        // Page view tracking
+        page_title: document.title,
+        page_location: window.location.href,
+        // Privacy settings
+        anonymize_ip: true,
+        // Performance tracking
+        custom_map: {
+          'custom_parameter_1': 'web_vitals_metric',
+          'custom_parameter_2': 'page_type'
+        },
+        // Cookie settings
+        cookie_flags: 'SameSite=None;Secure',
+        cookie_expires: 63072000, // 2 years in seconds
+        // Disable automatic page view tracking initially
+        send_page_view: false
+      });
+      
+      // Check for existing consent
+      function checkExistingConsent() {
+        const analyticsEnabled = localStorage.getItem('analytics-enabled');
+        if (analyticsEnabled === 'true') {
+          gtag('consent', 'update', {
+            'analytics_storage': 'granted'
+          });
+          // Send initial page view if consent granted
+          gtag('event', 'page_view', {
+            page_title: document.title,
+            page_location: window.location.href
+          });
+        }
+      }
+      
+      // Listen for consent changes
+      window.addEventListener('analytics-enabled', () => {
+        gtag('consent', 'update', {
+          'analytics_storage': 'granted'
+        });
+        // Send page view when analytics is enabled
+        gtag('event', 'page_view', {
+          page_title: document.title,
+          page_location: window.location.href
+        });
+      });
+      
+      window.addEventListener('analytics-disabled', () => {
+        gtag('consent', 'update', {
+          'analytics_storage': 'denied'
+        });
+      });
+      
+      // Check consent on load
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', checkExistingConsent);
+      } else {
+        checkExistingConsent();
+      }
+    </script>
+  </>
+)}

@@ -1,0 +1,162 @@
+---
+import { getCollection } from 'astro:content';
+
+// Get all blog posts for search
+const posts = await getCollection('blog');
+const searchablePosts = posts
+  .filter(post => !post.data.draft)
+  .map(post => ({
+    slug: post.slug,
+    title: post.data.title,
+    description: post.data.description,
+    tags: post.data.tags || [],
+    publishedDate: post.data.publishedDate,
+    readingTime: post.data.readingTime,
+    image: post.data.image
+  }));
+---
+
+<div id="search-results" class="hidden absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-96 overflow-y-auto z-50">
+  <div id="search-results-content" class="p-4">
+    <!-- Results will be populated by JavaScript -->
+  </div>
+</div>
+
+<script define:vars={{ searchablePosts }}>
+  // Make posts data available globally for search
+  window.searchablePosts = searchablePosts;
+  
+  function performSearch(query) {
+    if (!query || query.length < 2) {
+      return [];
+    }
+    
+    const searchTerm = query.toLowerCase();
+    
+    return searchablePosts.filter(post => {
+      const titleMatch = post.title.toLowerCase().includes(searchTerm);
+      const descriptionMatch = post.description.toLowerCase().includes(searchTerm);
+      const tagsMatch = post.tags.some(tag => tag.toLowerCase().includes(searchTerm));
+      
+      return titleMatch || descriptionMatch || tagsMatch;
+    }).slice(0, 5); // Limit to 5 results
+  }
+  
+  function displaySearchResults(results, query) {
+    const resultsContainer = document.getElementById('search-results-content');
+    const searchResults = document.getElementById('search-results');
+    
+    if (!resultsContainer || !searchResults) return;
+    
+    if (results.length === 0) {
+      resultsContainer.innerHTML = `
+        <div class="text-gray-500 dark:text-gray-400 text-center py-4">
+          Tidak ada hasil untuk "${query}"
+        </div>
+      `;
+    } else {
+      resultsContainer.innerHTML = results.map(post => `
+        <a href="/blog/${post.slug}/" class="block p-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+          <div class="flex items-start space-x-3">
+            ${post.image ? `
+              <img src="${post.image}" alt="${post.title}" class="w-12 h-12 object-cover rounded-lg flex-shrink-0">
+            ` : ''}
+            <div class="flex-1 min-w-0">
+              <h3 class="text-sm font-medium text-gray-900 dark:text-white truncate">
+                ${post.title}
+              </h3>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
+                ${post.description}
+              </p>
+              <div class="flex items-center mt-2 space-x-2">
+                ${post.readingTime ? `
+                  <span class="text-xs text-gray-400 dark:text-gray-500">${post.readingTime}</span>
+                ` : ''}
+                <span class="text-xs text-gray-400 dark:text-gray-500">
+                  ${new Date(post.publishedDate).toLocaleDateString('id-ID', { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric' 
+                  })}
+                </span>
+              </div>
+            </div>
+          </div>
+        </a>
+      `).join('');
+    }
+    
+    searchResults.classList.remove('hidden');
+  }
+  
+  function hideSearchResults() {
+    const searchResults = document.getElementById('search-results');
+    if (searchResults) {
+      searchResults.classList.add('hidden');
+    }
+  }
+  
+  // Initialize search functionality
+  function initializeSearch() {
+    const searchInputs = document.querySelectorAll('#search-input');
+    
+    searchInputs.forEach(input => {
+      let searchTimeout;
+      
+      input.addEventListener('input', (e) => {
+        const query = e.target.value.trim();
+        
+        clearTimeout(searchTimeout);
+        
+        if (query.length < 2) {
+          hideSearchResults();
+          return;
+        }
+        
+        searchTimeout = setTimeout(() => {
+          const results = performSearch(query);
+          displaySearchResults(results, query);
+        }, 300); // Debounce search
+      });
+      
+      input.addEventListener('focus', (e) => {
+        const query = e.target.value.trim();
+        if (query.length >= 2) {
+          const results = performSearch(query);
+          displaySearchResults(results, query);
+        }
+      });
+    });
+    
+    // Hide results when clicking outside
+    document.addEventListener('click', (e) => {
+      const searchContainer = e.target.closest('.search-container');
+      if (!searchContainer) {
+        hideSearchResults();
+      }
+    });
+    
+    // Handle escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        hideSearchResults();
+      }
+    });
+  }
+  
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeSearch);
+  } else {
+    initializeSearch();
+  }
+</script>
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

@@ -1,0 +1,375 @@
+---
+// Analytics Events Component untuk tracking custom events
+---
+
+<script>
+  // Type definitions
+  interface QueuedEvent {
+    name: string;
+    parameters: Record<string, any>;
+  }
+
+  interface LayoutShiftEntry extends PerformanceEntry {
+    value: number;
+    hadRecentInput: boolean;
+  }
+
+  declare global {
+    interface Window {
+      gtag: (...args: any[]) => void;
+      analyticsTracker: AnalyticsTracker;
+    }
+  }
+
+  // Enhanced Analytics Event Tracking
+  class AnalyticsTracker {
+    private isGA4Ready: boolean = false;
+    private eventQueue: QueuedEvent[] = [];
+    private trackingEnabled: boolean = true;
+
+    constructor() {
+      this.init();
+    }
+
+    private init(): void {
+      // Wait for GA4 to be ready
+      this.waitForGA4(() => {
+        this.isGA4Ready = true;
+        this.processEventQueue();
+        this.setupEventListeners();
+      });
+    }
+
+    private waitForGA4(callback: () => void): void {
+      if (typeof window.gtag !== 'undefined') {
+        callback();
+      } else {
+        setTimeout(() => this.waitForGA4(callback), 100);
+      }
+    }
+
+    private processEventQueue(): void {
+      while (this.eventQueue.length > 0) {
+        const event = this.eventQueue.shift();
+        if (event) {
+          this.trackEvent(event.name, event.parameters);
+        }
+      }
+    }
+
+    private trackEvent(eventName: string, parameters: Record<string, any> = {}): void {
+      // Don't track if tracking is disabled
+      if (!this.trackingEnabled) {
+        return;
+      }
+
+      if (this.isGA4Ready && typeof window.gtag !== 'undefined') {
+        window.gtag('event', eventName, parameters);
+      } else {
+        // Queue events if GA4 not ready yet
+        this.eventQueue.push({ name: eventName, parameters });
+      }
+    }
+
+    setupEventListeners() {
+      // Track search events
+      this.trackSearchEvents();
+      
+      // Track scroll depth
+      this.trackScrollDepth();
+      
+      // Track outbound links
+      this.trackOutboundLinks();
+      
+      // Track file downloads
+      this.trackFileDownloads();
+      
+      // Track page engagement
+      this.trackPageEngagement();
+      
+      // Track Core Web Vitals
+      this.trackWebVitals();
+    }
+
+    private trackSearchEvents(): void {
+      const searchInputs = document.querySelectorAll('#search-input');
+      
+      searchInputs.forEach(input => {
+        let searchTimeout: number;
+        
+        input.addEventListener('input', (e) => {
+          clearTimeout(searchTimeout);
+          const target = e.target as HTMLInputElement;
+          if (target) {
+            const query = target.value.trim();
+            
+            if (query.length >= 2) {
+              searchTimeout = window.setTimeout(() => {
+                this.trackEvent('search', {
+                  search_term: query,
+                  event_category: 'engagement',
+                  event_label: 'site_search'
+                });
+              }, 1000); // Track after 1 second of no typing
+            }
+          }
+        });
+      });
+    }
+
+    private trackScrollDepth(): void {
+      let maxScroll = 0;
+      const milestones = [25, 50, 75, 90, 100];
+      const tracked = new Set<number>();
+
+      const trackScroll = () => {
+        const scrollPercent = Math.round(
+          (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100
+        );
+        
+        if (scrollPercent > maxScroll) {
+          maxScroll = scrollPercent;
+          
+          milestones.forEach(milestone => {
+            if (scrollPercent >= milestone && !tracked.has(milestone)) {
+              tracked.add(milestone);
+              this.trackEvent('scroll', {
+                event_category: 'engagement',
+                event_label: `${milestone}%`,
+                value: milestone
+              });
+            }
+          });
+        }
+      };
+
+      // Throttled scroll tracking
+      let ticking = false;
+      window.addEventListener('scroll', () => {
+        if (!ticking) {
+          requestAnimationFrame(() => {
+            trackScroll();
+            ticking = false;
+          });
+          ticking = true;
+        }
+      }, { passive: true });
+    }
+
+    private trackOutboundLinks(): void {
+      document.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        if (!target) return;
+        
+        const link = target.closest('a');
+        if (!link) return;
+
+        const href = link.href;
+        const hostname = link.hostname;
+        const currentHostname = window.location.hostname;
+
+        // Track outbound links
+        if (hostname && hostname !== currentHostname) {
+          this.trackEvent('click', {
+            event_category: 'outbound',
+            event_label: href,
+            transport_type: 'beacon'
+          });
+        }
+      });
+    }
+
+    private trackFileDownloads(): void {
+      document.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        if (!target) return;
+        
+        const link = target.closest('a');
+        if (!link) return;
+
+        const href = link.href;
+        const fileExtensions = /\.(pdf|doc|docx|xls|xlsx|ppt|pptx|zip|rar|mp3|mp4|avi|mov)$/i;
+        
+        if (fileExtensions.test(href)) {
+          const fileName = href.split('/').pop() || '';
+          const fileType = fileName.split('.').pop()?.toLowerCase() || '';
+          
+          this.trackEvent('file_download', {
+            event_category: 'engagement',
+            event_label: fileName,
+            file_extension: fileType,
+            file_name: fileName
+          });
+        }
+      });
+    }
+
+    private trackPageEngagement(): void {
+      let startTime = Date.now();
+      let isActive = true;
+      let totalTime = 0;
+
+      // Track time on page
+      const trackTimeOnPage = () => {
+        if (isActive) {
+          totalTime = Date.now() - startTime;
+          
+          // Send engagement time every 30 seconds
+          if (totalTime > 0 && totalTime % 30000 < 1000) {
+            this.trackEvent('user_engagement', {
+              engagement_time_msec: totalTime,
+              event_category: 'engagement'
+            });
+          }
+        }
+      };
+
+      // Track page visibility
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          isActive = false;
+          totalTime += Date.now() - startTime;
+        } else {
+          isActive = true;
+          startTime = Date.now();
+        }
+      });
+
+      // Track before page unload
+      window.addEventListener('beforeunload', () => {
+        if (isActive) {
+          totalTime += Date.now() - startTime;
+        }
+        
+        if (totalTime > 5000) { // Only track if user spent more than 5 seconds
+          this.trackEvent('page_view_time', {
+            event_category: 'engagement',
+            value: Math.round(totalTime / 1000), // Convert to seconds
+            transport_type: 'beacon'
+          });
+        }
+      });
+
+      // Periodic tracking
+      setInterval(trackTimeOnPage, 10000); // Check every 10 seconds
+    }
+
+    private trackWebVitals(): void {
+      // Track Core Web Vitals if web-vitals library is available
+      if (typeof window !== 'undefined') {
+        // Try to load web-vitals dynamically
+        this.loadWebVitals();
+      }
+    }
+
+    private async loadWebVitals(): Promise<void> {
+      try {
+        // You can install web-vitals: npm install web-vitals
+        // For now, we'll use a simple implementation
+        this.trackSimpleWebVitals();
+      } catch (error) {
+        console.log('Web Vitals library not available');
+      }
+    }
+
+    private trackSimpleWebVitals(): void {
+      // Simple LCP tracking
+      if ('PerformanceObserver' in window) {
+        try {
+          const observer = new PerformanceObserver((list) => {
+            const entries = list.getEntries();
+            const lastEntry = entries[entries.length - 1];
+            
+            this.trackEvent('web_vitals', {
+              event_category: 'Web Vitals',
+              event_label: 'LCP',
+              value: Math.round(lastEntry.startTime),
+              metric_name: 'largest_contentful_paint',
+              metric_value: lastEntry.startTime
+            });
+          });
+          
+          observer.observe({ entryTypes: ['largest-contentful-paint'] });
+        } catch (error) {
+          console.log('LCP tracking not supported');
+        }
+
+        // Simple CLS tracking
+        try {
+          let clsValue = 0;
+          const clsObserver = new PerformanceObserver((list) => {
+            for (const entry of list.getEntries()) {
+              const layoutShiftEntry = entry as LayoutShiftEntry;
+              if (!layoutShiftEntry.hadRecentInput) {
+                clsValue += layoutShiftEntry.value;
+              }
+            }
+            
+            // Send CLS after page load
+            setTimeout(() => {
+              this.trackEvent('web_vitals', {
+                event_category: 'Web Vitals',
+                event_label: 'CLS',
+                value: Math.round(clsValue * 1000),
+                metric_name: 'cumulative_layout_shift',
+                metric_value: clsValue
+              });
+            }, 5000);
+          });
+          
+          clsObserver.observe({ entryTypes: ['layout-shift'] });
+        } catch (error) {
+          console.log('CLS tracking not supported');
+        }
+      }
+    }
+
+    // Public method to track custom events
+    public track(eventName: string, parameters: Record<string, any> = {}): void {
+      this.trackEvent(eventName, parameters);
+    }
+
+    // Public method to enable tracking
+    public enableTracking(): void {
+      this.trackingEnabled = true;
+    }
+
+    // Public method to disable tracking
+    public disableTracking(): void {
+      this.trackingEnabled = false;
+      // Clear event queue when tracking is disabled
+      this.eventQueue = [];
+    }
+
+    // Public method to check if tracking is enabled
+    public isTrackingEnabled(): boolean {
+      return this.trackingEnabled;
+    }
+  }
+
+  // Initialize analytics tracker
+  const analyticsTracker = new AnalyticsTracker();
+
+  // Expose tracker globally for custom tracking
+  window.analyticsTracker = analyticsTracker;
+
+  // Track page type
+  const getPageType = (): string => {
+    const path = window.location.pathname;
+    if (path === '/') return 'homepage';
+    if (path.startsWith('/blog/') && path !== '/blog/') return 'article';
+    if (path.startsWith('/blog')) return 'blog_index';
+    if (path.startsWith('/kategori/') && path !== '/kategori/') return 'category';
+    if (path.startsWith('/kategori')) return 'category_index';
+    return 'page';
+  };
+
+  // Track initial page view with page type
+  window.addEventListener('load', () => {
+    analyticsTracker.track('page_view', {
+      page_type: getPageType(),
+      page_location: window.location.href,
+      page_title: document.title
+    });
+  });
+</script>

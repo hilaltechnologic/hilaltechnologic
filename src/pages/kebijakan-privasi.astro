@@ -1,0 +1,121 @@
+---
+import type { SEOProps } from '../utils/seo';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const seo: SEOProps = {
+  title: 'Kebijakan Privasi',
+  description: 'Kebijakan privasi dan perlindungan data pribadi pengguna website ini.',
+  type: 'website',
+  noindex: false,
+};
+---
+
+<BaseLayout seo={seo}>
+  <Fragment slot="header">
+    <Header />
+  </Fragment>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-br from-primary-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 py-16">
+      <div class="container mx-auto px-4 text-center">
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+          Kebijakan Privasi
+        </h1>
+        <p class="text-xl text-gray-800 dark:text-gray-100 max-w-3xl mx-auto">
+          Komitmen kami dalam melindungi privasi dan data pribadi Anda
+        </p>
+      </div>
+    </section>
+
+    <!-- Content Section -->
+    <section class="py-16 bg-white dark:bg-gray-900">
+      <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto">
+          <div class="prose prose-lg prose-gray dark:prose-invert max-w-none">
+            
+            <h2>🔒 Kebijakan Privasi</h2>
+
+            <p class="text-sm text-gray-600 dark:text-gray-400">Terakhir diperbarui: 25 Juni 2025</p>
+
+            <p>Halo sobat teknologi!<br/>
+            Di <strong>Hilal Technologic</strong> (<a href="https://hilaltechnologic.info">https://hilaltechnologic.info</a>), kami serius menjaga privasi lo. Kebijakan Privasi ini menjelaskan gimana kami mengumpulkan, menggunakan, menyimpan, dan melindungi data pribadi yang lo berikan saat mengakses situs kami.</p>
+
+            <h3>1. Data yang Kami Kumpulkan</h3>
+
+            <p>Saat lo mampir atau berinteraksi dengan situs ini, kami mungkin mengumpulkan data berikut:</p>
+
+            <ul>
+              <li><strong>Data Pribadi</strong>: Seperti nama, email, atau info lain yang lo isi saat komentar atau kirim pesan.</li>
+              <li><strong>Data Otomatis</strong>: IP address, jenis browser, perangkat yang lo pakai, sistem operasi, durasi kunjungan, dan halaman yang lo buka—semua ini kami kumpulkan via cookie & tools analitik.</li>
+              <li><strong>Cookie</strong>: Kami pakai cookie untuk ningkatin pengalaman browsing lo. Lo bisa nonaktifin lewat pengaturan browser, tapi beberapa fitur mungkin nggak jalan maksimal.</li>
+            </ul>
+
+            <h3>2. Cara Kami Menggunakan Data</h3>
+
+            <p>Data yang kami kumpulkan digunakan untuk:</p>
+
+            <ul>
+              <li>Menyajikan konten yang relevan dan berkualitas</li>
+              <li>Menganalisis perilaku pengunjung untuk optimasi situs</li>
+              <li>Menanggapi pertanyaan atau permintaan lo</li>
+              <li>Menayangkan iklan (melalui pihak ketiga) yang sesuai minat lo</li>
+            </ul>
+
+            <p>Tenang bro, <strong>kami nggak jual data pribadi lo ke pihak mana pun</strong>. Kami menjaga data lo kayak jaga harddisk backup satu-satunya.</p>
+
+            <h3>3. Iklan Pihak Ketiga</h3>
+
+            <p>Kami bekerja sama dengan mitra iklan seperti <strong>Google AdSense</strong>, <strong>Adsterra</strong>, atau penyedia lain. Mereka bisa menggunakan cookie dan web beacon untuk menayangkan iklan yang lebih sesuai dengan minat lo.<br/>
+            Kebijakan privasi mitra pihak ketiga akan berbeda—pastikan lo cek juga di situs mereka.</p>
+
+            <h3>4. Link ke Situs Eksternal</h3>
+
+            <p>Artikel kami mungkin menyertakan link ke situs lain. Kami tidak bertanggung jawab atas praktik privasi atau konten di situs eksternal tersebut. Buka link eksternal = tanggung jawab lo sendiri.</p>
+
+            <h3>5. Keamanan Data</h3>
+
+            <p>Kami menjaga data lo menggunakan langkah-langkah keamanan digital standar industri. Tapi inget ya bro, <strong>nggak ada sistem di internet yang 100% aman.</strong> Jadi tetap bijak dan jangan pernah share data sensitif via formulir publik.</p>
+
+            <h3>6. Hak Pengguna</h3>
+
+            <p>Lo punya hak untuk:</p>
+
+            <ul>
+              <li>Mengakses, memperbaiki, atau menghapus data pribadi lo</li>
+              <li>Menolak penggunaan cookie tertentu</li>
+              <li>Menghubungi kami untuk pertanyaan seputar data lo</li>
+            </ul>
+
+            <h3>7. Perubahan pada Kebijakan Privasi</h3>
+
+            <p>Kami bisa update Kebijakan Privasi ini kapan pun tanpa pemberitahuan. Setiap perubahan akan langsung ditampilkan di halaman ini. Disarankan lo cek secara berkala ya, bro.</p>
+
+            <hr/>
+
+            <h3>Hubungi Kami</h3>
+            <p>Kalau ada pertanyaan seputar kebijakan ini, lo bisa kontak kami di:<br/>
+            📩 <a href="mailto:admin@hilaltechnologic.info">admin@hilaltechnologic.info</a><br/>
+            atau langsung mampir ke halaman <a href="/kontak">Kontak Kami</a>.</p>
+
+            <div class="mt-12 p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
+              <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                <strong>Terakhir diperbarui:</strong> 25 Juni 2025
+              </p>
+              <p class="text-sm text-gray-600 dark:text-gray-400">
+                Jika Anda memiliki pertanyaan tentang kebijakan privasi ini, silakan hubungi kami melalui halaman <a href="/kontak" class="text-primary-600 dark:text-primary-400 hover:underline">kontak</a>.
+              </p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Fragment slot="footer">
+    <Footer />
+  </Fragment>
+</BaseLayout>
