@@ -2,13 +2,13 @@
 export const ADS_CONFIG = {
   // Google AdSense
   adsense: {
-    enabled: false, // Set ke true untuk mengaktifkan
-    publisherId: 'ca-pub-YOUR_PUBLISHER_ID', // Ganti dengan Publisher ID Anda
+    enabled: true, // Diaktifkan untuk Google AdSense
+    publisherId: 'ca-pub-5573623649456971', // Publisher ID Anda
     slots: {
-      header: '1234567890',
-      sidebar: '1234567891', 
-      content: '1234567892',
-      footer: '1234567893'
+      header: 'auto',     // Menggunakan format auto untuk adaptive ads
+      sidebar: 'auto',    // Anda bisa mengganti dengan slot ID spesifik
+      content: 'auto',    // dari AdSense dashboard setelah
+      footer: 'auto'      // membuat ad unit
     }
   },
 
@@ -69,8 +69,9 @@ export const ADS_CONFIG = {
 
 // Helper function untuk mengecek apakah iklan harus ditampilkan
 export function shouldShowAds(): boolean {
-  // Cek environment
-  if (import.meta.env.DEV && !ADS_CONFIG.settings.showInDevelopment) {
+  // Cek environment - gunakan process.env untuk kompatibilitas
+  const isDev = typeof process !== 'undefined' && process.env.NODE_ENV === 'development';
+  if (isDev && !ADS_CONFIG.settings.showInDevelopment) {
     return false;
   }
 
