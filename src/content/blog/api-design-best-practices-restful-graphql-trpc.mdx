@@ -1,0 +1,1098 @@
+---
+title: "API Design Best Practices: RESTful vs GraphQL vs tRPC - Pilih Mana di 2025?"
+description: "Panduan lengkap API design best practices 2025. Perbandingan RESTful API, GraphQL, dan tRPC dengan implementasi praktis, security, dan performance optimization."
+publishedDate: 2025-01-07
+author:
+  name: "Hilal Technologic"
+  url: "https://hilaltechnologic.info/author/admin"
+tags: ["api design", "rest api", "graphql", "trpc", "backend development", "api security", "web development"]
+image: "/images/blog/api-design-best-practices-cover.webp"
+imageAlt: "API Design Best Practices Cover"
+featured: true
+draft: false
+readingTime: "24 menit baca"
+---
+
+# 🚀 API Design Best Practices: RESTful vs GraphQL vs tRPC - Pilih Mana di 2025?
+
+API adalah jantung dari aplikasi modern. Dengan 83% developer menggunakan APIs dalam project mereka, memilih arsitektur API yang tepat dan mengimplementasikan best practices menjadi krusial untuk kesuksesan aplikasi. Di tahun 2025, pilihan antara REST, GraphQL, dan tRPC semakin kompleks dengan munculnya kebutuhan real-time, type safety, dan developer experience yang superior.
+
+> "Good API design is like a good joke - if you have to explain it, it's not that good." - API Design Community
+
+Mari kita explore secara mendalam bagaimana merancang API yang scalable, maintainable, dan developer-friendly!
+
+---
+
+## 🎯 Mengapa API Design Penting?
+
+### Statistik Industry 2025
+
+- **83% aplikasi** menggunakan APIs sebagai core architecture
+- **API-first companies** tumbuh **12x lebih cepat** dari kompetitor
+- **Poor API design** menyebabkan **40% developer churn**
+- **Well-designed APIs** meningkatkan **developer productivity 60%**
+
+### Impact of Good API Design
+
+```javascript
+// Bad API Design - Inconsistent, unclear
+POST /user/create
+GET /getUsers
+PUT /user/1/update
+DELETE /removeUser/1
+
+// Good API Design - RESTful, predictable
+POST /api/v1/users
+GET /api/v1/users
+PUT /api/v1/users/1
+DELETE /api/v1/users/1
+
+// Response consistency
+// Bad
+{
+  "user_data": {...},
+  "success": true,
+  "msg": "User created"
+}
+
+// Good
+{
+  "data": {
+    "user": {...}
+  },
+  "meta": {
+    "message": "User created successfully",
+    "timestamp": "2025-01-07T10:00:00Z"
+  }
+}
+```
+
+---
+
+## 🏗️ RESTful API Design
+
+### 1. Resource-Based URLs
+
+```javascript
+// Express.js RESTful API Implementation
+const express = require('express');
+const app = express();
+
+// Resource: Users
+app.get('/api/v1/users', getAllUsers);           // Get all users
+app.get('/api/v1/users/:id', getUserById);       // Get specific user
+app.post('/api/v1/users', createUser);           // Create new user
+app.put('/api/v1/users/:id', updateUser);        // Update entire user
+app.patch('/api/v1/users/:id', partialUpdate);   // Partial update
+app.delete('/api/v1/users/:id', deleteUser);     // Delete user
+
+// Nested resources
+app.get('/api/v1/users/:id/posts', getUserPosts);
+app.post('/api/v1/users/:id/posts', createUserPost);
+app.get('/api/v1/users/:id/posts/:postId', getUserPost);
+
+// Query parameters for filtering, sorting, pagination
+app.get('/api/v1/users', (req, res) => {
+  const {
+    page = 1,
+    limit = 10,
+    sort = 'createdAt',
+    order = 'desc',
+    filter,
+    search
+  } = req.query;
+
+  // Implementation
+  const users = getUsersWithParams({
+    page: parseInt(page),
+    limit: parseInt(limit),
+    sort,
+    order,
+    filter: filter ? JSON.parse(filter) : {},
+    search
+  });
+
+  res.json({
+    data: users,
+    meta: {
+      page: parseInt(page),
+      limit: parseInt(limit),
+      total: users.length,
+      totalPages: Math.ceil(users.length / limit)
+    }
+  });
+});
+```
+
+### 2. HTTP Status Codes
+
+```javascript
+// Proper HTTP status code usage
+const statusCodes = {
+  // Success
+  200: 'OK - Request successful',
+  201: 'Created - Resource created',
+  202: 'Accepted - Request accepted for processing',
+  204: 'No Content - Successful deletion',
+
+  // Client Errors
+  400: 'Bad Request - Invalid request data',
+  401: 'Unauthorized - Authentication required',
+  403: 'Forbidden - Access denied',
+  404: 'Not Found - Resource not found',
+  409: 'Conflict - Resource conflict',
+  422: 'Unprocessable Entity - Validation errors',
+  429: 'Too Many Requests - Rate limit exceeded',
+
+  // Server Errors
+  500: 'Internal Server Error - Server error',
+  502: 'Bad Gateway - Upstream server error',
+  503: 'Service Unavailable - Server overloaded'
+};
+
+// Implementation
+async function createUser(req, res) {
+  try {
+    // Validation
+    const { error, value } = userSchema.validate(req.body);
+    if (error) {
+      return res.status(422).json({
+        error: {
+          message: 'Validation failed',
+          details: error.details.map(d => ({
+            field: d.path.join('.'),
+            message: d.message
+          }))
+        }
+      });
+    }
+
+    // Check if user exists
+    const existingUser = await User.findOne({ email: value.email });
+    if (existingUser) {
+      return res.status(409).json({
+        error: {
+          message: 'User with this email already exists',
+          code: 'USER_EXISTS'
+        }
+      });
+    }
+
+    // Create user
+    const user = await User.create(value);
+    
+    res.status(201).json({
+      data: {
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          createdAt: user.createdAt
+        }
+      },
+      meta: {
+        message: 'User created successfully'
+      }
+    });
+
+  } catch (error) {
+    console.error('Create user error:', error);
+    res.status(500).json({
+      error: {
+        message: 'Internal server error',
+        code: 'INTERNAL_ERROR'
+      }
+    });
+  }
+}
+```
+
+### 3. Versioning Strategy
+
+```javascript
+// API Versioning approaches
+
+// 1. URL Versioning (Recommended)
+app.use('/api/v1', v1Routes);
+app.use('/api/v2', v2Routes);
+
+// 2. Header Versioning
+app.use((req, res, next) => {
+  const version = req.headers['api-version'] || 'v1';
+  req.apiVersion = version;
+  next();
+});
+
+// 3. Query Parameter Versioning
+app.get('/api/users', (req, res) => {
+  const version = req.query.version || 'v1';
+  
+  if (version === 'v2') {
+    return handleV2Request(req, res);
+  }
+  
+  return handleV1Request(req, res);
+});
+
+// Version compatibility layer
+class ApiVersionManager {
+  constructor() {
+    this.versions = new Map();
+    this.deprecationWarnings = new Map();
+  }
+
+  registerVersion(version, handler) {
+    this.versions.set(version, handler);
+  }
+
+  deprecateVersion(version, deprecationDate, removalDate) {
+    this.deprecationWarnings.set(version, {
+      deprecationDate,
+      removalDate,
+      message: `API version ${version} is deprecated and will be removed on ${removalDate}`
+    });
+  }
+
+  handleRequest(version, req, res) {
+    // Add deprecation warning
+    if (this.deprecationWarnings.has(version)) {
+      const warning = this.deprecationWarnings.get(version);
+      res.set('Deprecation', warning.deprecationDate);
+      res.set('Sunset', warning.removalDate);
+      res.set('Warning', `299 - "${warning.message}"`);
+    }
+
+    // Handle request
+    const handler = this.versions.get(version);
+    if (!handler) {
+      return res.status(400).json({
+        error: {
+          message: `Unsupported API version: ${version}`,
+          supportedVersions: Array.from(this.versions.keys())
+        }
+      });
+    }
+
+    return handler(req, res);
+  }
+}
+```
+
+### 4. Error Handling
+
+```javascript
+// Standardized error response format
+class ApiError extends Error {
+  constructor(message, statusCode = 500, code = null, details = null) {
+    super(message);
+    this.statusCode = statusCode;
+    this.code = code;
+    this.details = details;
+    this.timestamp = new Date().toISOString();
+  }
+}
+
+// Error handling middleware
+function errorHandler(error, req, res, next) {
+  let statusCode = 500;
+  let response = {
+    error: {
+      message: 'Internal server error',
+      code: 'INTERNAL_ERROR',
+      timestamp: new Date().toISOString(),
+      path: req.path,
+      method: req.method
+    }
+  };
+
+  if (error instanceof ApiError) {
+    statusCode = error.statusCode;
+    response.error.message = error.message;
+    response.error.code = error.code;
+    if (error.details) {
+      response.error.details = error.details;
+    }
+  } else if (error.name === 'ValidationError') {
+    statusCode = 422;
+    response.error.message = 'Validation failed';
+    response.error.code = 'VALIDATION_ERROR';
+    response.error.details = Object.values(error.errors).map(err => ({
+      field: err.path,
+      message: err.message
+    }));
+  } else if (error.name === 'CastError') {
+    statusCode = 400;
+    response.error.message = 'Invalid ID format';
+    response.error.code = 'INVALID_ID';
+  }
+
+  // Log error for monitoring
+  console.error('API Error:', {
+    error: error.message,
+    stack: error.stack,
+    request: {
+      method: req.method,
+      url: req.url,
+      headers: req.headers,
+      body: req.body
+    }
+  });
+
+  res.status(statusCode).json(response);
+}
+
+// Usage
+app.get('/api/v1/users/:id', async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.id);
+    
+    if (!user) {
+      throw new ApiError('User not found', 404, 'USER_NOT_FOUND');
+    }
+
+    res.json({
+      data: { user },
+      meta: { message: 'User retrieved successfully' }
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+```
+
+---
+
+## 🔮 GraphQL Implementation
+
+### 1. Schema Design
+
+```graphql
+# schema.graphql
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  age: Int
+  posts: [Post!]!
+  profile: UserProfile
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Post {
+  id: ID!
+  title: String!
+  content: String!
+  author: User!
+  tags: [String!]!
+  published: Boolean!
+  publishedAt: DateTime
+  comments: [Comment!]!
+  likes: Int!
+}
+
+type Comment {
+  id: ID!
+  content: String!
+  author: User!
+  post: Post!
+  createdAt: DateTime!
+}
+
+type UserProfile {
+  bio: String
+  avatar: String
+  website: String
+  location: String
+}
+
+# Queries
+type Query {
+  # Users
+  users(
+    first: Int
+    after: String
+    filter: UserFilter
+    sort: UserSort
+  ): UserConnection!
+  
+  user(id: ID!): User
+  me: User
+  
+  # Posts
+  posts(
+    first: Int
+    after: String
+    filter: PostFilter
+    sort: PostSort
+  ): PostConnection!
+  
+  post(id: ID!): Post
+  
+  # Search
+  search(query: String!, type: SearchType): SearchResult!
+}
+
+# Mutations
+type Mutation {
+  # User mutations
+  createUser(input: CreateUserInput!): CreateUserPayload!
+  updateUser(id: ID!, input: UpdateUserInput!): UpdateUserPayload!
+  deleteUser(id: ID!): DeleteUserPayload!
+  
+  # Post mutations
+  createPost(input: CreatePostInput!): CreatePostPayload!
+  updatePost(id: ID!, input: UpdatePostInput!): UpdatePostPayload!
+  deletePost(id: ID!): DeletePostPayload!
+  publishPost(id: ID!): PublishPostPayload!
+  
+  # Comment mutations
+  addComment(input: AddCommentInput!): AddCommentPayload!
+  updateComment(id: ID!, input: UpdateCommentInput!): UpdateCommentPayload!
+  deleteComment(id: ID!): DeleteCommentPayload!
+}
+
+# Subscriptions
+type Subscription {
+  postAdded: Post!
+  commentAdded(postId: ID!): Comment!
+  userOnline: User!
+}
+
+# Input types
+input CreateUserInput {
+  name: String!
+  email: String!
+  age: Int
+  profile: UserProfileInput
+}
+
+input UpdateUserInput {
+  name: String
+  email: String
+  age: Int
+  profile: UserProfileInput
+}
+
+input UserProfileInput {
+  bio: String
+  avatar: String
+  website: String
+  location: String
+}
+
+input CreatePostInput {
+  title: String!
+  content: String!
+  tags: [String!]!
+  published: Boolean = false
+}
+
+# Filter types
+input UserFilter {
+  name: String
+  email: String
+  ageRange: IntRange
+  hasProfile: Boolean
+}
+
+input PostFilter {
+  authorId: ID
+  published: Boolean
+  tags: [String!]
+  dateRange: DateRange
+}
+
+# Pagination
+type UserConnection {
+  edges: [UserEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type UserEdge {
+  node: User!
+  cursor: String!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+# Payload types
+type CreateUserPayload {
+  user: User
+  errors: [Error!]
+}
+
+type Error {
+  field: String
+  message: String!
+  code: String
+}
+
+# Enums
+enum UserSort {
+  NAME_ASC
+  NAME_DESC
+  CREATED_AT_ASC
+  CREATED_AT_DESC
+  EMAIL_ASC
+  EMAIL_DESC
+}
+
+enum PostSort {
+  TITLE_ASC
+  TITLE_DESC
+  CREATED_AT_ASC
+  CREATED_AT_DESC
+  LIKES_ASC
+  LIKES_DESC
+}
+
+enum SearchType {
+  USERS
+  POSTS
+  COMMENTS
+  ALL
+}
+
+# Scalar types
+scalar DateTime
+scalar JSON
+
+# Custom types
+type IntRange {
+  min: Int
+  max: Int
+}
+
+type DateRange {
+  start: DateTime
+  end: DateTime
+}
+
+union SearchResult = User | Post | Comment
+```
+
+### 2. Resolvers Implementation
+
+```javascript
+// resolvers.js
+const { GraphQLError } = require('graphql');
+const DataLoader = require('dataloader');
+
+// DataLoaders for N+1 problem prevention
+const createLoaders = () => ({
+  userLoader: new DataLoader(async (userIds) => {
+    const users = await User.find({ _id: { $in: userIds } });
+    return userIds.map(id => users.find(user => user.id === id));
+  }),
+  
+  postsByUserLoader: new DataLoader(async (userIds) => {
+    const posts = await Post.find({ authorId: { $in: userIds } });
+    return userIds.map(id => posts.filter(post => post.authorId === id));
+  }),
+  
+  commentsByPostLoader: new DataLoader(async (postIds) => {
+    const comments = await Comment.find({ postId: { $in: postIds } });
+    return postIds.map(id => comments.filter(comment => comment.postId === id));
+  })
+});
+
+const resolvers = {
+  Query: {
+    users: async (parent, args, context) => {
+      const { first = 10, after, filter, sort } = args;
+      
+      // Build query
+      let query = {};
+      if (filter) {
+        if (filter.name) {
+          query.name = { $regex: filter.name, $options: 'i' };
+        }
+        if (filter.email) {
+          query.email = { $regex: filter.email, $options: 'i' };
+        }
+        if (filter.ageRange) {
+          query.age = {};
+          if (filter.ageRange.min) query.age.$gte = filter.ageRange.min;
+          if (filter.ageRange.max) query.age.$lte = filter.ageRange.max;
+        }
+      }
+
+      // Pagination
+      if (after) {
+        query._id = { $gt: after };
+      }
+
+      // Sorting
+      let sortObj = {};
+      switch (sort) {
+        case 'NAME_ASC':
+          sortObj.name = 1;
+          break;
+        case 'NAME_DESC':
+          sortObj.name = -1;
+          break;
+        case 'CREATED_AT_ASC':
+          sortObj.createdAt = 1;
+          break;
+        case 'CREATED_AT_DESC':
+        default:
+          sortObj.createdAt = -1;
+      }
+
+      const users = await User.find(query)
+        .sort(sortObj)
+        .limit(first + 1);
+
+      const hasNextPage = users.length > first;
+      const edges = users.slice(0, first).map(user => ({
+        node: user,
+        cursor: user.id
+      }));
+
+      return {
+        edges,
+        pageInfo: {
+          hasNextPage,
+          hasPreviousPage: !!after,
+          startCursor: edges[0]?.cursor,
+          endCursor: edges[edges.length - 1]?.cursor
+        },
+        totalCount: await User.countDocuments(query)
+      };
+    },
+
+    user: async (parent, { id }, context) => {
+      const user = await context.loaders.userLoader.load(id);
+      if (!user) {
+        throw new GraphQLError('User not found', {
+          extensions: { code: 'USER_NOT_FOUND' }
+        });
+      }
+      return user;
+    },
+
+    me: async (parent, args, context) => {
+      if (!context.user) {
+        throw new GraphQLError('Authentication required', {
+          extensions: { code: 'UNAUTHENTICATED' }
+        });
+      }
+      return context.user;
+    }
+  },
+
+  Mutation: {
+    createUser: async (parent, { input }, context) => {
+      try {
+        // Validation
+        const existingUser = await User.findOne({ email: input.email });
+        if (existingUser) {
+          return {
+            user: null,
+            errors: [{
+              field: 'email',
+              message: 'Email already exists',
+              code: 'EMAIL_EXISTS'
+            }]
+          };
+        }
+
+        const user = await User.create(input);
+        
+        return {
+          user,
+          errors: []
+        };
+      } catch (error) {
+        return {
+          user: null,
+          errors: [{
+            field: null,
+            message: error.message,
+            code: 'INTERNAL_ERROR'
+          }]
+        };
+      }
+    },
+
+    updateUser: async (parent, { id, input }, context) => {
+      // Authorization check
+      if (!context.user || (context.user.id !== id && !context.user.isAdmin)) {
+        throw new GraphQLError('Forbidden', {
+          extensions: { code: 'FORBIDDEN' }
+        });
+      }
+
+      const user = await User.findByIdAndUpdate(id, input, { new: true });
+      if (!user) {
+        throw new GraphQLError('User not found', {
+          extensions: { code: 'USER_NOT_FOUND' }
+        });
+      }
+
+      return { user, errors: [] };
+    }
+  },
+
+  Subscription: {
+    postAdded: {
+      subscribe: (parent, args, context) => {
+        return context.pubsub.asyncIterator(['POST_ADDED']);
+      }
+    },
+
+    commentAdded: {
+      subscribe: (parent, { postId }, context) => {
+        return context.pubsub.asyncIterator([`COMMENT_ADDED_${postId}`]);
+      }
+    }
+  },
+
+  // Field resolvers
+  User: {
+    posts: async (user, args, context) => {
+      return context.loaders.postsByUserLoader.load(user.id);
+    },
+
+    profile: async (user, args, context) => {
+      if (!user.profileId) return null;
+      return context.loaders.profileLoader.load(user.profileId);
+    }
+  },
+
+  Post: {
+    author: async (post, args, context) => {
+      return context.loaders.userLoader.load(post.authorId);
+    },
+
+    comments: async (post, args, context) => {
+      return context.loaders.commentsByPostLoader.load(post.id);
+    },
+
+    likes: async (post, args, context) => {
+      return await Like.countDocuments({ postId: post.id });
+    }
+  },
+
+  Comment: {
+    author: async (comment, args, context) => {
+      return context.loaders.userLoader.load(comment.authorId);
+    },
+
+    post: async (comment, args, context) => {
+      return context.loaders.postLoader.load(comment.postId);
+    }
+  }
+};
+
+module.exports = resolvers;
+```
+
+### 3. GraphQL Server Setup
+
+```javascript
+// server.js
+const { ApolloServer } = require('@apollo/server');
+const { startStandaloneServer } = require('@apollo/server/standalone');
+const { GraphQLError } = require('graphql');
+const jwt = require('jsonwebtoken');
+const { PubSub } = require('graphql-subscriptions');
+
+const typeDefs = require('./schema');
+const resolvers = require('./resolvers');
+
+const pubsub = new PubSub();
+
+// Context function
+async function createContext({ req }) {
+  let user = null;
+  
+  // Extract token from headers
+  const token = req.headers.authorization?.replace('Bearer ', '');
+  
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      user = await User.findById(decoded.userId);
+    } catch (error) {
+      // Invalid token - continue without user
+    }
+  }
+
+  return {
+    user,
+    loaders: createLoaders(),
+    pubsub,
+    req
+  };
+}
+
+// Custom directives
+const { mapSchema, getDirective, MapperKind } = require('@graphql-tools/utils');
+
+function authDirective(schema, directiveName) {
+  return mapSchema(schema, {
+    [MapperKind.OBJECT_FIELD]: (fieldConfig) => {
+      const authDirective = getDirective(schema, fieldConfig, directiveName)?.[0];
+      
+      if (authDirective) {
+        const { resolve = defaultFieldResolver } = fieldConfig;
+        
+        fieldConfig.resolve = function (source, args, context, info) {
+          if (!context.user) {
+            throw new GraphQLError('Authentication required', {
+              extensions: { code: 'UNAUTHENTICATED' }
+            });
+          }
+          
+          if (authDirective.requires && !context.user.roles.includes(authDirective.requires)) {
+            throw new GraphQLError('Insufficient permissions', {
+              extensions: { code: 'FORBIDDEN' }
+            });
+          }
+          
+          return resolve(source, args, context, info);
+        };
+      }
+      
+      return fieldConfig;
+    }
+  });
+}
+
+// Create Apollo Server
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  plugins: [
+    // Query complexity analysis
+    {
+      requestDidStart() {
+        return {
+          didResolveOperation({ request, document }) {
+            const complexity = getComplexity({
+              estimators: [
+                fieldExtensionsEstimator(),
+                simpleEstimator({ maximumComplexity: 1000 })
+              ],
+              maximumComplexity: 1000,
+              variables: request.variables,
+              document,
+              schema
+            });
+
+            if (complexity > 1000) {
+              throw new GraphQLError('Query too complex', {
+                extensions: { code: 'QUERY_TOO_COMPLEX' }
+              });
+            }
+          }
+        };
+      }
+    },
+    
+    // Query depth limiting
+    depthLimit(10),
+    
+    // Rate limiting
+    {
+      requestDidStart() {
+        return {
+          willSendResponse(requestContext) {
+            // Implement rate limiting logic
+          }
+        };
+      }
+    }
+  ],
+  
+  formatError: (error) => {
+    // Log error
+    console.error('GraphQL Error:', error);
+    
+    // Return sanitized error
+    return {
+      message: error.message,
+      code: error.extensions?.code || 'INTERNAL_ERROR',
+      path: error.path,
+      timestamp: new Date().toISOString()
+    };
+  }
+});
+
+// Start server
+startStandaloneServer(server, {
+  context: createContext,
+  listen: { port: 4000 }
+}).then(({ url }) => {
+  console.log(`🚀 GraphQL Server ready at ${url}`);
+});
+```
+
+---
+
+## ⚡ tRPC Implementation
+
+### 1. tRPC Router Setup
+
+```typescript
+// server/trpc.ts
+import { initTRPC, TRPCError } from '@trpc/server';
+import { z } from 'zod';
+import jwt from 'jsonwebtoken';
+
+// Context type
+interface Context {
+  user?: User;
+  req: Request;
+}
+
+// Initialize tRPC
+const t = initTRPC.context<Context>().create({
+  errorFormatter({ shape, error }) {
+    return {
+      ...shape,
+      data: {
+        ...shape.data,
+        zodError: error.cause instanceof z.ZodError ? error.cause.flatten() : null,
+      },
+    };
+  },
+});
+
+// Middleware for authentication
+const isAuthed = t.middleware(({ ctx, next }) => {
+  if (!ctx.user) {
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
+  }
+  return next({
+    ctx: {
+      user: ctx.user,
+    },
+  });
+});
+
+// Middleware for admin check
+const isAdmin = t.middleware(({ ctx, next }) => {
+  if (!ctx.user || !ctx.user.isAdmin) {
+    throw new TRPCError({ code: 'FORBIDDEN' });
+  }
+  return next({
+    ctx: {
+      user: ctx.user,
+    },
+  });
+});
+
+// Export router and procedure helpers
+export const router = t.router;
+export const publicProcedure = t.procedure;
+export const protectedProcedure = t.procedure.use(isAuthed);
+export const adminProcedure = t.procedure.use(isAdmin);
+```
+
+```typescript
+// server/routers/users.ts
+import { z } from 'zod';
+import { router, publicProcedure, protectedProcedure, adminProcedure } from '../trpc';
+import { TRPCError } from '@trpc/server';
+
+// Input schemas
+const createUserSchema = z.object({
+  name: z.string().min(1).max(100),
+  email: z.string().email(),
+  age: z.number().int().min(13).max(120).optional(),
+  profile: z.object({
+    bio: z.string().max(500).optional(),
+    avatar: z.string().url().optional(),
+    website: z.string().url().optional(),
+    location: z.string().max(100).optional(),
+  }).optional(),
+});
+
+const updateUserSchema = createUserSchema.partial();
+
+const getUsersSchema = z.object({
+  page: z.number().int().min(1).default(1),
+  limit: z.number().int().min(1).max(100).default(10),
+  search: z.string().optional(),
+  sortBy: z.enum(['name', 'email', 'createdAt']).default('createdAt'),
+  sortOrder: z.enum(['asc', 'desc']).default('desc'),
+  filter: z.object({
+    ageRange: z.object({
+      min: z.number().int().optional(),
+      max: z.number().int().optional(),
+    }).optional(),
+    hasProfile: z.boolean().optional(),
+  }).optional(),
+});
+
+// User router
+export const usersRouter = router({
+  // Get all users (public with pagination)
+  getAll: publicProcedure
+    .input(getUsersSchema)
+    .query(async ({ input }) => {
+      const { page, limit, search, sortBy, sortOrder, filter } = input;
+      
+      // Build query
+      let query: any = {};
+      
+      if (search) {
+        query.$or = [
+          { name: { $regex: search, $options: 'i' } },
+          { email: { $regex: search, $options: 'i' } }
+        ];
+      }
+      
+      if (filter?.ageRange) {
+        query.age = {};
+        if (filter.ageRange.min) query.age.$gte = filter.ageRange.min;
+        if (filter.ageRange.max) query.age.$lte = filter.ageRange.max;
+      }
+      
+      if (filter?.hasProfile !== undefined) {
+        query.profile = filter.hasProfile ? { $exists: true } : { $exists: false };
+      }
+
+      // Execute query
+      const skip = (page - 1) * limit;
+      const sortObj = { [sortBy]: sortOrder === 'asc' ? 1 : -1 };
+      
+      const [users, total] = await Promise.all([
+        User.find(query)
+          .sort(sortObj)
+          .skip(skip)
+          .limit(limit)
+          .select('-password'),
+        User.countDocuments(query)
+      ]);
+
+      return {
+        users,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+          hasNext: page * limit < total,
+          hasPrev: page > 1
+        }
+      };
+    }),
+
+  // Get user by ID
+  getById: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input }) => {
+      const user = await User.findById(input.id).select('-password');
+      
+      if (!user) {
+        throw new TRPCError
