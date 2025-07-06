@@ -1,0 +1,1001 @@
+---
+title: "Authentication Modern: Auth0 vs Firebase vs Supabase vs Custom JWT - Mana yang Paling Gampang? (Spoiler: Depends on Your Sanity Level)"
+description: "Bingung pilih authentication solution? Gue bahas Auth0, Firebase Auth, Supabase Auth, dan custom JWT dengan pengalaman real. Plus tips security yang wajib lo tau."
+publishedDate: 2025-01-07
+author:
+  name: "Hilal Technologic"
+  url: "https://hilaltechnologic.info/author/admin"
+tags: ["authentication", "auth0", "firebase", "supabase", "jwt", "security", "web development", "oauth", "sso"]
+image: "/images/blog/authentication-modern-2025-cover.webp"
+imageAlt: "Modern Authentication Solutions 2025 Cover"
+featured: true
+draft: false
+readingTime: "18 menit baca"
+---
+
+# 🔐 Authentication Modern: Auth0 vs Firebase vs Supabase vs Custom JWT - Mana yang Paling Gampang?
+
+Lo tau gak sih, authentication itu kayak kunci rumah. Keliatan simple, tapi kalau salah implement, bisa jadi pintu masuk buat hacker. Gue inget banget dulu pas pertama kali bikin sistem login sendiri, gue store password dalam plain text. Yeah, I know. Cringe banget. 😅
+
+Fast forward beberapa tahun, gue udah nyoba berbagai authentication solutions. Dari yang bikin gue begadang seminggu sampe yang bisa setup dalam 30 menit. Dan sekarang gue mau share pengalaman real gue, plus beberapa horror stories yang hopefully bisa jadi pelajaran.
+
+> "Authentication is like underwear. You don't think about it until it's missing or broken." - Anonymous Security Engineer
+
+---
+
+## 🤔 Kenapa Authentication Itu Ribet Banget?
+
+Sebelum kita compare berbagai solutions, gue mau jelasin dulu kenapa authentication itu gak sesimple yang keliatan:
+
+### The Iceberg of Authentication
+
+```javascript
+// Yang user lihat (tip of the iceberg)
+const userExperience = {
+  login: 'Enter email & password',
+  signup: 'Create account',
+  logout: 'Click logout button'
+};
+
+// Yang developer harus handle (the massive iceberg below)
+const developerReality = {
+  passwordHashing: 'bcrypt, scrypt, argon2?',
+  sessionManagement: 'JWT, sessions, cookies?',
+  socialLogin: 'OAuth flows for Google, Facebook, etc.',
+  twoFactorAuth: 'TOTP, SMS, email verification',
+  passwordReset: 'Secure token generation & validation',
+  accountLocking: 'Brute force protection',
+  emailVerification: 'Prevent fake accounts',
+  roleBasedAccess: 'Permissions & authorization',
+  securityHeaders: 'CSRF, XSS protection',
+  compliance: 'GDPR, CCPA, SOC2',
+  monitoring: 'Failed login attempts, suspicious activity',
+  scalability: 'Handle millions of users',
+  multiTenant: 'Separate user bases',
+  sso: 'Single sign-on integration',
+  mfa: 'Multi-factor authentication',
+  deviceManagement: 'Track & manage user devices'
+};
+```
+
+Dan ini baru basic requirements. Belum termasuk edge cases yang bikin pusing.
+
+### Horror Story: Custom Auth Gone Wrong
+
+```javascript
+// Code gue dulu (DON'T DO THIS!)
+const loginUser = async (email, password) => {
+  // 🚨 SECURITY NIGHTMARE ALERT 🚨
+  const user = await db.query(
+    `SELECT * FROM users WHERE email = '${email}' AND password = '${password}'`
+  );
+  
+  if (user) {
+    // Store user ID in localStorage (another mistake)
+    localStorage.setItem('userId', user.id);
+    return { success: true };
+  }
+  
+  return { success: false };
+};
+
+// What could go wrong?
+// 1. SQL Injection vulnerability
+// 2. Plain text passwords
+// 3. No rate limiting
+// 4. Client-side authentication state
+// 5. No session management
+// 6. No CSRF protection
+// 7. No password complexity requirements
+// 8. No account lockout
+// 9. No audit logging
+// 10. No secure headers
+
+// Basically, a hacker's paradise 🏴‍☠️
+```
+
+Setelah incident ini (dan beberapa sleepless nights), gue decide untuk pake authentication services yang udah proven.
+
+---
+
+## 🛡️ Auth0: The Enterprise Champion
+
+Auth0 itu kayak bodyguard profesional. Mahal, tapi lo bisa tidur nyenyak karena tau security lo di-handle sama expert.
+
+### Kenapa Gue Respect Auth0
+
+```javascript
+// Auth0 setup yang surprisingly simple
+import { Auth0Provider } from '@auth0/auth0-react';
+
+// Wrap your app
+function App() {
+  return (
+    <Auth0Provider
+      domain="your-domain.auth0.com"
+      clientId="your-client-id"
+      redirectUri={window.location.origin}
+      audience="your-api-identifier"
+    >
+      <MyApp />
+    </Auth0Provider>
+  );
+}
+
+// Login component
+import { useAuth0 } from '@auth0/auth0-react';
+
+function LoginButton() {
+  const { loginWithRedirect, logout, user, isAuthenticated, isLoading } = useAuth0();
+
+  if (isLoading) return <div>Loading...</div>;
+
+  if (isAuthenticated) {
+    return (
+      <div>
+        <img src={user.picture} alt={user.name} />
+        <h2>{user.name}</h2>
+        <p>{user.email}</p>
+        <button onClick={() => logout({ returnTo: window.location.origin })}>
+          Log Out
+        </button>
+      </div>
+    );
+  }
+
+  return <button onClick={() => loginWithRedirect()}>Log In</button>;
+}
+```
+
+### Auth0 Strengths
+
+#### 1. Enterprise-Grade Security
+
+```javascript
+// Features yang lo dapet out of the box
+const auth0Security = {
+  encryption: 'AES-256 encryption at rest',
+  transmission: 'TLS 1.2+ for data in transit',
+  compliance: 'SOC2, GDPR, HIPAA, PCI DSS',
+  monitoring: '24/7 security monitoring',
+  updates: 'Automatic security patches',
+  ddos: 'DDoS protection',
+  anomaly: 'Anomaly detection',
+  mfa: 'Built-in MFA support',
+  breachDetection: 'Credential breach detection',
+  botDetection: 'Advanced bot protection'
+};
+```
+
+#### 2. Extensive Social Providers
+
+```javascript
+// Social login options (30+ providers)
+const socialProviders = {
+  google: 'Google OAuth',
+  facebook: 'Facebook Login',
+  twitter: 'Twitter OAuth',
+  github: 'GitHub OAuth',
+  linkedin: 'LinkedIn OAuth',
+  microsoft: 'Microsoft Azure AD',
+  apple: 'Sign in with Apple',
+  amazon: 'Login with Amazon',
+  slack: 'Slack OAuth',
+  discord: 'Discord OAuth',
+  // ... and many more
+  
+  // Enterprise providers
+  saml: 'SAML 2.0',
+  adfs: 'Active Directory Federation Services',
+  okta: 'Okta integration',
+  pingIdentity: 'Ping Identity',
+  oneLogin: 'OneLogin'
+};
+
+// Setup social login
+const setupSocialLogin = {
+  // Google setup
+  google: {
+    clientId: 'your-google-client-id',
+    clientSecret: 'your-google-client-secret',
+    scopes: ['openid', 'profile', 'email']
+  },
+  
+  // GitHub setup  
+  github: {
+    clientId: 'your-github-client-id',
+    clientSecret: 'your-github-client-secret',
+    scopes: ['user:email']
+  }
+};
+```
+
+#### 3. Advanced Rules & Actions
+
+```javascript
+// Auth0 Rules untuk custom logic
+function addUserRoles(user, context, callback) {
+  // Add roles based on email domain
+  if (user.email.endsWith('@company.com')) {
+    context.idToken['https://myapp.com/roles'] = ['admin', 'employee'];
+    context.accessToken['https://myapp.com/roles'] = ['admin', 'employee'];
+  } else {
+    context.idToken['https://myapp.com/roles'] = ['user'];
+    context.accessToken['https://myapp.com/roles'] = ['user'];
+  }
+  
+  callback(null, user, context);
+}
+
+// Auth0 Actions (newer approach)
+exports.onExecutePostLogin = async (event, api) => {
+  // Check if user is from allowed domain
+  const allowedDomains = ['company.com', 'partner.com'];
+  const userDomain = event.user.email.split('@')[1];
+  
+  if (!allowedDomains.includes(userDomain)) {
+    api.access.deny('Access denied: Invalid email domain');
+    return;
+  }
+  
+  // Add custom claims
+  api.idToken.setCustomClaim('https://myapp.com/department', 
+    event.user.user_metadata?.department || 'general');
+  
+  // Track login
+  await fetch('https://api.myapp.com/analytics/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      userId: event.user.user_id,
+      loginTime: new Date().toISOString(),
+      ip: event.request.ip,
+      userAgent: event.request.user_agent
+    })
+  });
+};
+```
+
+### Real Project: Enterprise SaaS Platform
+
+```javascript
+// Enterprise SaaS yang gue handle pake Auth0
+const enterpriseAuthSetup = {
+  // Multi-tenant setup
+  tenants: {
+    // Each client gets their own Auth0 tenant
+    clientA: 'client-a.auth0.com',
+    clientB: 'client-b.auth0.com',
+    clientC: 'client-c.auth0.com'
+  },
+  
+  // SSO integration
+  sso: {
+    saml: 'SAML 2.0 for enterprise clients',
+    oidc: 'OpenID Connect for modern apps',
+    ldap: 'LDAP/Active Directory integration'
+  },
+  
+  // Role-based access control
+  rbac: {
+    roles: ['super_admin', 'admin', 'manager', 'user', 'viewer'],
+    permissions: [
+      'read:users', 'write:users', 'delete:users',
+      'read:reports', 'write:reports', 'export:reports',
+      'manage:billing', 'view:analytics'
+    ]
+  }
+};
+
+// Backend API protection
+const express = require('express');
+const { auth } = require('express-oauth-server');
+
+const app = express();
+
+// Middleware untuk check JWT
+const checkJwt = auth({
+  audience: 'https://api.myapp.com',
+  issuerBaseURL: 'https://your-domain.auth0.com/',
+  tokenSigningAlg: 'RS256'
+});
+
+// Protected route dengan role check
+app.get('/api/admin/users', checkJwt, checkRole(['admin', 'super_admin']), async (req, res) => {
+  const users = await getUsersFromDatabase();
+  res.json(users);
+});
+
+function checkRole(allowedRoles) {
+  return (req, res, next) => {
+    const userRoles = req.auth.payload['https://myapp.com/roles'] || [];
+    const hasPermission = allowedRoles.some(role => userRoles.includes(role));
+    
+    if (!hasPermission) {
+      return res.status(403).json({ error: 'Insufficient permissions' });
+    }
+    
+    next();
+  };
+}
+```
+
+### Auth0 Weaknesses
+
+#### 1. Pricing yang Bisa Bikin Kantong Jebol
+
+```javascript
+// Auth0 pricing (2025)
+const auth0Pricing = {
+  free: {
+    users: '7,000 active users',
+    socialConnections: '2 social connections',
+    features: 'Basic features only'
+  },
+  
+  essential: {
+    price: '$23/month + $0.0175 per active user',
+    users: 'Unlimited',
+    socialConnections: 'Unlimited',
+    features: 'MFA, custom domains'
+  },
+  
+  professional: {
+    price: '$240/month + $0.0280 per active user',
+    features: 'Advanced features, rules, hooks'
+  },
+  
+  enterprise: {
+    price: 'Custom pricing (usually $$$$$)',
+    features: 'Everything + dedicated support'
+  }
+};
+
+// Real cost calculation
+const calculateAuth0Cost = (activeUsers) => {
+  if (activeUsers <= 7000) return 0;
+  
+  // Professional tier for 100k users
+  const monthlyCost = 240 + (100000 * 0.028);
+  return monthlyCost; // $3,040/month 😱
+};
+```
+
+#### 2. Vendor Lock-in yang Kuat
+
+```javascript
+// Auth0-specific features yang susah di-migrate
+const vendorLockIn = {
+  rules: 'Custom JavaScript rules',
+  actions: 'Auth0-specific action system',
+  hooks: 'Lifecycle hooks',
+  customDomains: 'Auth0 domain setup',
+  dashboard: 'Auth0 management dashboard',
+  apis: 'Auth0 Management API'
+};
+
+// Migration keluar dari Auth0 = major refactoring
+```
+
+#### 3. Learning Curve untuk Advanced Features
+
+```javascript
+// Auth0 concepts yang butuh waktu buat dipahami
+const complexConcepts = {
+  tenants: 'Multi-tenant architecture',
+  applications: 'Different app types (SPA, Regular Web App, M2M)',
+  apis: 'API identifiers and scopes',
+  rules: 'JavaScript functions for custom logic',
+  hooks: 'Lifecycle event handlers',
+  connections: 'Identity providers configuration',
+  organizations: 'B2B multi-tenant features'
+};
+```
+
+---
+
+## 🔥 Firebase Auth: The Google Powerhouse
+
+Firebase Auth itu kayak Swiss Army knife. Versatile, reliable, dan backed by Google infrastructure.
+
+### Kenapa Firebase Auth Populer Banget
+
+```javascript
+// Firebase Auth setup yang super simple
+import { initializeApp } from 'firebase/app';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+
+const firebaseConfig = {
+  // Your config
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// Email/password authentication
+const signUp = async (email, password) => {
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+    console.log('User created:', user.uid);
+  } catch (error) {
+    console.error('Error:', error.message);
+  }
+};
+
+const signIn = async (email, password) => {
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+    console.log('User signed in:', user.uid);
+  } catch (error) {
+    console.error('Error:', error.message);
+  }
+};
+
+// Social authentication
+import { signInWithPopup, GoogleAuthProvider, FacebookAuthProvider } from 'firebase/auth';
+
+const signInWithGoogle = async () => {
+  const provider = new GoogleAuthProvider();
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+    console.log('Google sign-in successful:', user.displayName);
+  } catch (error) {
+    console.error('Google sign-in error:', error.message);
+  }
+};
+```
+
+### Firebase Auth Strengths
+
+#### 1. Integration dengan Firebase Ecosystem
+
+```javascript
+// Firebase Auth + Firestore + Storage + Functions
+import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { getFunctions, httpsCallable } from 'firebase/functions';
+
+const db = getFirestore();
+const storage = getStorage();
+const functions = getFunctions();
+
+// User profile management
+const createUserProfile = async (user, additionalData) => {
+  const userRef = doc(db, 'users', user.uid);
+  
+  try {
+    await setDoc(userRef, {
+      displayName: user.displayName,
+      email: user.email,
+      photoURL: user.photoURL,
+      createdAt: new Date(),
+      ...additionalData
+    });
+  } catch (error) {
+    console.error('Error creating user profile:', error);
+  }
+};
+
+// File upload dengan authentication
+const uploadUserAvatar = async (user, file) => {
+  const avatarRef = ref(storage, `avatars/${user.uid}`);
+  
+  try {
+    const snapshot = await uploadBytes(avatarRef, file);
+    const downloadURL = await getDownloadURL(snapshot.ref);
+    
+    // Update user profile
+    await updateProfile(user, { photoURL: downloadURL });
+    
+    return downloadURL;
+  } catch (error) {
+    console.error('Error uploading avatar:', error);
+  }
+};
+
+// Cloud Functions dengan auth context
+const sendWelcomeEmail = httpsCallable(functions, 'sendWelcomeEmail');
+
+const onUserSignUp = async (user) => {
+  try {
+    await sendWelcomeEmail({ 
+      email: user.email, 
+      displayName: user.displayName 
+    });
+  } catch (error) {
+    console.error('Error sending welcome email:', error);
+  }
+};
+```
+
+#### 2. Real-time Authentication State
+
+```javascript
+// React hook untuk Firebase Auth
+import { useState, useEffect } from 'react';
+import { onAuthStateChanged } from 'firebase/auth';
+
+const useAuth = () => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+      setLoading(false);
+    });
+
+    return unsubscribe; // Cleanup subscription
+  }, []);
+
+  return { user, loading };
+};
+
+// Usage in component
+function App() {
+  const { user, loading } = useAuth();
+
+  if (loading) return <div>Loading...</div>;
+
+  return (
+    <div>
+      {user ? (
+        <Dashboard user={user} />
+      ) : (
+        <LoginForm />
+      )}
+    </div>
+  );
+}
+```
+
+#### 3. Security Rules Integration
+
+```javascript
+// Firestore security rules dengan Firebase Auth
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users can only access their own data
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Posts are readable by anyone, writable by authenticated users
+    match /posts/{postId} {
+      allow read: if true;
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null && 
+        request.auth.uid == resource.data.authorId;
+    }
+    
+    // Admin-only collections
+    match /admin/{document=**} {
+      allow read, write: if request.auth != null && 
+        request.auth.token.admin == true;
+    }
+  }
+}
+
+// Custom claims untuk role-based access
+const admin = require('firebase-admin');
+
+const setAdminClaim = async (uid) => {
+  try {
+    await admin.auth().setCustomUserClaims(uid, { admin: true });
+    console.log(`Admin claim set for user ${uid}`);
+  } catch (error) {
+    console.error('Error setting admin claim:', error);
+  }
+};
+```
+
+### Real Project: Social Media App
+
+```javascript
+// Social media app dengan Firebase Auth
+const socialMediaAuth = {
+  // Multi-provider authentication
+  providers: {
+    email: 'Email/password',
+    google: 'Google OAuth',
+    facebook: 'Facebook Login',
+    twitter: 'Twitter OAuth',
+    phone: 'Phone number verification'
+  },
+  
+  // User onboarding flow
+  onboarding: async (user, provider) => {
+    // Create user profile
+    await createUserProfile(user, {
+      provider: provider,
+      isNewUser: true,
+      onboardingCompleted: false
+    });
+    
+    // Send welcome email
+    await sendWelcomeEmail(user);
+    
+    // Track analytics
+    analytics.track('User Signed Up', {
+      userId: user.uid,
+      provider: provider,
+      timestamp: new Date()
+    });
+  },
+  
+  // Profile completion
+  completeProfile: async (user, profileData) => {
+    const userRef = doc(db, 'users', user.uid);
+    
+    await setDoc(userRef, {
+      ...profileData,
+      onboardingCompleted: true,
+      profileCompletedAt: new Date()
+    }, { merge: true });
+  }
+};
+
+// Phone authentication
+import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
+
+const setupPhoneAuth = () => {
+  window.recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {
+    'size': 'invisible',
+    'callback': (response) => {
+      // reCAPTCHA solved
+    }
+  }, auth);
+};
+
+const sendVerificationCode = async (phoneNumber) => {
+  const appVerifier = window.recaptchaVerifier;
+  
+  try {
+    const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
+    window.confirmationResult = confirmationResult;
+    return true;
+  } catch (error) {
+    console.error('Error sending verification code:', error);
+    return false;
+  }
+};
+
+const verifyCode = async (code) => {
+  try {
+    const result = await window.confirmationResult.confirm(code);
+    const user = result.user;
+    console.log('Phone verification successful:', user.uid);
+    return user;
+  } catch (error) {
+    console.error('Error verifying code:', error);
+    return null;
+  }
+};
+```
+
+### Firebase Auth Weaknesses
+
+#### 1. Limited Customization
+
+```javascript
+// Things you can't customize in Firebase Auth
+const limitations = {
+  loginUI: 'Limited customization of FirebaseUI',
+  emailTemplates: 'Basic email template customization',
+  userManagement: 'No advanced user management dashboard',
+  analytics: 'Basic analytics only',
+  compliance: 'Limited compliance features',
+  multiTenant: 'No built-in multi-tenant support'
+};
+```
+
+#### 2. Vendor Lock-in dengan Google
+
+```javascript
+// Firebase-specific features
+const firebaseSpecific = {
+  auth: 'Firebase Auth SDK',
+  database: 'Firestore integration',
+  storage: 'Firebase Storage integration',
+  functions: 'Cloud Functions integration',
+  hosting: 'Firebase Hosting',
+  analytics: 'Google Analytics integration'
+};
+
+// Migration keluar dari Firebase ecosystem bisa complex
+```
+
+#### 3. Pricing yang Bisa Surprise
+
+```javascript
+// Firebase pricing (pay-as-you-go)
+const firebasePricing = {
+  auth: {
+    phoneAuth: '$0.006 per verification',
+    multiFactorAuth: '$0.055 per verification',
+    emailPasswordAuth: 'Free'
+  },
+  
+  firestore: {
+    reads: '$0.36 per 100k reads',
+    writes: '$1.08 per 100k writes',
+    deletes: '$0.108 per 100k deletes'
+  },
+  
+  storage: {
+    storage: '$0.026 per GB',
+    downloads: '$0.12 per GB'
+  }
+};
+
+// Kalau app lo viral, bill bisa shock
+```
+
+---
+
+## 🚀 Supabase Auth: The Open Source Alternative
+
+Supabase Auth itu kayak Firebase, tapi open source dan pake PostgreSQL. Best of both worlds.
+
+### Kenapa Gue Suka Supabase Auth
+
+```javascript
+// Supabase Auth setup
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = 'https://your-project.supabase.co';
+const supabaseKey = 'your-anon-key';
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+// Email/password authentication
+const signUp = async (email, password) => {
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+  });
+  
+  if (error) {
+    console.error('Error:', error.message);
+  } else {
+    console.log('User created:', data.user);
+  }
+};
+
+const signIn = async (email, password) => {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+  
+  if (error) {
+    console.error('Error:', error.message);
+  } else {
+    console.log('User signed in:', data.user);
+  }
+};
+
+// Social authentication
+const signInWithGoogle = async () => {
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: 'http://localhost:3000/callback'
+    }
+  });
+};
+
+// Magic link authentication
+const signInWithMagicLink = async (email) => {
+  const { data, error } = await supabase.auth.signInWithOtp({
+    email,
+    options: {
+      emailRedirectTo: 'http://localhost:3000/callback'
+    }
+  });
+};
+```
+
+### Supabase Auth Strengths
+
+#### 1. Row Level Security (RLS) Integration
+
+```sql
+-- Supabase RLS policies
+-- Users can only see their own profile
+CREATE POLICY "Users can view own profile" ON profiles
+  FOR SELECT USING (auth.uid() = user_id);
+
+-- Users can update their own profile
+CREATE POLICY "Users can update own profile" ON profiles
+  FOR UPDATE USING (auth.uid() = user_id);
+
+-- Posts are visible to everyone, but only authors can edit
+CREATE POLICY "Anyone can view posts" ON posts
+  FOR SELECT USING (true);
+
+CREATE POLICY "Authors can edit own posts" ON posts
+  FOR UPDATE USING (auth.uid() = author_id);
+
+-- Role-based access
+CREATE POLICY "Admins can manage users" ON profiles
+  FOR ALL USING (
+    auth.jwt() ->> 'role' = 'admin'
+  );
+```
+
+```javascript
+// JavaScript integration dengan RLS
+const getUserProfile = async () => {
+  // RLS automatically filters based on auth.uid()
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .single();
+    
+  return data;
+};
+
+const updateProfile = async (updates) => {
+  // RLS ensures user can only update their own profile
+  const { data, error } = await supabase
+    .from('profiles')
+    .update(updates)
+    .eq('user_id', user.id);
+    
+  return data;
+};
+```
+
+#### 2. Built-in User Management
+
+```javascript
+// Supabase Auth admin functions
+const adminAuthClient = createClient(supabaseUrl, serviceRoleKey);
+
+// List all users (admin only)
+const getAllUsers = async () => {
+  const { data, error } = await adminAuthClient.auth.admin.listUsers();
+  return data.users;
+};
+
+// Create user (admin only)
+const createUser = async (email, password, metadata) => {
+  const { data, error } = await adminAuthClient.auth.admin.createUser({
+    email,
+    password,
+    user_metadata: metadata,
+    email_confirm: true
+  });
+  
+  return data.user;
+};
+
+// Update user (admin only)
+const updateUser = async (userId, updates) => {
+  const { data, error } = await adminAuthClient.auth.admin.updateUserById(
+    userId,
+    updates
+  );
+  
+  return data.user;
+};
+
+// Delete user (admin only)
+const deleteUser = async (userId) => {
+  const { data, error } = await adminAuthClient.auth.admin.deleteUser(userId);
+  return data;
+};
+```
+
+#### 3. Real-time Authentication Events
+
+```javascript
+// Listen to auth state changes
+supabase.auth.onAuthStateChange((event, session) => {
+  console.log('Auth event:', event);
+  
+  switch (event) {
+    case 'SIGNED_IN':
+      console.log('User signed in:', session.user);
+      // Redirect to dashboard
+      break;
+      
+    case 'SIGNED_OUT':
+      console.log('User signed out');
+      // Redirect to login
+      break;
+      
+    case 'TOKEN_REFRESHED':
+      console.log('Token refreshed');
+      break;
+      
+    case 'USER_UPDATED':
+      console.log('User updated:', session.user);
+      break;
+      
+    case 'PASSWORD_RECOVERY':
+      console.log('Password recovery initiated');
+      break;
+  }
+});
+
+// React hook untuk Supabase Auth
+import { useState, useEffect } from 'react';
+
+const useSupabaseAuth = () => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setUser(session?.user ?? null);
+        setLoading(false);
+      }
+    );
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  return { user, loading };
+};
+```
+
+### Real Project: SaaS Dashboard
+
+```javascript
+// SaaS dashboard dengan Supabase Auth
+const saasAuthFlow = {
+  // Multi-step onboarding
+  onboarding: {
+    step1: 'Email verification',
+    step2: 'Profile completion', 
+    step3: 'Team setup',
+    step4: 'Billing setup'
+  },
+  
+  // Team management
+  teamManagement: async (teamId, userId, role) => {
+    // Add user to team with specific role
+    const { data, error } = await supabase
+      .from('team_members')
+      .insert({
+        team_id: teamId,
+        user_id: userId,
+        role: role,
+        invited_by: currentUser.id,
+        invited_at: new Date()
+      });
+      
+    // Send invitation email
+    await supabase.functions.invoke('send-team-invitation', {
+      body: { teamId, userId, role }
+    });
+  },
+  
+  // Role-based dashboard
+  dashboard: {
+    admin: ['users', 'billing', 'analytics', 'settings'],
+    manager: ['users', 'analytics', 'settings'],
+    member: ['analytics'],
+    viewer: ['analytics']
+  }
+};
+
+// Custom email templates
+const customEmailTemplates = {
+  // Welcome email
+  welcome: `
+    <h1>Welcome to Our Platform!</h1>
+    <p>Thanks for signing up. Click the

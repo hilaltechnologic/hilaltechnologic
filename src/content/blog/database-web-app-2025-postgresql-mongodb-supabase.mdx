@@ -1,0 +1,1015 @@
+---
+title: "Database untuk Web App 2025: PostgreSQL vs MongoDB vs Supabase - Pilih Sesuai Kebutuhan (Bukan Ikut Hype)"
+description: "Bingung pilih database buat project web app? Gue bahas PostgreSQL, MongoDB, dan Supabase dengan pengalaman real. Spoiler: gak ada yang perfect buat semua case."
+publishedDate: 2025-01-07
+author:
+  name: "Hilal Technologic"
+  url: "https://hilaltechnologic.info/author/admin"
+tags: ["database", "postgresql", "mongodb", "supabase", "web development", "backend", "sql", "nosql", "baas"]
+image: "/images/blog/database-web-app-2025-cover.webp"
+imageAlt: "Database Comparison 2025 Cover"
+featured: true
+draft: false
+readingTime: "19 menit baca"
+---
+
+# 🗄️ Database untuk Web App 2025: PostgreSQL vs MongoDB vs Supabase - Pilih Sesuai Kebutuhan
+
+Lo tau gak sih, salah satu keputusan paling penting (dan paling bikin pusing) pas bikin web app itu milih database. Gue inget banget dulu pas pertama kali bikin project serius, gue sampe begadang 3 hari cuma buat research database mana yang paling cocok.
+
+Akhirnya gue pilih MongoDB karena "katanya lebih modern dan flexible." Fast forward 6 bulan kemudian, gue nyesel banget. Data gue jadi berantakan, query-nya ribet, dan gue harus refactor hampir semua backend code. 😭
+
+Sekarang, setelah pake berbagai database di puluhan project, gue mau share pengalaman real gue. Spoiler alert: **gak ada database yang perfect buat semua use case**.
+
+> "Choose your database like you choose your life partner - based on compatibility, not just looks." - Wise Developer (probably)
+
+---
+
+## 🤔 Kenapa Pilihan Database Itu Penting Banget?
+
+Sebelum kita dive ke comparison, gue mau jelasin dulu kenapa keputusan ini crucial banget:
+
+### Database = Foundation of Your App
+
+```javascript
+// Analogi: Database itu kayak pondasi rumah
+const houseAnalogy = {
+  foundation: 'Database',
+  walls: 'Backend API',
+  roof: 'Frontend',
+  interior: 'User Experience'
+};
+
+// Kalau pondasi salah, everything else will suffer
+if (foundation.isWrong()) {
+  walls.willCrack();
+  roof.willLeak();
+  interior.willBeUncomfortable();
+  renovation.willBeCostly();
+}
+```
+
+### Real Impact dari Salah Pilih Database
+
+Gue pernah ngalamin ini di project e-commerce:
+
+```bash
+# Project stats after 1 year with wrong database choice
+Technical debt: 40% of codebase
+Performance issues: 15+ slow queries
+Scaling problems: Can't handle 1000+ concurrent users
+Migration cost: 3 months development time
+Team frustration: 📈📈📈
+```
+
+Makanya, better spend extra time di awal buat research daripada nyesel kemudian.
+
+---
+
+## 🐘 PostgreSQL: The Reliable Workhorse
+
+PostgreSQL itu kayak Toyota Camry-nya database. Gak flashy, tapi reliable banget dan bisa handle hampir semua situasi.
+
+### Kenapa Gue Jatuh Cinta sama PostgreSQL
+
+```sql
+-- PostgreSQL bisa handle complex queries dengan elegant
+WITH monthly_sales AS (
+  SELECT 
+    DATE_TRUNC('month', created_at) as month,
+    SUM(total_amount) as total_sales,
+    COUNT(*) as order_count
+  FROM orders 
+  WHERE created_at >= NOW() - INTERVAL '12 months'
+  GROUP BY DATE_TRUNC('month', created_at)
+),
+growth_rates AS (
+  SELECT 
+    month,
+    total_sales,
+    LAG(total_sales) OVER (ORDER BY month) as prev_month_sales,
+    (total_sales - LAG(total_sales) OVER (ORDER BY month)) / 
+    LAG(total_sales) OVER (ORDER BY month) * 100 as growth_rate
+  FROM monthly_sales
+)
+SELECT * FROM growth_rates ORDER BY month;
+```
+
+Try doing that in MongoDB. I'll wait. 😏
+
+### PostgreSQL Strengths
+
+#### 1. ACID Compliance yang Rock Solid
+
+```javascript
+// Real example: Transfer uang antar akun
+async function transferMoney(fromAccountId, toAccountId, amount) {
+  const client = await pool.connect();
+  
+  try {
+    await client.query('BEGIN');
+    
+    // Deduct from sender
+    const deductResult = await client.query(
+      'UPDATE accounts SET balance = balance - $1 WHERE id = $2 AND balance >= $1 RETURNING balance',
+      [amount, fromAccountId]
+    );
+    
+    if (deductResult.rows.length === 0) {
+      throw new Error('Insufficient balance');
+    }
+    
+    // Add to receiver
+    await client.query(
+      'UPDATE accounts SET balance = balance + $1 WHERE id = $2',
+      [amount, toAccountId]
+    );
+    
+    await client.query('COMMIT');
+    return { success: true };
+    
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+```
+
+Dengan PostgreSQL, lo gak perlu worry tentang data inconsistency. Either semua berhasil, atau semua di-rollback. Simple as that.
+
+#### 2. JSON Support yang Powerful
+
+```sql
+-- PostgreSQL bisa handle JSON kayak NoSQL database
+CREATE TABLE products (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255),
+  metadata JSONB,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Insert data dengan JSON
+INSERT INTO products (name, metadata) VALUES 
+('iPhone 15', '{"color": "blue", "storage": "256GB", "features": ["5G", "Face ID"]}'),
+('MacBook Pro', '{"screen": "14-inch", "chip": "M3", "ports": ["USB-C", "HDMI"]}');
+
+-- Query JSON data dengan index
+CREATE INDEX idx_products_metadata ON products USING GIN (metadata);
+
+-- Find products dengan specific features
+SELECT name, metadata->'color' as color 
+FROM products 
+WHERE metadata @> '{"features": ["5G"]}';
+
+-- Update JSON field
+UPDATE products 
+SET metadata = metadata || '{"warranty": "2 years"}'
+WHERE name = 'iPhone 15';
+```
+
+Best of both worlds: relational structure + NoSQL flexibility.
+
+#### 3. Extensions yang Crazy Powerful
+
+```sql
+-- PostGIS untuk geolocation
+CREATE EXTENSION postgis;
+
+-- Find restaurants within 5km radius
+SELECT name, ST_Distance(location, ST_Point(-122.4194, 37.7749)) as distance
+FROM restaurants 
+WHERE ST_DWithin(location, ST_Point(-122.4194, 37.7749), 5000)
+ORDER BY distance;
+
+-- Full-text search
+CREATE EXTENSION pg_trgm;
+
+-- Search products dengan typo tolerance
+SELECT name, similarity(name, 'iphone') as sim
+FROM products 
+WHERE name % 'iphone'
+ORDER BY sim DESC;
+
+-- UUID generation
+CREATE EXTENSION "uuid-ossp";
+
+CREATE TABLE users (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  email VARCHAR(255) UNIQUE NOT NULL
+);
+```
+
+### Real Project: E-commerce Platform
+
+```javascript
+// Schema design yang gue pake di project e-commerce
+const schema = `
+  -- Users table
+  CREATE TABLE users (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    profile JSONB,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+  );
+
+  -- Products table
+  CREATE TABLE products (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    price DECIMAL(10,2) NOT NULL,
+    inventory_count INTEGER DEFAULT 0,
+    metadata JSONB, -- For flexible attributes
+    created_at TIMESTAMP DEFAULT NOW()
+  );
+
+  -- Orders table
+  CREATE TABLE orders (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID REFERENCES users(id),
+    status VARCHAR(50) DEFAULT 'pending',
+    total_amount DECIMAL(10,2) NOT NULL,
+    shipping_address JSONB,
+    created_at TIMESTAMP DEFAULT NOW()
+  );
+
+  -- Order items (many-to-many relationship)
+  CREATE TABLE order_items (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    order_id UUID REFERENCES orders(id) ON DELETE CASCADE,
+    product_id UUID REFERENCES products(id),
+    quantity INTEGER NOT NULL,
+    unit_price DECIMAL(10,2) NOT NULL
+  );
+
+  -- Indexes for performance
+  CREATE INDEX idx_orders_user_id ON orders(user_id);
+  CREATE INDEX idx_orders_status ON orders(status);
+  CREATE INDEX idx_products_metadata ON products USING GIN (metadata);
+`;
+```
+
+### PostgreSQL Weaknesses
+
+Gue gak mau jadi fanboy. PostgreSQL juga ada kelemahannya:
+
+#### 1. Learning Curve yang Steep
+
+```sql
+-- SQL yang complex bisa bikin pusing
+WITH RECURSIVE category_tree AS (
+  SELECT id, name, parent_id, 0 as level
+  FROM categories 
+  WHERE parent_id IS NULL
+  
+  UNION ALL
+  
+  SELECT c.id, c.name, c.parent_id, ct.level + 1
+  FROM categories c
+  JOIN category_tree ct ON c.parent_id = ct.id
+)
+SELECT * FROM category_tree ORDER BY level, name;
+```
+
+Buat developer yang baru kenal SQL, ini bisa overwhelming.
+
+#### 2. Horizontal Scaling yang Tricky
+
+```javascript
+// PostgreSQL scaling challenges
+const scalingIssues = {
+  readReplicas: 'Doable, but requires careful setup',
+  sharding: 'Complex, need external tools like Citus',
+  autoScaling: 'Not as straightforward as cloud NoSQL',
+  multiRegion: 'Possible but requires expertise'
+};
+```
+
+#### 3. Schema Migrations yang Risky
+
+```sql
+-- Migration yang bisa bikin downtime
+ALTER TABLE users ADD COLUMN phone VARCHAR(20);
+-- On large table, this can take hours and lock the table
+
+-- Better approach (but more complex)
+-- 1. Add column as nullable
+-- 2. Backfill data in batches
+-- 3. Add NOT NULL constraint
+-- 4. Update application code
+```
+
+---
+
+## 🍃 MongoDB: The Flexible Rebel
+
+MongoDB itu kayak motor sport. Kenceng, flexible, tapi butuh skill buat handle-nya dengan benar.
+
+### Kapan Gue Suka MongoDB
+
+```javascript
+// MongoDB shine di use cases kayak gini
+const blogPost = {
+  _id: ObjectId("..."),
+  title: "My Blog Post",
+  content: "Long content here...",
+  author: {
+    name: "John Doe",
+    email: "john@example.com",
+    bio: "Developer and writer"
+  },
+  tags: ["javascript", "mongodb", "tutorial"],
+  comments: [
+    {
+      _id: ObjectId("..."),
+      author: "Jane Smith",
+      content: "Great post!",
+      createdAt: new Date(),
+      replies: [
+        {
+          author: "John Doe", 
+          content: "Thanks!",
+          createdAt: new Date()
+        }
+      ]
+    }
+  ],
+  metadata: {
+    views: 1250,
+    likes: 89,
+    shares: 23,
+    readingTime: "5 minutes"
+  },
+  createdAt: new Date(),
+  updatedAt: new Date()
+};
+
+// Insert langsung, gak perlu mikirin schema
+await db.collection('posts').insertOne(blogPost);
+
+// Query yang intuitive
+const popularPosts = await db.collection('posts')
+  .find({ 'metadata.views': { $gt: 1000 } })
+  .sort({ 'metadata.views': -1 })
+  .limit(10)
+  .toArray();
+```
+
+### MongoDB Strengths
+
+#### 1. Schema Flexibility yang Extreme
+
+```javascript
+// Bisa store different document structures dalam satu collection
+const users = [
+  {
+    _id: ObjectId("..."),
+    type: "individual",
+    name: "John Doe",
+    email: "john@example.com",
+    preferences: {
+      theme: "dark",
+      notifications: true
+    }
+  },
+  {
+    _id: ObjectId("..."),
+    type: "company", 
+    companyName: "Tech Corp",
+    contactEmail: "contact@techcorp.com",
+    employees: [
+      { name: "Alice", role: "CEO" },
+      { name: "Bob", role: "CTO" }
+    ],
+    subscription: {
+      plan: "enterprise",
+      features: ["analytics", "api_access", "priority_support"]
+    }
+  }
+];
+
+// MongoDB gak complain, semua bisa disimpan di collection yang sama
+await db.collection('users').insertMany(users);
+```
+
+#### 2. Horizontal Scaling yang Built-in
+
+```javascript
+// MongoDB sharding setup (simplified)
+// 1. Setup config servers
+mongod --configsvr --replSet configReplSet --port 27019
+
+// 2. Setup shard servers  
+mongod --shardsvr --replSet shard1 --port 27018
+mongod --shardsvr --replSet shard2 --port 27020
+
+// 3. Setup mongos router
+mongos --configdb configReplSet/localhost:27019 --port 27017
+
+// 4. Add shards
+sh.addShard("shard1/localhost:27018")
+sh.addShard("shard2/localhost:27020")
+
+// 5. Enable sharding on database
+sh.enableSharding("myapp")
+
+// 6. Shard collection
+sh.shardCollection("myapp.users", { "userId": 1 })
+```
+
+#### 3. Aggregation Pipeline yang Powerful
+
+```javascript
+// Complex analytics query dengan aggregation pipeline
+const salesAnalytics = await db.collection('orders').aggregate([
+  // Match orders from last 6 months
+  {
+    $match: {
+      createdAt: { $gte: new Date(Date.now() - 6 * 30 * 24 * 60 * 60 * 1000) }
+    }
+  },
+  
+  // Group by month and product category
+  {
+    $group: {
+      _id: {
+        month: { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
+        category: "$product.category"
+      },
+      totalSales: { $sum: "$totalAmount" },
+      orderCount: { $sum: 1 },
+      avgOrderValue: { $avg: "$totalAmount" }
+    }
+  },
+  
+  // Sort by month and category
+  {
+    $sort: { "_id.month": 1, "_id.category": 1 }
+  },
+  
+  // Group by month to get category breakdown
+  {
+    $group: {
+      _id: "$_id.month",
+      categories: {
+        $push: {
+          category: "$_id.category",
+          totalSales: "$totalSales",
+          orderCount: "$orderCount",
+          avgOrderValue: "$avgOrderValue"
+        }
+      },
+      monthlyTotal: { $sum: "$totalSales" }
+    }
+  }
+]).toArray();
+```
+
+### Real Project: Content Management System
+
+```javascript
+// CMS yang gue bikin pake MongoDB
+const contentSchema = {
+  // Pages collection
+  pages: {
+    _id: ObjectId("..."),
+    slug: "about-us",
+    title: "About Us",
+    content: [
+      {
+        type: "hero",
+        data: {
+          title: "Welcome to Our Company",
+          subtitle: "We build amazing things",
+          backgroundImage: "/images/hero.jpg"
+        }
+      },
+      {
+        type: "text",
+        data: {
+          content: "<p>Our story begins...</p>"
+        }
+      },
+      {
+        type: "gallery",
+        data: {
+          images: [
+            { url: "/images/1.jpg", caption: "Our office" },
+            { url: "/images/2.jpg", caption: "Our team" }
+          ]
+        }
+      }
+    ],
+    seo: {
+      metaTitle: "About Us - Company Name",
+      metaDescription: "Learn about our company...",
+      keywords: ["company", "about", "team"]
+    },
+    status: "published",
+    publishedAt: new Date(),
+    createdBy: ObjectId("..."),
+    versions: [
+      {
+        versionNumber: 1,
+        content: "...", // Previous version
+        createdAt: new Date(),
+        createdBy: ObjectId("...")
+      }
+    ]
+  }
+};
+
+// Query pages dengan complex filtering
+const getPages = async (filters) => {
+  const pipeline = [];
+  
+  // Filter by status
+  if (filters.status) {
+    pipeline.push({ $match: { status: filters.status } });
+  }
+  
+  // Search in title and content
+  if (filters.search) {
+    pipeline.push({
+      $match: {
+        $or: [
+          { title: { $regex: filters.search, $options: 'i' } },
+          { 'content.data.content': { $regex: filters.search, $options: 'i' } }
+        ]
+      }
+    });
+  }
+  
+  // Add author information
+  pipeline.push({
+    $lookup: {
+      from: 'users',
+      localField: 'createdBy',
+      foreignField: '_id',
+      as: 'author'
+    }
+  });
+  
+  // Sort and paginate
+  pipeline.push(
+    { $sort: { publishedAt: -1 } },
+    { $skip: filters.skip || 0 },
+    { $limit: filters.limit || 10 }
+  );
+  
+  return await db.collection('pages').aggregate(pipeline).toArray();
+};
+```
+
+### MongoDB Weaknesses
+
+#### 1. Consistency Issues
+
+```javascript
+// MongoDB default behavior bisa bikin data inconsistent
+// Example: Transfer uang (DANGEROUS in MongoDB without transactions)
+async function transferMoneyMongoDB(fromAccountId, toAccountId, amount) {
+  // Step 1: Deduct from sender
+  await db.collection('accounts').updateOne(
+    { _id: fromAccountId },
+    { $inc: { balance: -amount } }
+  );
+  
+  // What if server crashes here? 💥
+  // Sender loses money, receiver gets nothing!
+  
+  // Step 2: Add to receiver  
+  await db.collection('accounts').updateOne(
+    { _id: toAccountId },
+    { $inc: { balance: amount } }
+  );
+}
+
+// Better approach: Use transactions (available since MongoDB 4.0)
+async function transferMoneyMongoDB_Safe(fromAccountId, toAccountId, amount) {
+  const session = client.startSession();
+  
+  try {
+    await session.withTransaction(async () => {
+      await db.collection('accounts').updateOne(
+        { _id: fromAccountId, balance: { $gte: amount } },
+        { $inc: { balance: -amount } },
+        { session }
+      );
+      
+      await db.collection('accounts').updateOne(
+        { _id: toAccountId },
+        { $inc: { balance: amount } },
+        { session }
+      );
+    });
+  } finally {
+    await session.endSession();
+  }
+}
+```
+
+#### 2. Query Complexity untuk Relational Data
+
+```javascript
+// Join data di MongoDB itu pain
+// Get users dengan their orders dan order items
+const usersWithOrders = await db.collection('users').aggregate([
+  {
+    $lookup: {
+      from: 'orders',
+      localField: '_id',
+      foreignField: 'userId',
+      as: 'orders'
+    }
+  },
+  {
+    $unwind: '$orders'
+  },
+  {
+    $lookup: {
+      from: 'orderItems',
+      localField: 'orders._id',
+      foreignField: 'orderId',
+      as: 'orders.items'
+    }
+  },
+  {
+    $lookup: {
+      from: 'products',
+      localField: 'orders.items.productId',
+      foreignField: '_id',
+      as: 'orders.items.product'
+    }
+  },
+  // ... more complex aggregation stages
+]).toArray();
+
+// Compare dengan PostgreSQL:
+// SELECT u.*, o.*, oi.*, p.*
+// FROM users u
+// JOIN orders o ON u.id = o.user_id  
+// JOIN order_items oi ON o.id = oi.order_id
+// JOIN products p ON oi.product_id = p.id;
+```
+
+#### 3. Storage Overhead
+
+```javascript
+// MongoDB storage bisa boros
+const postgresUser = {
+  id: 1,
+  name: "John Doe",
+  email: "john@example.com"
+};
+// Storage: ~50 bytes
+
+const mongoUser = {
+  _id: ObjectId("507f1f77bcf86cd799439011"), // 12 bytes
+  name: "John Doe",
+  email: "john@example.com"
+};
+// Storage: ~80 bytes + field names overhead
+
+// Dalam skala besar, ini bisa significant
+```
+
+---
+
+## 🚀 Supabase: The Modern Challenger
+
+Supabase itu kayak Tesla-nya database. Modern, feature-rich, tapi masih relatively new di market.
+
+### Kenapa Gue Excited sama Supabase
+
+```javascript
+// Supabase = PostgreSQL + Real-time + Auth + Storage + Edge Functions
+const supabaseFeatures = {
+  database: 'PostgreSQL (with all its power)',
+  realtime: 'WebSocket subscriptions out of the box',
+  auth: 'Built-in authentication with social providers',
+  storage: 'File storage with CDN',
+  edgeFunctions: 'Serverless functions at the edge',
+  dashboard: 'Beautiful admin interface',
+  api: 'Auto-generated REST and GraphQL APIs'
+};
+```
+
+### Supabase Strengths
+
+#### 1. Real-time Subscriptions yang Mudah
+
+```javascript
+// Real-time chat application dalam 10 lines
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(url, key);
+
+// Subscribe to new messages
+const subscription = supabase
+  .channel('messages')
+  .on('postgres_changes', 
+    { event: 'INSERT', schema: 'public', table: 'messages' },
+    (payload) => {
+      console.log('New message:', payload.new);
+      addMessageToUI(payload.new);
+    }
+  )
+  .subscribe();
+
+// Send message
+const sendMessage = async (content) => {
+  const { data, error } = await supabase
+    .from('messages')
+    .insert({ content, user_id: currentUser.id });
+};
+```
+
+#### 2. Authentication yang Comprehensive
+
+```javascript
+// Auth dengan berbagai providers
+const authOptions = {
+  // Email/password
+  signUp: async (email, password) => {
+    const { user, error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+  },
+  
+  // Social login
+  signInWithGoogle: async () => {
+    const { user, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+    });
+  },
+  
+  // Magic link
+  signInWithMagicLink: async (email) => {
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+    });
+  },
+  
+  // Phone authentication
+  signInWithPhone: async (phone) => {
+    const { error } = await supabase.auth.signInWithOtp({
+      phone,
+    });
+  }
+};
+
+// Row Level Security (RLS) policies
+-- Users can only see their own data
+CREATE POLICY "Users can view own profile" ON profiles
+  FOR SELECT USING (auth.uid() = user_id);
+
+-- Users can only update their own data  
+CREATE POLICY "Users can update own profile" ON profiles
+  FOR UPDATE USING (auth.uid() = user_id);
+```
+
+#### 3. Auto-generated APIs
+
+```sql
+-- Create table
+CREATE TABLE posts (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  title TEXT NOT NULL,
+  content TEXT,
+  author_id UUID REFERENCES auth.users(id),
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Enable RLS
+ALTER TABLE posts ENABLE ROW LEVEL SECURITY;
+
+-- Create policy
+CREATE POLICY "Anyone can read posts" ON posts FOR SELECT TO anon, authenticated USING (true);
+CREATE POLICY "Authors can CRUD own posts" ON posts USING (auth.uid() = author_id);
+```
+
+```javascript
+// Instantly available REST API
+// GET /rest/v1/posts
+// POST /rest/v1/posts
+// PATCH /rest/v1/posts?id=eq.123
+// DELETE /rest/v1/posts?id=eq.123
+
+// And JavaScript client
+const { data: posts } = await supabase
+  .from('posts')
+  .select('*, author:profiles(*)')
+  .order('created_at', { ascending: false });
+```
+
+### Real Project: Social Media App
+
+```javascript
+// Social media app yang gue bikin pake Supabase
+const socialMediaSchema = `
+  -- Users profiles (extends auth.users)
+  CREATE TABLE profiles (
+    id UUID REFERENCES auth.users(id) PRIMARY KEY,
+    username TEXT UNIQUE NOT NULL,
+    full_name TEXT,
+    bio TEXT,
+    avatar_url TEXT,
+    website TEXT,
+    created_at TIMESTAMP DEFAULT NOW()
+  );
+
+  -- Posts
+  CREATE TABLE posts (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    author_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
+    content TEXT NOT NULL,
+    image_url TEXT,
+    created_at TIMESTAMP DEFAULT NOW()
+  );
+
+  -- Likes
+  CREATE TABLE likes (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
+    post_id UUID REFERENCES posts(id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT NOW(),
+    UNIQUE(user_id, post_id)
+  );
+
+  -- Comments
+  CREATE TABLE comments (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    post_id UUID REFERENCES posts(id) ON DELETE CASCADE,
+    author_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+  );
+
+  -- Follows
+  CREATE TABLE follows (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    follower_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
+    following_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT NOW(),
+    UNIQUE(follower_id, following_id)
+  );
+`;
+
+// Real-time feed updates
+const setupRealtimeFeed = () => {
+  // Subscribe to new posts from people I follow
+  supabase
+    .channel('feed_updates')
+    .on('postgres_changes',
+      { 
+        event: 'INSERT', 
+        schema: 'public', 
+        table: 'posts',
+        filter: `author_id=in.(${followingIds.join(',')})`
+      },
+      (payload) => {
+        addPostToFeed(payload.new);
+      }
+    )
+    .subscribe();
+
+  // Subscribe to likes on my posts
+  supabase
+    .channel('my_post_likes')
+    .on('postgres_changes',
+      {
+        event: 'INSERT',
+        schema: 'public', 
+        table: 'likes',
+        filter: `post_id=in.(${myPostIds.join(',')})`
+      },
+      (payload) => {
+        updateLikeCount(payload.new.post_id);
+      }
+    )
+    .subscribe();
+};
+
+// File upload untuk images
+const uploadPostImage = async (file) => {
+  const fileExt = file.name.split('.').pop();
+  const fileName = `${Math.random()}.${fileExt}`;
+  const filePath = `posts/${fileName}`;
+
+  const { data, error } = await supabase.storage
+    .from('images')
+    .upload(filePath, file);
+
+  if (error) throw error;
+
+  // Get public URL
+  const { data: { publicUrl } } = supabase.storage
+    .from('images')
+    .getPublicUrl(filePath);
+
+  return publicUrl;
+};
+```
+
+### Supabase Weaknesses
+
+#### 1. Vendor Lock-in
+
+```javascript
+// Supabase-specific features yang gak portable
+const vendorLockIn = {
+  realtime: 'Supabase-specific implementation',
+  auth: 'Custom auth system',
+  storage: 'Supabase storage API',
+  edgeFunctions: 'Deno-based, not standard',
+  rls: 'PostgreSQL feature, but Supabase-optimized'
+};
+
+// Migration keluar dari Supabase bisa tricky
+```
+
+#### 2. Pricing yang Bisa Mahal
+
+```javascript
+// Supabase pricing tiers (2025)
+const pricing = {
+  free: {
+    database: '500MB',
+    bandwidth: '5GB',
+    storage: '1GB',
+    auth: '50,000 monthly active users',
+    realtime: '200 concurrent connections'
+  },
+  pro: {
+    price: '$25/month',
+    database: '8GB included',
+    bandwidth: '250GB',
+    storage: '100GB',
+    auth: '100,000 MAU'
+  },
+  team: {
+    price: '$599/month',
+    database: '500GB included',
+    // ... more features
+  }
+};
+
+// Kalau app lo grow, pricing bisa escalate quickly
+```
+
+#### 3. Limited Control
+
+```javascript
+// Things you can't control di Supabase
+const limitations = {
+  serverConfiguration: 'No access to PostgreSQL config',
+  extensions: 'Limited to what Supabase provides',
+  customFunctions: 'Must use Edge Functions',
+  backup: 'Rely on Supabase backup system',
+  monitoring: 'Limited to Supabase dashboard'
+};
+```
+
+---
+
+## 🎯 Decision Matrix: Pilih yang Mana?
+
+Berdasarkan pengalaman gue di puluhan project, ini guidelines yang bisa lo pake:
+
+### 🐘 Pilih PostgreSQL Kalau:
+
+#### ✅ Perfect untuk:
+
+**1. Financial Applications**
+```javascript
+// Butuh ACID compliance yang strict
+const financialRequirements = {
+  transactions: 'Must be atomic',
+  consistency: 'Data must always be consistent',
+  auditTrail: 'Every change must be tracked',
+  compliance: 'SOX, PCI-DSS, etc.'
+};
+```
+
+**2. Complex Business Logic**
+```sql
+-- Complex queries yang butuh SQL power
+WITH RECURSIVE employee_hierarchy AS (
+  SELECT id, name, manager_id, 0 as level, ARRAY[id] as path
+  FROM employees 
+  WHERE manager_id IS NULL
+  
+  UNION ALL
+  
+  SELECT e.id, e.name, e.manager_id, eh.level + 1, eh.path || e.id
+  FROM employees e
+  JOIN employee_hierarchy eh ON e.manager_id = eh.id
+  WHERE NOT e.id = ANY(eh.path) -- Prevent cycles
+)
+SELECT * FROM employee_

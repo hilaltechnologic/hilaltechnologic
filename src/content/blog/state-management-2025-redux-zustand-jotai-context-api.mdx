@@ -1,0 +1,1021 @@
+---
+title: "State Management 2025: Redux vs Zustand vs Jotai vs Context API - Bye Bye Prop Drilling! (Akhirnya Ada Solusi yang Gak Bikin Pusing)"
+description: "Capek sama prop drilling dan state management yang ribet? Gue bahas Redux, Zustand, Jotai, dan Context API dengan pengalaman real. Spoiler: ada yang bikin hidup lo jauh lebih mudah."
+publishedDate: 2025-01-07
+author:
+  name: "Hilal Technologic"
+  url: "https://hilaltechnologic.info/author/admin"
+tags: ["state management", "redux", "zustand", "jotai", "context api", "react", "javascript", "frontend", "web development"]
+image: "/images/blog/state-management-2025-cover.webp"
+imageAlt: "State Management Solutions 2025 Cover"
+featured: true
+draft: false
+readingTime: "20 menit baca"
+---
+
+# 🔄 State Management 2025: Redux vs Zustand vs Jotai vs Context API - Bye Bye Prop Drilling!
+
+Lo pernah gak sih ngerasain nightmare yang namanya prop drilling? Gue inget banget dulu pas bikin aplikasi React yang agak complex, gue harus passing props dari parent ke child, terus ke grandchild, terus ke great-grandchild. Sampe gue bingung sendiri, "Ini props buat apa sih? Kenapa harus lewat sini?"
+
+Dan yang paling nyebelin, kalau ada perubahan di struktur component, gue harus refactor props di 10+ files. Rasanya kayak main jenga, satu salah langkah, everything falls apart. 😭
+
+Sekarang, setelah nyoba berbagai state management solutions, gue mau share pengalaman real gue. From the heavyweight champion Redux, sampe newcomer yang bikin hidup gue jauh lebih mudah.
+
+> "State management is like organizing your closet. You can throw everything in one big pile (useState everywhere), or you can have a system that actually makes sense." - Wise React Developer
+
+---
+
+## 🤔 Kenapa State Management Itu Penting Banget?
+
+Sebelum kita dive ke comparison, gue mau jelasin dulu kenapa state management itu crucial, especially di aplikasi yang udah mulai complex.
+
+### The Prop Drilling Nightmare
+
+```jsx
+// Prop drilling horror story
+function App() {
+  const [user, setUser] = useState(null);
+  const [theme, setTheme] = useState('light');
+  const [notifications, setNotifications] = useState([]);
+  
+  return (
+    <Header 
+      user={user} 
+      theme={theme} 
+      setTheme={setTheme}
+      notifications={notifications}
+    />
+  );
+}
+
+function Header({ user, theme, setTheme, notifications }) {
+  return (
+    <nav>
+      <Logo theme={theme} />
+      <Navigation 
+        user={user} 
+        theme={theme} 
+        notifications={notifications}
+      />
+      <UserMenu 
+        user={user} 
+        theme={theme} 
+        setTheme={setTheme}
+        notifications={notifications}
+      />
+    </nav>
+  );
+}
+
+function Navigation({ user, theme, notifications }) {
+  return (
+    <ul>
+      <NavItem theme={theme} />
+      <NotificationBell 
+        notifications={notifications}
+        theme={theme}
+      />
+      <ProfileLink user={user} theme={theme} />
+    </ul>
+  );
+}
+
+function UserMenu({ user, theme, setTheme, notifications }) {
+  return (
+    <div>
+      <Avatar user={user} theme={theme} />
+      <Dropdown 
+        user={user} 
+        theme={theme} 
+        setTheme={setTheme}
+        notifications={notifications}
+      />
+    </div>
+  );
+}
+
+// Dan seterusnya... 🤮
+// Props yang sama di-pass ke 10+ components
+// Padahal cuma 2-3 components yang beneran butuh
+```
+
+### Real Impact dari Poor State Management
+
+```javascript
+// Project stats sebelum pake proper state management
+const projectNightmare = {
+  components: 150,
+  propsPassedUnnecessarily: 400+,
+  filesChangedPerFeature: 15-20,
+  bugsDueToStateIssues: 'Too many to count',
+  developerSanity: 'Rapidly declining',
+  teamVelocity: 'Slower than a snail',
+  codeReviewTime: '2x longer than normal'
+};
+
+// Setelah implement proper state management
+const projectHeaven = {
+  components: 150,
+  propsPassedUnnecessarily: 50,
+  filesChangedPerFeature: 3-5,
+  bugsDueToStateIssues: 'Rare',
+  developerSanity: 'Restored',
+  teamVelocity: 'Back to normal',
+  codeReviewTime: 'Much faster'
+};
+```
+
+---
+
+## 🏛️ Redux: The Heavyweight Champion
+
+Redux itu kayak tank. Powerful, battle-tested, tapi butuh effort buat handle-nya. Gue masih inget pertama kali belajar Redux, rasanya kayak belajar bahasa alien.
+
+### Redux: The Good, The Bad, The Verbose
+
+```javascript
+// Redux setup (the traditional way)
+// 1. Actions
+const INCREMENT = 'INCREMENT';
+const DECREMENT = 'DECREMENT';
+const SET_USER = 'SET_USER';
+const SET_LOADING = 'SET_LOADING';
+
+const increment = () => ({ type: INCREMENT });
+const decrement = () => ({ type: DECREMENT });
+const setUser = (user) => ({ type: SET_USER, payload: user });
+const setLoading = (loading) => ({ type: SET_LOADING, payload: loading });
+
+// 2. Reducers
+const initialState = {
+  count: 0,
+  user: null,
+  loading: false
+};
+
+const rootReducer = (state = initialState, action) => {
+  switch (action.type) {
+    case INCREMENT:
+      return { ...state, count: state.count + 1 };
+    case DECREMENT:
+      return { ...state, count: state.count - 1 };
+    case SET_USER:
+      return { ...state, user: action.payload };
+    case SET_LOADING:
+      return { ...state, loading: action.payload };
+    default:
+      return state;
+  }
+};
+
+// 3. Store
+import { createStore } from 'redux';
+const store = createStore(rootReducer);
+
+// 4. Component usage
+import { useSelector, useDispatch } from 'react-redux';
+
+function Counter() {
+  const count = useSelector(state => state.count);
+  const dispatch = useDispatch();
+  
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => dispatch(increment())}>+</button>
+      <button onClick={() => dispatch(decrement())}>-</button>
+    </div>
+  );
+}
+```
+
+Liat tuh! Cuma buat simple counter aja udah butuh segitu banyak boilerplate. Tapi tunggu, ada Redux Toolkit yang bikin hidup lebih mudah.
+
+### Redux Toolkit: Redux yang Lebih Manusiawi
+
+```javascript
+// Redux Toolkit - much better!
+import { createSlice, configureStore } from '@reduxjs/toolkit';
+
+// 1. Create slice (combines actions + reducer)
+const counterSlice = createSlice({
+  name: 'counter',
+  initialState: {
+    value: 0
+  },
+  reducers: {
+    increment: (state) => {
+      state.value += 1; // Immer makes this safe
+    },
+    decrement: (state) => {
+      state.value -= 1;
+    },
+    incrementByAmount: (state, action) => {
+      state.value += action.payload;
+    }
+  }
+});
+
+const userSlice = createSlice({
+  name: 'user',
+  initialState: {
+    data: null,
+    loading: false,
+    error: null
+  },
+  reducers: {
+    setLoading: (state, action) => {
+      state.loading = action.payload;
+    },
+    setUser: (state, action) => {
+      state.data = action.payload;
+      state.loading = false;
+      state.error = null;
+    },
+    setError: (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+    }
+  }
+});
+
+// 2. Configure store
+const store = configureStore({
+  reducer: {
+    counter: counterSlice.reducer,
+    user: userSlice.reducer
+  }
+});
+
+// 3. Export actions
+export const { increment, decrement, incrementByAmount } = counterSlice.actions;
+export const { setLoading, setUser, setError } = userSlice.actions;
+
+// 4. Component usage (same as before)
+function Counter() {
+  const count = useSelector(state => state.counter.value);
+  const dispatch = useDispatch();
+  
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => dispatch(increment())}>+</button>
+      <button onClick={() => dispatch(decrement())}>-</button>
+    </div>
+  );
+}
+```
+
+### Redux Strengths
+
+#### 1. Predictable State Updates
+
+```javascript
+// Redux DevTools = debugging paradise
+const debuggingFeatures = {
+  timeTravel: 'Undo/redo any action',
+  actionHistory: 'See every state change',
+  stateInspection: 'Inspect state at any point',
+  hotReloading: 'Preserve state during code changes',
+  actionReplay: 'Replay actions for testing'
+};
+
+// Example: Complex async action dengan Redux Toolkit
+import { createAsyncThunk } from '@reduxjs/toolkit';
+
+const fetchUserProfile = createAsyncThunk(
+  'user/fetchProfile',
+  async (userId, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`/api/users/${userId}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch user');
+      }
+      
+      const user = await response.json();
+      return user;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// Slice handles all states automatically
+const userSlice = createSlice({
+  name: 'user',
+  initialState: {
+    data: null,
+    loading: false,
+    error: null
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchUserProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchUserProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.data = action.payload;
+      })
+      .addCase(fetchUserProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+  }
+});
+```
+
+#### 2. Middleware Ecosystem
+
+```javascript
+// Redux middleware untuk berbagai kebutuhan
+import { configureStore } from '@reduxjs/toolkit';
+import { persistStore, persistReducer } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
+import logger from 'redux-logger';
+
+// Persist config
+const persistConfig = {
+  key: 'root',
+  storage,
+  whitelist: ['user', 'settings'] // Only persist these slices
+};
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
+// Store dengan middleware
+const store = configureStore({
+  reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE']
+      }
+    }).concat(logger), // Add redux-logger
+  devTools: process.env.NODE_ENV !== 'production'
+});
+
+// Custom middleware untuk analytics
+const analyticsMiddleware = (store) => (next) => (action) => {
+  // Track user actions
+  if (action.type.startsWith('user/')) {
+    analytics.track('User Action', {
+      action: action.type,
+      payload: action.payload,
+      timestamp: Date.now()
+    });
+  }
+  
+  return next(action);
+};
+```
+
+### Real Project: E-commerce Dashboard
+
+```javascript
+// E-commerce dashboard dengan Redux Toolkit
+const ecommerceStore = {
+  // Products slice
+  products: createSlice({
+    name: 'products',
+    initialState: {
+      items: [],
+      categories: [],
+      filters: {
+        category: '',
+        priceRange: [0, 1000],
+        sortBy: 'name'
+      },
+      loading: false,
+      error: null
+    },
+    reducers: {
+      setFilters: (state, action) => {
+        state.filters = { ...state.filters, ...action.payload };
+      },
+      clearFilters: (state) => {
+        state.filters = {
+          category: '',
+          priceRange: [0, 1000],
+          sortBy: 'name'
+        };
+      }
+    },
+    extraReducers: (builder) => {
+      builder
+        .addCase(fetchProducts.fulfilled, (state, action) => {
+          state.items = action.payload;
+          state.loading = false;
+        });
+    }
+  }),
+  
+  // Cart slice
+  cart: createSlice({
+    name: 'cart',
+    initialState: {
+      items: [],
+      total: 0,
+      discount: 0,
+      shipping: 0
+    },
+    reducers: {
+      addItem: (state, action) => {
+        const existingItem = state.items.find(
+          item => item.id === action.payload.id
+        );
+        
+        if (existingItem) {
+          existingItem.quantity += 1;
+        } else {
+          state.items.push({ ...action.payload, quantity: 1 });
+        }
+        
+        // Recalculate total
+        state.total = state.items.reduce(
+          (sum, item) => sum + (item.price * item.quantity), 0
+        );
+      },
+      removeItem: (state, action) => {
+        state.items = state.items.filter(item => item.id !== action.payload);
+        state.total = state.items.reduce(
+          (sum, item) => sum + (item.price * item.quantity), 0
+        );
+      },
+      updateQuantity: (state, action) => {
+        const { id, quantity } = action.payload;
+        const item = state.items.find(item => item.id === id);
+        
+        if (item) {
+          item.quantity = quantity;
+          state.total = state.items.reduce(
+            (sum, item) => sum + (item.price * item.quantity), 0
+          );
+        }
+      }
+    }
+  })
+};
+
+// Selectors untuk computed values
+import { createSelector } from '@reduxjs/toolkit';
+
+const selectCartItems = (state) => state.cart.items;
+const selectCartTotal = (state) => state.cart.total;
+const selectCartDiscount = (state) => state.cart.discount;
+
+const selectCartSummary = createSelector(
+  [selectCartItems, selectCartTotal, selectCartDiscount],
+  (items, total, discount) => ({
+    itemCount: items.reduce((sum, item) => sum + item.quantity, 0),
+    subtotal: total,
+    discount: discount,
+    finalTotal: total - discount
+  })
+);
+
+// Component usage
+function CartSummary() {
+  const cartSummary = useSelector(selectCartSummary);
+  
+  return (
+    <div>
+      <p>Items: {cartSummary.itemCount}</p>
+      <p>Subtotal: ${cartSummary.subtotal}</p>
+      <p>Discount: -${cartSummary.discount}</p>
+      <p>Total: ${cartSummary.finalTotal}</p>
+    </div>
+  );
+}
+```
+
+### Redux Weaknesses
+
+#### 1. Boilerplate (Even with RTK)
+
+```javascript
+// Masih butuh setup yang lumayan
+const simpleCounterWithRedux = {
+  slice: 'Need to create slice',
+  store: 'Need to configure store',
+  provider: 'Need to wrap app with Provider',
+  selectors: 'Need to write selectors',
+  actions: 'Need to dispatch actions'
+};
+
+// Compare dengan useState
+const simpleCounterWithState = {
+  setup: 'const [count, setCount] = useState(0);'
+};
+```
+
+#### 2. Learning Curve
+
+```javascript
+// Concepts yang harus dipahami
+const reduxConcepts = {
+  actions: 'Plain objects describing what happened',
+  reducers: 'Pure functions that update state',
+  store: 'Single source of truth',
+  dispatch: 'How to trigger state changes',
+  selectors: 'How to read state',
+  middleware: 'Extend Redux with custom functionality',
+  immutability: 'Never mutate state directly',
+  normalization: 'How to structure nested data'
+};
+```
+
+#### 3. Overkill untuk Simple Apps
+
+```javascript
+// Kalau cuma butuh simple state sharing
+const simpleApp = {
+  components: 5,
+  sharedState: 'Just user info',
+  complexity: 'Low',
+  reduxOverhead: 'Probably not worth it'
+};
+```
+
+---
+
+## 🐻 Zustand: The Minimalist Champion
+
+Zustand itu kayak Marie Kondo-nya state management. Simple, clean, dan "spark joy" banget buat developer.
+
+### Kenapa Gue Jatuh Cinta sama Zustand
+
+```javascript
+// Zustand setup - THAT'S IT!
+import { create } from 'zustand';
+
+const useStore = create((set, get) => ({
+  // State
+  count: 0,
+  user: null,
+  todos: [],
+  
+  // Actions
+  increment: () => set((state) => ({ count: state.count + 1 })),
+  decrement: () => set((state) => ({ count: state.count - 1 })),
+  
+  setUser: (user) => set({ user }),
+  
+  addTodo: (todo) => set((state) => ({
+    todos: [...state.todos, { id: Date.now(), ...todo }]
+  })),
+  
+  removeTodo: (id) => set((state) => ({
+    todos: state.todos.filter(todo => todo.id !== id)
+  })),
+  
+  // Computed values
+  get todoCount() {
+    return get().todos.length;
+  },
+  
+  get completedTodos() {
+    return get().todos.filter(todo => todo.completed);
+  }
+}));
+
+// Component usage - super clean!
+function Counter() {
+  const { count, increment, decrement } = useStore();
+  
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={increment}>+</button>
+      <button onClick={decrement}>-</button>
+    </div>
+  );
+}
+
+function TodoList() {
+  const { todos, addTodo, removeTodo, todoCount } = useStore();
+  
+  return (
+    <div>
+      <h3>Todos ({todoCount})</h3>
+      {todos.map(todo => (
+        <div key={todo.id}>
+          {todo.text}
+          <button onClick={() => removeTodo(todo.id)}>Remove</button>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+Liat tuh! Gak ada boilerplate, gak ada provider, gak ada reducer. Just works!
+
+### Zustand Strengths
+
+#### 1. Zero Boilerplate
+
+```javascript
+// Literally zero setup
+// No providers, no reducers, no actions
+// Just create store and use it
+
+const useAuthStore = create((set) => ({
+  user: null,
+  isAuthenticated: false,
+  
+  login: async (credentials) => {
+    try {
+      const user = await authAPI.login(credentials);
+      set({ user, isAuthenticated: true });
+    } catch (error) {
+      console.error('Login failed:', error);
+    }
+  },
+  
+  logout: () => {
+    authAPI.logout();
+    set({ user: null, isAuthenticated: false });
+  }
+}));
+
+// Use anywhere without provider
+function LoginButton() {
+  const { login, logout, isAuthenticated, user } = useAuthStore();
+  
+  if (isAuthenticated) {
+    return (
+      <div>
+        Welcome, {user.name}!
+        <button onClick={logout}>Logout</button>
+      </div>
+    );
+  }
+  
+  return <button onClick={() => login({ email, password })}>Login</button>;
+}
+```
+
+#### 2. TypeScript Support yang Excellent
+
+```typescript
+// TypeScript dengan Zustand = perfect match
+interface AuthState {
+  user: User | null;
+  isAuthenticated: boolean;
+  login: (credentials: LoginCredentials) => Promise<void>;
+  logout: () => void;
+}
+
+const useAuthStore = create<AuthState>((set, get) => ({
+  user: null,
+  isAuthenticated: false,
+  
+  login: async (credentials) => {
+    const user = await authAPI.login(credentials);
+    set({ user, isAuthenticated: true });
+  },
+  
+  logout: () => {
+    set({ user: null, isAuthenticated: false });
+  }
+}));
+
+// Type inference works perfectly
+function Profile() {
+  const user = useAuthStore(state => state.user); // Type: User | null
+  const logout = useAuthStore(state => state.logout); // Type: () => void
+  
+  if (!user) return <div>Please login</div>;
+  
+  return (
+    <div>
+      <h1>{user.name}</h1> {/* TypeScript knows user is not null here */}
+      <button onClick={logout}>Logout</button>
+    </div>
+  );
+}
+```
+
+#### 3. Middleware Support
+
+```javascript
+// Zustand middleware untuk persistence
+import { persist } from 'zustand/middleware';
+
+const useSettingsStore = create(
+  persist(
+    (set) => ({
+      theme: 'light',
+      language: 'en',
+      notifications: true,
+      
+      setTheme: (theme) => set({ theme }),
+      setLanguage: (language) => set({ language }),
+      toggleNotifications: () => set((state) => ({ 
+        notifications: !state.notifications 
+      }))
+    }),
+    {
+      name: 'app-settings', // localStorage key
+      partialize: (state) => ({ 
+        theme: state.theme, 
+        language: state.language 
+      }) // Only persist these fields
+    }
+  )
+);
+
+// DevTools middleware
+import { devtools } from 'zustand/middleware';
+
+const useStore = create(
+  devtools(
+    (set) => ({
+      count: 0,
+      increment: () => set((state) => ({ count: state.count + 1 }), false, 'increment'),
+      decrement: () => set((state) => ({ count: state.count - 1 }), false, 'decrement')
+    }),
+    { name: 'counter-store' }
+  )
+);
+
+// Immer middleware untuk complex updates
+import { immer } from 'zustand/middleware/immer';
+
+const useComplexStore = create(
+  immer((set) => ({
+    users: [],
+    posts: [],
+    
+    addUser: (user) => set((state) => {
+      state.users.push(user); // Immer makes this safe
+    }),
+    
+    updateUserPost: (userId, postId, updates) => set((state) => {
+      const user = state.users.find(u => u.id === userId);
+      if (user) {
+        const post = user.posts.find(p => p.id === postId);
+        if (post) {
+          Object.assign(post, updates);
+        }
+      }
+    })
+  }))
+);
+```
+
+### Real Project: Social Media App
+
+```javascript
+// Social media app dengan Zustand
+const useSocialStore = create((set, get) => ({
+  // State
+  posts: [],
+  user: null,
+  feed: [],
+  notifications: [],
+  loading: {
+    posts: false,
+    feed: false,
+    notifications: false
+  },
+  
+  // Actions
+  setUser: (user) => set({ user }),
+  
+  // Posts
+  setPosts: (posts) => set({ posts }),
+  addPost: (post) => set((state) => ({
+    posts: [post, ...state.posts]
+  })),
+  
+  updatePost: (postId, updates) => set((state) => ({
+    posts: state.posts.map(post => 
+      post.id === postId ? { ...post, ...updates } : post
+    )
+  })),
+  
+  deletePost: (postId) => set((state) => ({
+    posts: state.posts.filter(post => post.id !== postId)
+  })),
+  
+  // Feed
+  loadFeed: async () => {
+    set((state) => ({ loading: { ...state.loading, feed: true } }));
+    
+    try {
+      const feed = await api.getFeed();
+      set({ feed });
+    } catch (error) {
+      console.error('Failed to load feed:', error);
+    } finally {
+      set((state) => ({ loading: { ...state.loading, feed: false } }));
+    }
+  },
+  
+  // Interactions
+  likePost: async (postId) => {
+    try {
+      await api.likePost(postId);
+      
+      // Optimistic update
+      set((state) => ({
+        posts: state.posts.map(post =>
+          post.id === postId 
+            ? { ...post, likes: post.likes + 1, isLiked: true }
+            : post
+        ),
+        feed: state.feed.map(post =>
+          post.id === postId 
+            ? { ...post, likes: post.likes + 1, isLiked: true }
+            : post
+        )
+      }));
+    } catch (error) {
+      console.error('Failed to like post:', error);
+      // Revert optimistic update
+    }
+  },
+  
+  // Computed values
+  get userPosts() {
+    const { posts, user } = get();
+    return posts.filter(post => post.authorId === user?.id);
+  },
+  
+  get unreadNotifications() {
+    return get().notifications.filter(n => !n.read);
+  }
+}));
+
+// Separate stores untuk different concerns
+const useUIStore = create((set) => ({
+  sidebarOpen: false,
+  modalOpen: false,
+  activeTab: 'home',
+  
+  toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
+  openModal: () => set({ modalOpen: true }),
+  closeModal: () => set({ modalOpen: false }),
+  setActiveTab: (tab) => set({ activeTab: tab })
+}));
+
+// Component usage
+function PostList() {
+  const { posts, loading, likePost } = useSocialStore();
+  
+  if (loading.posts) return <div>Loading posts...</div>;
+  
+  return (
+    <div>
+      {posts.map(post => (
+        <PostCard 
+          key={post.id} 
+          post={post} 
+          onLike={() => likePost(post.id)}
+        />
+      ))}
+    </div>
+  );
+}
+
+function Sidebar() {
+  const { sidebarOpen, toggleSidebar } = useUIStore();
+  const { unreadNotifications } = useSocialStore();
+  
+  return (
+    <aside className={sidebarOpen ? 'open' : 'closed'}>
+      <button onClick={toggleSidebar}>Toggle</button>
+      <div>Notifications ({unreadNotifications.length})</div>
+    </aside>
+  );
+}
+```
+
+### Zustand Weaknesses
+
+#### 1. No Time Travel Debugging
+
+```javascript
+// Zustand gak punya Redux DevTools yang powerful
+const debuggingLimitations = {
+  timeTravel: 'Not available by default',
+  actionHistory: 'Limited compared to Redux',
+  stateInspection: 'Basic devtools support',
+  hotReloading: 'Works, but not as robust'
+};
+
+// Workaround: manual logging
+const useStore = create((set, get) => ({
+  count: 0,
+  increment: () => {
+    console.log('Before increment:', get().count);
+    set((state) => ({ count: state.count + 1 }));
+    console.log('After increment:', get().count);
+  }
+}));
+```
+
+#### 2. Less Ecosystem
+
+```javascript
+// Redux ecosystem vs Zustand
+const ecosystemComparison = {
+  redux: {
+    middleware: '100+ middleware packages',
+    devtools: 'Excellent Redux DevTools',
+    community: 'Huge community',
+    resources: 'Tons of tutorials and examples'
+  },
+  
+  zustand: {
+    middleware: 'Built-in middleware + some community ones',
+    devtools: 'Basic devtools support',
+    community: 'Growing but smaller',
+    resources: 'Good docs, fewer tutorials'
+  }
+};
+```
+
+#### 3. No Built-in Async Patterns
+
+```javascript
+// Zustand gak punya built-in async patterns kayak RTK Query
+// Harus handle sendiri
+const useApiStore = create((set, get) => ({
+  data: null,
+  loading: false,
+  error: null,
+  
+  fetchData: async () => {
+    set({ loading: true, error: null });
+    
+    try {
+      const data = await api.getData();
+      set({ data, loading: false });
+    } catch (error) {
+      set({ error: error.message, loading: false });
+    }
+  }
+}));
+
+// Compare dengan RTK Query yang handle semua ini automatically
+```
+
+---
+
+## ⚛️ Jotai: The Atomic Approach
+
+Jotai itu kayak LEGO blocks. Lo bisa combine small pieces jadi something bigger, dan setiap piece bisa digunakan independently.
+
+### Jotai Philosophy: Bottom-Up State Management
+
+```javascript
+// Jotai atoms - small pieces of state
+import { atom, useAtom } from 'jotai';
+
+// Primitive atoms
+const countAtom = atom(0);
+const nameAtom = atom('');
+const emailAtom = atom('');
+
+// Derived atoms
+const doubleCountAtom = atom((get) => get(countAtom) * 2);
+const userAtom = atom((get) => ({
+  name: get(nameAtom),
+  email: get(emailAtom)
+}));
+
+// Write-only atoms
+const incrementAtom = atom(
+  null, // no read
+  (get, set) => set(countAtom, get(countAtom) + 1)
+);
+
+// Async atoms
+const userProfileAtom = atom(async (get) => {
+  const user = get(userAtom);
+  if (!user.email) return null;
+  
+  const response = await fetch(`/api/users/${user.email}`);
+  return response.json();
+});
+
+// Component usage
+function Counter() {
+  const [count, setCount] = useAtom(countAtom);
+  const [doubleCount] = useAtom(doubleCountAtom);
+  
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <p>Double: {doubleCount}</p>
+      <button onClick={() => setCount(c => c + 1)}>+</button>
+    </div>
+  );
+}
+
+function UserProfile() {
