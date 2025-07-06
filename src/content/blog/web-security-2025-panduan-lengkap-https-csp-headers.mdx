@@ -1,0 +1,1908 @@
+---
+title: "Web Security 2025: Panduan Lengkap HTTPS, CSP, dan Modern Security Headers"
+description: "Panduan komprehensif web security 2025: implementasi HTTPS, Content Security Policy (CSP), security headers, dan best practices keamanan website modern untuk developer Indonesia."
+publishedDate: 2025-07-01
+author:
+  name: "Hilal Technologic"
+  url: "https://hilaltechnologic.info/author/admin"
+tags: ["web security", "https", "csp", "security headers", "cybersecurity", "web development", "ssl", "tls", "owasp", "security best practices"]
+image: "/images/blog/web-security-2025-cover.webp"
+imageAlt: "Web Security 2025 Panduan Lengkap Cover"
+featured: true
+draft: false
+readingTime: "28 menit baca"
+---
+
+import Code from '../../components/Code.astro';
+
+# 🔒 Web Security 2025: Panduan Lengkap HTTPS, CSP, dan Modern Security Headers
+
+Di era digital 2025, keamanan website bukan lagi pilihan, tapi keharusan mutlak. Dengan serangan cyber yang semakin canggih dan regulasi data yang ketat, setiap developer harus memahami fundamental web security. Artikel ini akan membahas implementasi HTTPS, Content Security Policy (CSP), security headers modern, dan best practices keamanan yang wajib diterapkan.
+
+> "Security is not a product, but a process." - Bruce Schneier
+
+Mari kita pelajari cara membangun benteng digital yang kokoh untuk website Anda!
+
+---
+
+## 🎯 Mengapa Web Security Penting di 2025?
+
+### Statistik Mengkhawatirkan
+
+- **43% serangan cyber** menargetkan small business
+- **95% data breach** disebabkan human error
+- **$4.45 juta** rata-rata kerugian per data breach
+- **277 hari** waktu rata-rata untuk mendeteksi breach
+- **70% website** masih memiliki vulnerability kritis
+
+### Dampak Bisnis
+
+```javascript
+// Cost of Security Breach 2025
+const securityImpact = {
+  financial: {
+    directLoss: "$4.45M average per breach",
+    legalCosts: "$1.2M average",
+    reputationDamage: "23% customer loss",
+    recoveryTime: "6-12 months"
+  },
+  technical: {
+    downtime: "72 hours average",
+    dataLoss: "Potentially irreversible",
+    systemCompromise: "Full infrastructure risk",
+    complianceViolation: "GDPR, CCPA penalties"
+  },
+  reputation: {
+    trustLoss: "Long-term customer impact",
+    brandDamage: "Viral social media exposure",
+    competitorAdvantage: "Market share loss",
+    mediaAttention: "Negative publicity"
+  }
+};
+```
+
+### Regulasi & Compliance 2025
+
+- **GDPR** - €20M atau 4% revenue penalty
+- **CCPA** - $7,500 per violation
+- **SOX** - Criminal charges untuk executives
+- **HIPAA** - $1.5M per violation
+- **PCI DSS** - $100K per month fines
+
+---
+
+## 🔐 HTTPS Implementation: Foundation of Web Security
+
+### 1. Understanding HTTPS vs HTTP
+
+```javascript
+// HTTP vs HTTPS Comparison
+const protocolComparison = {
+  http: {
+    port: 80,
+    encryption: "None",
+    dataIntegrity: "No protection",
+    authentication: "No server verification",
+    seoRanking: "Penalized by Google",
+    browserWarning: "Not Secure warning",
+    compliance: "Fails most standards"
+  },
+  https: {
+    port: 443,
+    encryption: "TLS 1.3 (AES-256)",
+    dataIntegrity: "Cryptographic protection",
+    authentication: "Certificate validation",
+    seoRanking: "SEO boost",
+    browserWarning: "Secure padlock",
+    compliance: "Required for compliance"
+  }
+};
+```
+
+### 2. SSL/TLS Certificate Types
+
+```javascript
+// Certificate Types & Use Cases
+const certificateTypes = {
+  domainValidated: {
+    validation: "Domain ownership only",
+    trustLevel: "Basic",
+    issuanceTime: "Minutes to hours",
+    cost: "$0-50/year",
+    useCase: "Personal websites, blogs",
+    example: "Let's Encrypt, Cloudflare"
+  },
+  organizationValidated: {
+    validation: "Domain + Organization",
+    trustLevel: "Medium",
+    issuanceTime: "1-3 days",
+    cost: "$50-200/year",
+    useCase: "Business websites",
+    example: "DigiCert, GlobalSign"
+  },
+  extendedValidation: {
+    validation: "Domain + Organization + Legal",
+    trustLevel: "Highest",
+    issuanceTime: "1-2 weeks",
+    cost: "$200-1000/year",
+    useCase: "E-commerce, banking",
+    example: "Green address bar"
+  },
+  wildcard: {
+    validation: "Covers all subdomains",
+    trustLevel: "Varies by type",
+    issuanceTime: "Same as base type",
+    cost: "2-3x regular price",
+    useCase: "Multiple subdomains",
+    example: "*.hilaltechnologic.info"
+  }
+};
+```
+
+### 3. Free SSL Implementation
+
+#### Let's Encrypt dengan Certbot
+
+```bash
+# Install Certbot (Ubuntu/Debian)
+sudo apt update
+sudo apt install certbot python3-certbot-nginx
+
+# Generate certificate
+sudo certbot --nginx -d hilaltechnologic.info -d www.hilaltechnologic.info
+
+# Auto-renewal setup
+sudo crontab -e
+# Add this line:
+0 12 * * * /usr/bin/certbot renew --quiet
+```
+
+#### Cloudflare SSL Setup
+
+```javascript
+// Cloudflare SSL Configuration
+const cloudflareSSL = {
+  step1: "Add domain to Cloudflare",
+  step2: "Change nameservers to Cloudflare",
+  step3: "Enable SSL/TLS encryption",
+  step4: "Set SSL mode to 'Full (strict)'",
+  step5: "Enable 'Always Use HTTPS'",
+  step6: "Configure HSTS",
+  
+  benefits: [
+    "Free SSL certificate",
+    "Global CDN",
+    "DDoS protection",
+    "Web Application Firewall",
+    "Bot protection"
+  ]
+};
+```
+
+### 4. HTTPS Redirect Implementation
+
+#### Apache .htaccess
+
+```apache
+# Force HTTPS redirect
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# HSTS Header
+Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+```
+
+#### Nginx Configuration
+
+```nginx
+# HTTP to HTTPS redirect
+server {
+    listen 80;
+    server_name hilaltechnologic.info www.hilaltechnologic.info;
+    return 301 https://$server_name$request_uri;
+}
+
+# HTTPS server block
+server {
+    listen 443 ssl http2;
+    server_name hilaltechnologic.info www.hilaltechnologic.info;
+    
+    # SSL Configuration
+    ssl_certificate /etc/letsencrypt/live/hilaltechnologic.info/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/hilaltechnologic.info/privkey.pem;
+    
+    # Modern SSL configuration
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384;
+    ssl_prefer_server_ciphers off;
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_timeout 10m;
+    
+    # Security headers
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
+}
+```
+
+#### Node.js/Express
+
+```javascript
+// Express HTTPS redirect middleware
+const express = require('express');
+const helmet = require('helmet');
+const app = express();
+
+// Force HTTPS in production
+app.use((req, res, next) => {
+  if (process.env.NODE_ENV === 'production' && !req.secure && req.get('x-forwarded-proto') !== 'https') {
+    return res.redirect(301, `https://${req.get('host')}${req.url}`);
+  }
+  next();
+});
+
+// Security middleware
+app.use(helmet({
+  hsts: {
+    maxAge: 31536000,
+    includeSubDomains: true,
+    preload: true
+  },
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      imgSrc: ["'self'", "data:", "https:"],
+      scriptSrc: ["'self'"],
+      connectSrc: ["'self'"],
+      frameSrc: ["'none'"],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: []
+    }
+  }
+}));
+```
+
+---
+
+## 🛡️ Content Security Policy (CSP): Advanced Protection
+
+### 1. Understanding CSP
+
+Content Security Policy adalah security layer yang membantu mendeteksi dan mitigasi serangan XSS (Cross-Site Scripting) dan data injection.
+
+```javascript
+// CSP Attack Prevention
+const cspProtection = {
+  xss: "Prevents malicious script injection",
+  dataInjection: "Blocks unauthorized data sources",
+  clickjacking: "Prevents iframe embedding attacks",
+  mixedContent: "Enforces HTTPS-only resources",
+  codeInjection: "Restricts inline scripts/styles"
+};
+```
+
+### 2. CSP Directives Explained
+
+```javascript
+// Complete CSP Directives Guide
+const cspDirectives = {
+  // Fetch directives
+  defaultSrc: "Fallback for other fetch directives",
+  scriptSrc: "Valid sources for JavaScript",
+  styleSrc: "Valid sources for CSS",
+  imgSrc: "Valid sources for images",
+  connectSrc: "Valid sources for fetch, XHR, WebSocket",
+  fontSrc: "Valid sources for fonts",
+  objectSrc: "Valid sources for plugins (Flash, etc)",
+  mediaSrc: "Valid sources for audio/video",
+  frameSrc: "Valid sources for frames/iframes",
+  
+  // Document directives
+  baseUri: "Valid sources for <base> element",
+  sandbox: "Enables sandbox for requested resource",
+  
+  // Navigation directives
+  formAction: "Valid endpoints for form submissions",
+  frameAncestors: "Valid parents for embedding",
+  
+  // Reporting directives
+  reportUri: "URL to send violation reports",
+  reportTo: "Group name for violation reports",
+  
+  // Other directives
+  upgradeInsecureRequests: "Upgrade HTTP to HTTPS",
+  blockAllMixedContent: "Block all mixed content"
+};
+```
+
+### 3. Progressive CSP Implementation
+
+#### Level 1: Basic Protection
+
+```html
+<!-- Basic CSP for simple websites -->
+<meta http-equiv="Content-Security-Policy" 
+      content="default-src 'self'; 
+               img-src 'self' data: https:; 
+               style-src 'self' 'unsafe-inline'; 
+               script-src 'self';">
+```
+
+#### Level 2: Intermediate Protection
+
+```javascript
+// Express.js CSP middleware
+app.use(helmet.contentSecurityPolicy({
+  directives: {
+    defaultSrc: ["'self'"],
+    scriptSrc: [
+      "'self'",
+      "'unsafe-inline'", // Temporary, should be removed
+      "https://www.google-analytics.com",
+      "https://www.googletagmanager.com"
+    ],
+    styleSrc: [
+      "'self'",
+      "'unsafe-inline'", // For inline styles
+      "https://fonts.googleapis.com",
+      "https://cdn.jsdelivr.net"
+    ],
+    fontSrc: [
+      "'self'",
+      "https://fonts.gstatic.com",
+      "data:"
+    ],
+    imgSrc: [
+      "'self'",
+      "data:",
+      "https:",
+      "blob:"
+    ],
+    connectSrc: [
+      "'self'",
+      "https://api.hilaltechnologic.info",
+      "https://www.google-analytics.com"
+    ],
+    frameSrc: [
+      "https://www.youtube.com",
+      "https://player.vimeo.com"
+    ],
+    objectSrc: ["'none'"],
+    upgradeInsecureRequests: []
+  }
+}));
+```
+
+#### Level 3: Advanced Protection with Nonces
+
+```javascript
+// Advanced CSP with nonces
+const crypto = require('crypto');
+
+app.use((req, res, next) => {
+  // Generate unique nonce for each request
+  res.locals.nonce = crypto.randomBytes(16).toString('hex');
+  next();
+});
+
+app.use(helmet.contentSecurityPolicy({
+  directives: {
+    defaultSrc: ["'self'"],
+    scriptSrc: [
+      "'self'",
+      (req, res) => `'nonce-${res.locals.nonce}'`, // Dynamic nonce
+      "https://www.google-analytics.com"
+    ],
+    styleSrc: [
+      "'self'",
+      (req, res) => `'nonce-${res.locals.nonce}'`,
+      "https://fonts.googleapis.com"
+    ],
+    fontSrc: ["'self'", "https://fonts.gstatic.com"],
+    imgSrc: ["'self'", "data:", "https:"],
+    connectSrc: ["'self'", "https://api.hilaltechnologic.info"],
+    frameSrc: ["'none'"],
+    objectSrc: ["'none'"],
+    baseUri: ["'self'"],
+    formAction: ["'self'"],
+    frameAncestors: ["'none'"],
+    upgradeInsecureRequests: []
+  }
+}));
+```
+
+#### Template Usage with Nonces
+
+```html
+<!-- EJS template with nonce -->
+<!DOCTYPE html>
+<html>
+<head>
+    <style nonce="<%= nonce %>">
+        body { font-family: Arial, sans-serif; }
+    </style>
+</head>
+<body>
+    <script nonce="<%= nonce %>">
+        console.log('This script is allowed by CSP');
+    </script>
+</body>
+</html>
+```
+
+### 4. CSP Reporting & Monitoring
+
+```javascript
+// CSP Violation Reporting
+app.use('/csp-report', express.json({ type: 'application/csp-report' }));
+
+app.post('/csp-report', (req, res) => {
+  const violation = req.body['csp-report'];
+  
+  console.log('CSP Violation:', {
+    documentUri: violation['document-uri'],
+    violatedDirective: violation['violated-directive'],
+    blockedUri: violation['blocked-uri'],
+    sourceFile: violation['source-file'],
+    lineNumber: violation['line-number'],
+    columnNumber: violation['column-number']
+  });
+  
+  // Send to monitoring service
+  sendToMonitoring('csp_violation', violation);
+  
+  res.status(204).send();
+});
+
+// CSP with reporting
+app.use(helmet.contentSecurityPolicy({
+  directives: {
+    // ... other directives
+    reportUri: '/csp-report'
+  },
+  reportOnly: false // Set to true for testing
+}));
+```
+
+### 5. CSP Testing & Debugging
+
+```javascript
+// CSP Testing Utility
+class CSPTester {
+  constructor() {
+    this.violations = [];
+    this.setupReporting();
+  }
+
+  setupReporting() {
+    // Listen for CSP violations
+    document.addEventListener('securitypolicyviolation', (e) => {
+      this.violations.push({
+        directive: e.violatedDirective,
+        blockedURI: e.blockedURI,
+        sourceFile: e.sourceFile,
+        lineNumber: e.lineNumber,
+        columnNumber: e.columnNumber,
+        timestamp: new Date().toISOString()
+      });
+      
+      console.warn('CSP Violation:', e);
+    });
+  }
+
+  getViolations() {
+    return this.violations;
+  }
+
+  generateReport() {
+    const report = {
+      totalViolations: this.violations.length,
+      uniqueDirectives: [...new Set(this.violations.map(v => v.directive))],
+      topViolations: this.getTopViolations(),
+      recommendations: this.getRecommendations()
+    };
+    
+    return report;
+  }
+
+  getTopViolations() {
+    const counts = {};
+    this.violations.forEach(v => {
+      const key = `${v.directive}: ${v.blockedURI}`;
+      counts[key] = (counts[key] || 0) + 1;
+    });
+    
+    return Object.entries(counts)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 5);
+  }
+
+  getRecommendations() {
+    const recommendations = [];
+    
+    if (this.violations.some(v => v.directive.includes('script-src'))) {
+      recommendations.push('Consider using nonces or hashes for inline scripts');
+    }
+    
+    if (this.violations.some(v => v.directive.includes('style-src'))) {
+      recommendations.push('Move inline styles to external CSS files');
+    }
+    
+    return recommendations;
+  }
+}
+
+// Usage
+const cspTester = new CSPTester();
+
+// Check violations after page load
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const report = cspTester.generateReport();
+    console.log('CSP Report:', report);
+  }, 5000);
+});
+```
+
+---
+
+## 🔧 Modern Security Headers: Complete Protection
+
+### 1. Essential Security Headers
+
+```javascript
+// Complete Security Headers Configuration
+const securityHeaders = {
+  // HTTPS Enforcement
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
+  
+  // Clickjacking Protection
+  'X-Frame-Options': 'SAMEORIGIN', // or 'DENY'
+  
+  // MIME Type Protection
+  'X-Content-Type-Options': 'nosniff',
+  
+  // XSS Protection (legacy but still useful)
+  'X-XSS-Protection': '1; mode=block',
+  
+  // Referrer Policy
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  
+  // Permissions Policy (formerly Feature Policy)
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=()',
+  
+  // Cross-Origin Policies
+  'Cross-Origin-Embedder-Policy': 'require-corp',
+  'Cross-Origin-Opener-Policy': 'same-origin',
+  'Cross-Origin-Resource-Policy': 'same-origin'
+};
+```
+
+### 2. Detailed Header Implementation
+
+#### Strict-Transport-Security (HSTS)
+
+```javascript
+// HSTS Implementation
+const hstsConfig = {
+  basic: 'max-age=31536000', // 1 year
+  withSubdomains: 'max-age=31536000; includeSubDomains',
+  withPreload: 'max-age=31536000; includeSubDomains; preload',
+  
+  // Preload submission requirements
+  preloadRequirements: [
+    'Valid certificate',
+    'Redirect HTTP to HTTPS',
+    'Serve HSTS header on base domain',
+    'max-age at least 31536000 seconds',
+    'includeSubDomains directive',
+    'preload directive'
+  ]
+};
+
+// Express implementation
+app.use((req, res, next) => {
+  if (req.secure) {
+    res.setHeader('Strict-Transport-Security', 
+      'max-age=31536000; includeSubDomains; preload');
+  }
+  next();
+});
+```
+
+#### Content Security Policy (Advanced)
+
+```javascript
+// Production-ready CSP
+const productionCSP = {
+  directives: {
+    defaultSrc: ["'self'"],
+    scriptSrc: [
+      "'self'",
+      "'sha256-xyz123...'", // Hash for specific inline scripts
+      "https://www.google-analytics.com",
+      "https://www.googletagmanager.com",
+      "https://cdn.jsdelivr.net"
+    ],
+    styleSrc: [
+      "'self'",
+      "'sha256-abc456...'", // Hash for specific inline styles
+      "https://fonts.googleapis.com",
+      "https://cdn.jsdelivr.net"
+    ],
+    fontSrc: [
+      "'self'",
+      "https://fonts.gstatic.com",
+      "data:"
+    ],
+    imgSrc: [
+      "'self'",
+      "data:",
+      "https:",
+      "blob:"
+    ],
+    connectSrc: [
+      "'self'",
+      "https://api.hilaltechnologic.info",
+      "https://www.google-analytics.com",
+      "wss://websocket.hilaltechnologic.info"
+    ],
+    mediaSrc: ["'self'", "https://cdn.hilaltechnologic.info"],
+    frameSrc: [
+      "https://www.youtube.com",
+      "https://player.vimeo.com",
+      "https://codesandbox.io"
+    ],
+    childSrc: ["'self'", "blob:"],
+    workerSrc: ["'self'", "blob:"],
+    manifestSrc: ["'self'"],
+    objectSrc: ["'none'"],
+    baseUri: ["'self'"],
+    formAction: ["'self'", "https://forms.hilaltechnologic.info"],
+    frameAncestors: ["'none'"],
+    upgradeInsecureRequests: [],
+    blockAllMixedContent: []
+  }
+};
+```
+
+#### Permissions Policy
+
+```javascript
+// Permissions Policy Configuration
+const permissionsPolicy = {
+  // Disable dangerous features
+  camera: [],
+  microphone: [],
+  geolocation: [],
+  payment: [],
+  usb: [],
+  
+  // Allow for same origin
+  fullscreen: ['self'],
+  autoplay: ['self'],
+  
+  // Allow for specific origins
+  'picture-in-picture': ['self', 'https://youtube.com'],
+  
+  // Complete policy string
+  headerValue: [
+    'camera=()',
+    'microphone=()',
+    'geolocation=()',
+    'payment=()',
+    'usb=()',
+    'fullscreen=(self)',
+    'autoplay=(self)',
+    'picture-in-picture=(self "https://youtube.com")'
+  ].join(', ')
+};
+```
+
+### 3. Cross-Origin Policies
+
+```javascript
+// Cross-Origin Security Headers
+const crossOriginPolicies = {
+  // Cross-Origin Embedder Policy
+  coep: {
+    'require-corp': 'Requires Cross-Origin-Resource-Policy header',
+    'credentialless': 'Allows credentialless cross-origin requests',
+    'unsafe-none': 'Disables COEP (not recommended)'
+  },
+  
+  // Cross-Origin Opener Policy
+  coop: {
+    'same-origin': 'Isolates browsing context',
+    'same-origin-allow-popups': 'Allows popups to same origin',
+    'unsafe-none': 'Disables COOP (default)'
+  },
+  
+  // Cross-Origin Resource Policy
+  corp: {
+    'same-origin': 'Only same-origin requests',
+    'same-site': 'Only same-site requests',
+    'cross-origin': 'Allows cross-origin requests'
+  }
+};
+
+// Implementation
+app.use((req, res, next) => {
+  // Enable cross-origin isolation
+  res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+  res.setHeader('Cross-Origin-Resource-Policy', 'same-origin');
+  next();
+});
+```
+
+### 4. Complete Security Headers Middleware
+
+```javascript
+// Comprehensive Security Middleware
+class SecurityHeadersMiddleware {
+  constructor(options = {}) {
+    this.options = {
+      hsts: true,
+      csp: true,
+      frameOptions: 'SAMEORIGIN',
+      contentTypeOptions: true,
+      referrerPolicy: 'strict-origin-when-cross-origin',
+      permissionsPolicy: true,
+      crossOriginPolicies: true,
+      ...options
+    };
+  }
+
+  middleware() {
+    return (req, res, next) => {
+      // HSTS
+      if (this.options.hsts && req.secure) {
+        res.setHeader('Strict-Transport-Security', 
+          'max-age=31536000; includeSubDomains; preload');
+      }
+
+      // X-Frame-Options
+      if (this.options.frameOptions) {
+        res.setHeader('X-Frame-Options', this.options.frameOptions);
+      }
+
+      // X-Content-Type-Options
+      if (this.options.contentTypeOptions) {
+        res.setHeader('X-Content-Type-Options', 'nosniff');
+      }
+
+      // X-XSS-Protection (legacy)
+      res.setHeader('X-XSS-Protection', '1; mode=block');
+
+      // Referrer Policy
+      if (this.options.referrerPolicy) {
+        res.setHeader('Referrer-Policy', this.options.referrerPolicy);
+      }
+
+      // Permissions Policy
+      if (this.options.permissionsPolicy) {
+        res.setHeader('Permissions-Policy', 
+          'camera=(), microphone=(), geolocation=(), payment=()');
+      }
+
+      // Cross-Origin Policies
+      if (this.options.crossOriginPolicies) {
+        res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+        res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+        res.setHeader('Cross-Origin-Resource-Policy', 'same-origin');
+      }
+
+      // Remove server information
+      res.removeHeader('X-Powered-By');
+      res.removeHeader('Server');
+
+      next();
+    };
+  }
+}
+
+// Usage
+const securityHeaders = new SecurityHeadersMiddleware({
+  frameOptions: 'DENY',
+  referrerPolicy: 'no-referrer'
+});
+
+app.use(securityHeaders.middleware());
+```
+
+---
+
+## 🚨 Common Security Vulnerabilities & Prevention
+
+### 1. OWASP Top 10 2025
+
+```javascript
+// OWASP Top 10 Web Application Security Risks 2025
+const owaspTop10 = {
+  1: {
+    name: "Broken Access Control",
+    description: "Restrictions not properly enforced",
+    prevention: ["Implement proper authorization", "Use principle of least privilege", "Regular access reviews"]
+  },
+  2: {
+    name: "Cryptographic Failures",
+    description: "Weak or missing encryption",
+    prevention: ["Use strong encryption", "Proper key management", "Encrypt data in transit and at rest"]
+  },
+  3: {
+    name: "Injection",
+    description: "SQL, NoSQL, OS command injection",
+    prevention: ["Use parameterized queries", "Input validation", "Escape special characters"]
+  },
+  4: {
+    name: "Insecure Design",
+    description: "Missing or ineffective control design",
+    prevention: ["Secure development lifecycle", "Threat modeling", "Security requirements"]
+  },
+  5: {
+    name: "Security Misconfiguration",
+    description: "Insecure default configurations",
+    prevention: ["Security hardening", "Regular updates", "Remove unused features"]
+  },
+  6: {
+    name: "Vulnerable Components",
+    description: "Using components with known vulnerabilities",
+    prevention: ["Regular dependency updates", "Vulnerability scanning", "Component inventory"]
+  },
+  7: {
+    name: "Authentication Failures",
+    description: "Broken authentication and session management",
+    prevention: ["Multi-factor authentication", "Strong password policies", "Session management"]
+  },
+  8: {
+    name: "Software Integrity Failures",
+    description: "Code and infrastructure without integrity verification",
+    prevention: ["Digital signatures", "Trusted repositories", "CI/CD pipeline security"]
+  },
+  9: {
+    name: "Logging Failures",
+    description: "Insufficient logging and monitoring",
+    prevention: ["Comprehensive logging", "Real-time monitoring", "Incident response"]
+  },
+  10: {
+    name: "Server-Side Request Forgery",
+    description: "SSRF flaws allow attackers to send crafted requests",
+    prevention: ["Input validation", "Network segmentation", "URL allowlisting"]
+  }
+};
+```
+
+### 2. XSS Prevention
+
+```javascript
+// XSS Prevention Strategies
+class XSSPrevention {
+  // Input sanitization
+  static sanitizeInput(input) {
+    const map = {
+      '&': '&amp;',
+      '<': '<',
+      '>': '>',
+      '"': '"',
+      "'": '&#x27;',
+      '/': '&#x2F;'
+    };
+    
+    return input.replace(/[&<>"'/]/g, (s) => map[s]);
+  }
+
+  // Output encoding
+  static encodeHTML(str) {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '<')
+      .replace(/>/g, '>')
+      .replace(/"/g, '"')
+      .replace(/'/g, '&#39;');
+  }
+
+  // URL encoding
+  static encodeURL(str) {
+    return encodeURIComponent(str);
+  }
+
+  // JavaScript encoding
+  static encodeJS(str) {
+    return str.replace(/[\\"']/g, '\\$&').replace(/\u0000/g, '\\0');
+  }
+
+  // CSS encoding
+  static encodeCSS(str) {
+    return str.replace(/[^\w-]/g, (char) => {
+      return '\\' + char.charCodeAt(0).toString(16) + ' ';
+    });
+  }
+}
+
+// Express middleware for XSS protection
+const xssProtection = (req, res, next) => {
+  // Sanitize all string inputs
+  const sanitizeObject = (obj) => {
+    for (let key in obj) {
+      if (typeof obj[key] === 'string') {
+        obj[key] = XSSPrevention.sanitizeInput(obj[key]);
+      } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+        sanitizeObject(obj[key]);
+      }
+    }
+  };
+
+  if (req.body) sanitizeObject(req.body);
+  if (req.query) sanitizeObject(req.query);
+  if (req.params) sanitizeObject(req.params);
+
+  next();
+};
+
+// Usage
+app.use(xssProtection);
+```
+
+### 3. SQL Injection Prevention
+
+```javascript
+// SQL Injection Prevention
+class SQLInjectionPrevention {
+  // Parameterized queries (recommended)
+  static async getUserById(id) {
+    // ❌ Vulnerable to SQL injection
+    // const query = `SELECT * FROM users WHERE id = ${id}`;
+    
+    // ✅ Safe parameterized query
+    const query = 'SELECT * FROM users WHERE id = ?';
+    return await db.query(query, [id]);
+  }
+
+  // Input validation
+  static validateInput(input, type) {
+    switch (type) {
+      case 'id':
+        return /^\d+$/.test(input);
+      case 'email':
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input);
+      case 'alphanumeric':
+        return /^[a-zA-Z0-9]+$/.test(input);
+      default:
+        return false;
+    }
+  }
+
+  // Escape special characters (last resort)
+  static escapeSQL(str) {
+    return str.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, (char) => {
+      switch (char) {
+        case "\0": return "\\0";
+        case "\x08": return "\\b";
+        case "\x09": return "\\t";
+        case "\x1a": return "\\z";
+        case "\n": return "\\n";
+        case "\r": return "\\r";
+        case "\"":
+        case "'":
+        case "\\":
+        case "%": return "\\" + char;
+        default: return char;
+      }
+    });
+  }
+}
+
+// Express route with protection
+app.get('/user/:id', async (req, res) => {
+  const { id } = req.params;
+  
+  // Validate input
+  if (!SQLInjectionPrevention.validateInput(id, 'id')) {
+    return res.status(400).json({ error: 'Invalid user ID' });
+  }
+  
+  try {
+    const user = await SQLInjectionPrevention.getUserById(id);
+    res.json(user);
+  } catch (error) {
+    console.error('Database error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+```
+
+### 4. CSRF Protection
+
+```javascript
+// CSRF Protection Implementation
+const csrf = require('csurf');
+const cookieParser = require('cookie-parser');
+
+// Setup CSRF protection
+app.use(cookieParser());
+app.use(csrf({ cookie: true }));
+
+// CSRF middleware
+app.use((req, res, next) => {
+  res.locals.csrfToken = req.csrfToken();
+  next();
+});
+
+// Custom CSRF protection class
+class CSRFProtection {
+  static generateToken() {
+    return require('crypto').randomBytes(32).toString('hex');
+  }
+
+  static validateToken(sessionToken, requestToken) {
+    return sessionToken === requestToken;
+  }
+
+  static middleware() {
+    return (req, res, next) => {
+      if (req.method === 'GET') {
+        // Generate token for GET requests
+        req.session.csrfToken = CSRFProtection.generateToken();
+        res.locals.csrfToken = req.session.csrfToken;
+        return next();
+      }
+
+      // Validate token for state-changing requests
+      const token = req.body._csrf || req.headers['x-csrf-token'];
+      
+      if (!token || !CSRFProtection.validateToken(req.session.csrfToken, token)) {
+        return res.status(403).json({ error: 'Invalid CSRF token' });
+      }
+
+      next();
+    };
+  }
+}
+```
+
+```html
+<!-- HTML form with CSRF token -->
+<form method="POST" action="/submit">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <input type="text" name="data" required>
+  <button type="submit">Submit</button>
+</form>
+
+<!-- AJAX with CSRF token -->
+<script>
+  const csrfToken = '<%= csrfToken %>';
+  
+  fetch('/api/data', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': csrfToken
+    },
+    body: JSON.stringify({ data: 'example' })
+  });
+</script>
+```
+
+---
+
+## 🔍 Security Testing & Monitoring
+
+### 1. Automated Security Testing
+
+```javascript
+// Security Testing Suite
+class SecurityTester {
+  constructor(baseURL) {
+    this.baseURL = baseURL;
+    this.results = [];
+  }
+
+  async runSecurityTests() {
+    console.log('🔍 Running security tests...');
+    
+    await this.testHTTPS();
+    await this.testSecurityHeaders();
+    await this.testCSP();
+    await this.testXSSVulnerabilities();
+    await this.testSQLInjection();
+    await this.testCSRF();
+    
+    return this.generateReport();
+  }
+
+  async testHTTPS() {
+    try {
+      const response = await fetch(this.baseURL.replace('https://', 'http://'));
+      
+      if (response.redirected && response.url.startsWith('https://')) {
+        this.addResult('HTTPS Redirect', 'PASS', 'HTTP properly redirects to HTTPS');
+      } else {
+        this.addResult('HTTPS Redirect', 'FAIL', 'HTTP does not redirect to HTTPS');
+      }
+    } catch (error) {
+      this.addResult('HTTPS Redirect', 'ERROR', error.message);
+    }
+  }
+
+  async testSecurityHeaders() {
+    try {
+      const response = await fetch(this.baseURL);
+      const headers = response.headers;
+
+      const requiredHeaders = [
+        'strict-transport-security',
+        'x-frame-options',
+        'x-content-type-options',
+        'referrer-policy',
+        'content-security-policy'
+      ];
+
+      requiredHeaders.forEach(header => {
+        if (headers.has(header)) {
+          this.addResult(`Header: ${header}`, 'PASS', headers.get(header));
+        } else {
+          this.addResult(`Header: ${header}`, 'FAIL', 'Header missing');
+        }
+      });
+    } catch (error) {
+      this.addResult('Security Headers', 'ERROR', error.message);
+    }
+  }
+
+  async testCSP() {
+    try {
+      const response = await fetch(this.baseURL);
+      const csp = response.headers.get('content-security-policy');
+      
+      if (!csp) {
+        this.addResult('CSP', 'FAIL', 'Content-Security-Policy header missing');
+        return;
+      }
+
+      // Check for unsafe directives
+      const unsafePatterns = [
+        "'unsafe-inline'",
+        "'unsafe-eval'",
+        "data:",
+        "*"
+      ];
+
+      const hasUnsafe = unsafePatterns.some(pattern => csp.includes(pattern));
+      
+      if (hasUnsafe) {
+        this.addResult('CSP Safety', 'WARN', 'CSP contains potentially unsafe directives');
+      } else {
+        this.addResult('CSP Safety', 'PASS', 'CSP appears secure');
+      }
+    } catch (error) {
+      this.addResult('CSP Test', 'ERROR', error.message);
+    }
+  }
+
+  async testXSSVulnerabilities() {
+    const xssPayloads = [
+      '<script>alert("XSS")</script>',
+      '"><script>alert("XSS")</script>',
+      "javascript:alert('XSS')",
+      '<img src=x onerror=alert("XSS")>'
+    ];
+
+    for (const payload of xssPayloads) {
+      try {
+        const response = await fetch(`${this.baseURL}/search?q=${encodeURIComponent(payload)}`);
+        const text = await response.text();
+        
+        if (text.includes(payload)) {
+          this.addResult('XSS Vulnerability', 'FAIL', `Reflected XSS found with payload: ${payload}`);
+          return;
+        }
+      } catch (error) {
+        // Continue testing other payloads
+      }
+    }
+    
+    this.addResult('XSS Vulnerability', 'PASS', 'No obvious XSS vulnerabilities found');
+  }
+
+  async testSQLInjection() {
+    const sqlPayloads = [
+      "' OR '1'='1",
+      "'; DROP TABLE users; --",
+      "' UNION SELECT * FROM users --"
+    ];
+
+    for (const payload of sqlPayloads) {
+      try {
+        const response = await fetch(`${this.baseURL}/user/${encodeURIComponent(payload)}`);
+        
+        if (response.status === 500) {
+          this.addResult('SQL Injection', 'WARN', 'Server error might indicate SQL injection vulnerability');
+          return;
+        }
+      } catch (error) {
+        // Continue testing
+      }
+    }
+    
+    this.addResult('SQL Injection', 'PASS', 'No obvious SQL injection vulnerabilities found');
+  }
+
+  async testCSRF() {
+    try {
+      // Test if state-changing requests work without CSRF token
+      const response = await fetch(`${this.baseURL}/api/test`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ test: 'data' })
+      });
+
+      if (response.status === 403) {
+        this.addResult('CSRF Protection', 'PASS', 'CSRF protection appears to be working');
+      } else {
+        this.addResult('CSRF Protection', 'WARN', 'CSRF protection might be missing');
+      }
+    } catch (error) {
+      this.addResult('CSRF Protection', 'ERROR', error.message);
+    }
+  }
+
+  addResult(test, status, message) {
+    this.results.push({ test, status, message, timestamp: new Date().toISOString() });
+  }
+
+  generateReport() {
+    const summary = {
+      total: this.results.length,
+      passed: this.results.filter(r => r.status === 'PASS').length,
+      failed: this.results.filter(r => r.status === 'FAIL').length,
+      warnings: this.results.filter(r => r.status === 'WARN').length,
+      errors: this.results.filter(r => r.status === 'ERROR').length
+    };
+
+    return {
+      summary,
+      results: this.results,
+      score: Math.round((summary.passed / summary.total) * 100)
+    };
+  }
+}
+
+// Usage
+const tester = new SecurityTester('https://hilaltechnologic.info');
+tester.runSecurityTests().then(report => {
+  console.log('Security Test Report:', report);
+});
+```
+
+### 2. Real-time Security Monitoring
+
+```javascript
+// Security Monitoring System
+class SecurityMonitor {
+  constructor() {
+    this.alerts = [];
+    this.metrics = new Map();
+    this.init();
+  }
+
+  init() {
+    this.setupRateLimiting();
+    this.setupAnomalyDetection();
+    this.setupLogAnalysis();
+    this.setupAlertSystem();
+  }
+
+  setupRateLimiting() {
+    const rateLimit = require('express-rate-limit');
+    
+    // General rate limiting
+    const generalLimiter = rateLimit({
+      windowMs: 15 * 60 * 1000, // 15 minutes
+      max: 100, // limit each IP to 100 requests per windowMs
+      message: 'Too many requests from this IP',
+      standardHeaders: true,
+      legacyHeaders: false,
+      handler: (req, res) => {
+        this.logSecurityEvent('RATE_LIMIT_EXCEEDED', {
+          ip: req.ip,
+          userAgent: req.get('User-Agent'),
+          url: req.url
+        });
+        res.status(429).json({ error: 'Rate limit exceeded' });
+      }
+    });
+
+    // Strict rate limiting for auth endpoints
+    const authLimiter = rateLimit({
+      windowMs: 15 * 60 * 1000,
+      max: 5,
+      skipSuccessfulRequests: true,
+      handler: (req, res) => {
+        this.logSecurityEvent('AUTH_RATE_LIMIT_EXCEEDED', {
+          ip: req.ip,
+          userAgent: req.get('User-Agent'),
+          endpoint: req.url
+        });
+        res.status(429).json({ error: 'Too many authentication attempts' });
+      }
+    });
+
+    return { generalLimiter, authLimiter };
+  }
+
+  setupAnomalyDetection() {
+    // Track request patterns
+    const requestPatterns = new Map();
+
+    return (req, res, next) => {
+      const key = req.ip;
+      const now = Date.now();
+      
+      if (!requestPatterns.has(key)) {
+        requestPatterns.set(key, []);
+      }
+
+      const requests = requestPatterns.get(key);
+      requests.push(now);
+
+      // Keep only requests from last hour
+      const oneHour = 60 * 60 * 1000;
+      const recentRequests = requests.filter(time => now - time < oneHour);
+      requestPatterns.set(key, recentRequests);
+
+      // Detect anomalies
+      if (recentRequests.length > 1000) {
+        this.logSecurityEvent('POTENTIAL_DDoS', {
+          ip: req.ip,
+          requestCount: recentRequests.length,
+          timeWindow: '1 hour'
+        });
+      }
+
+      // Detect suspicious patterns
+      const suspiciousPatterns = [
+        /\.\./,  // Directory traversal
+        /<script/i,  // XSS attempts
+        /union.*select/i,  // SQL injection
+        /exec\(/i,  // Code injection
+      ];
+
+      const url = req.url.toLowerCase();
+      const body = JSON.stringify(req.body || {}).toLowerCase();
+      
+      suspiciousPatterns.forEach(pattern => {
+        if (pattern.test(url) || pattern.test(body)) {
+          this.logSecurityEvent('SUSPICIOUS_REQUEST', {
+            ip: req.ip,
+            pattern: pattern.toString(),
+            url: req.url,
+            userAgent: req.get('User-Agent')
+          });
+        }
+      });
+
+      next();
+    };
+  }
+
+  setupLogAnalysis() {
+    // Analyze logs for security events
+    setInterval(() => {
+      this.analyzeSecurityLogs();
+    }, 5 * 60 * 1000); // Every 5 minutes
+  }
+
+  analyzeSecurityLogs() {
+    // Implement log analysis logic
+    const recentEvents = this.getRecentSecurityEvents();
+    
+    // Detect brute force attacks
+    const authFailures = recentEvents.filter(e => e.type === 'AUTH_FAILURE');
+    const ipGroups = this.groupByIP(authFailures);
+    
+    Object.entries(ipGroups).forEach(([ip, events]) => {
+      if (events.length > 10) {
+        this.triggerAlert('BRUTE_FORCE_DETECTED', {
+          ip,
+          attempts: events.length,
+          timeframe: '5 minutes'
+        });
+      }
+    });
+
+    // Detect coordinated attacks
+    const suspiciousIPs = Object.keys(ipGroups).filter(ip => ipGroups[ip].length > 5);
+    if (suspiciousIPs.length > 10) {
+      this.triggerAlert('COORDINATED_ATTACK', {
+        suspiciousIPs: suspiciousIPs.length,
+        totalAttempts: suspiciousIPs.reduce((sum, ip) => sum + ipGroups[ip].length, 0)
+      });
+    }
+  }
+
+  setupAlertSystem() {
+    // Setup various alert channels
+    this.alertChannels = {
+      email: this.sendEmailAlert.bind(this),
+      slack: this.sendSlackAlert.bind(this),
+      webhook: this.sendWebhookAlert.bind(this),
+      sms: this.sendSMSAlert.bind(this)
+    };
+  }
+
+  logSecurityEvent(type, data) {
+    const event = {
+      type,
+      data,
+      timestamp: new Date().toISOString(),
+      severity: this.getSeverity(type)
+    };
+
+    console.log('Security Event:', event);
+    
+    // Store in database or log file
+    this.storeSecurityEvent(event);
+
+    // Trigger immediate alerts for critical events
+    if (event.severity === 'CRITICAL') {
+      this.triggerAlert(type, data);
+    }
+  }
+
+  getSeverity(eventType) {
+    const severityMap = {
+      'RATE_LIMIT_EXCEEDED': 'LOW',
+      'AUTH_RATE_LIMIT_EXCEEDED': 'MEDIUM',
+      'SUSPICIOUS_REQUEST': 'MEDIUM',
+      'POTENTIAL_DDoS': 'HIGH',
+      'BRUTE_FORCE_DETECTED': 'HIGH',
+      'COORDINATED_ATTACK': 'CRITICAL',
+      'DATA_BREACH': 'CRITICAL'
+    };
+
+    return severityMap[eventType] || 'LOW';
+  }
+
+  triggerAlert(type, data) {
+    const alert = {
+      type,
+      data,
+      timestamp: new Date().toISOString(),
+      id: require('crypto').randomUUID()
+    };
+
+    this.alerts.push(alert);
+
+    // Send to all configured alert channels
+    Object.values(this.alertChannels).forEach(channel => {
+      try {
+        channel(alert);
+      } catch (error) {
+        console.error('Alert channel error:', error);
+      }
+    });
+  }
+
+  async sendEmailAlert(alert) {
+    // Email alert implementation
+    const nodemailer = require('nodemailer');
+    
+    const transporter = nodemailer.createTransporter({
+      // Email configuration
+    });
+
+    await transporter.sendMail({
+      to: 'security@hilaltechnologic.info',
+      subject: `Security Alert: ${alert.type}`,
+      html: `
+        <h2>Security Alert</h2>
+        <p><strong>Type:</strong> ${alert.type}</p>
+        <p><strong>Time:</strong> ${alert.timestamp}</p>
+        <p><strong>Data:</strong></p>
+        <pre>${JSON.stringify(alert.data, null, 2)}</pre>
+      `
+    });
+  }
+
+  async sendSlackAlert(alert) {
+    // Slack alert implementation
+    const webhook = 'YOUR_SLACK_WEBHOOK_URL';
+    
+    await fetch(webhook, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        text: `🚨 Security Alert: ${alert.type}`,
+        attachments: [{
+          color: 'danger',
+          fields: [
+            { title: 'Type', value: alert.type, short: true },
+            { title: 'Time', value: alert.timestamp, short: true },
+            { title: 'Data', value: JSON.stringify(alert.data, null, 2), short: false }
+          ]
+        }]
+      })
+    });
+  }
+
+  // Additional helper methods
+  getRecentSecurityEvents() {
+    // Implementation to get recent events from storage
+    return [];
+  }
+
+  groupByIP(events) {
+    return events.reduce((groups, event) => {
+      const ip = event.data.ip;
+      if (!groups[ip]) groups[ip] = [];
+      groups[ip].push(event);
+      return groups;
+    }, {});
+  }
+
+  storeSecurityEvent(event) {
+    // Store event in database or log file
+    console.log('Storing security event:', event);
+  }
+}
+
+// Initialize security monitoring
+const securityMonitor = new SecurityMonitor();
+```
+
+---
+
+## 🛠️ Security Tools & Resources
+
+### 1. Essential Security Tools
+
+```javascript
+// Security Tools Checklist
+const securityTools = {
+  // SSL/TLS Testing
+  sslTesting: [
+    "SSL Labs SSL Test (ssllabs.com/ssltest)",
+    "testssl.sh command line tool",
+    "Mozilla Observatory",
+    "Hardenize.com"
+  ],
+
+  // Security Headers Testing
+  headerTesting: [
+    "securityheaders.com",
+    "Mozilla Observatory",
+    "webhint.io",
+    "Chrome DevTools Security tab"
+  ],
+
+  // Vulnerability Scanning
+  vulnerabilityScanning: [
+    "OWASP ZAP (free)",
+    "Burp Suite Community",
+    "Nessus (commercial)",
+    "Qualys VMDR",
+    "Rapid7 InsightVM"
+  ],
+
+  // Code Analysis
+  codeAnalysis: [
+    "SonarQube",
+    "Snyk",
+    "GitHub Security Advisories",
+    "npm audit",
+    "ESLint security plugins"
+  ],
+
+  // Monitoring & Alerting
+  monitoring: [
+    "Sentry (error tracking)",
+    "LogRocket (session replay)",
+    "Datadog (infrastructure)",
+    "New Relic (APM)",
+    "Splunk (log analysis)"
+  ]
+};
+```
+
+### 2. Security Automation Scripts
+
+```bash
+#!/bin/bash
+# security-check.sh - Automated security checking script
+
+echo "🔍 Running Security Checks..."
+
+# Check SSL certificate
+echo "Checking SSL certificate..."
+openssl s_client -connect hilaltechnologic.info:443 -servername hilaltechnologic.info < /dev/null 2>/dev/null | openssl x509 -noout -dates
+
+# Check security headers
+echo "Checking security headers..."
+curl -I https://hilaltechnologic.info | grep -E "(Strict-Transport-Security|Content-Security-Policy|X-Frame-Options|X-Content-Type-Options)"
+
+# Check for common vulnerabilities
+echo "Checking for common vulnerabilities..."
+nmap -sV --script vuln hilaltechnologic.info
+
+# Check dependencies for vulnerabilities
+echo "Checking npm dependencies..."
+npm audit
+
+# Run custom security tests
+echo "Running custom security tests..."
+node security-test.js
+
+echo "✅ Security check completed!"
+```
+
+### 3. Security Configuration Templates
+
+```yaml
+# docker-compose.yml - Secure Docker setup
+version: '3.8'
+services:
+  web:
+    image: nginx:alpine
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/ssl:ro
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+    user: "101:101"
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+```
+
+```nginx
+# nginx.conf - Secure Nginx configuration
+user nginx;
+worker_processes auto;
+error_log /var/log/nginx/error.log warn;
+pid /var/run/nginx.pid;
+
+events {
+    worker_connections 1024;
+    use epoll;
+    multi_accept on;
+}
+
+http {
+    # Security headers
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+    
+    # Hide server information
+    server_tokens off;
+    
+    # Rate limiting
+    limit_req_zone $binary_remote_addr zone=login:10m rate=1r/s;
+    limit_req_zone $binary_remote_addr zone=api:10m rate=10r/s;
+    
+    # SSL configuration
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384;
+    ssl_prefer_server_ciphers off;
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_timeout 10m;
+    
+    server {
+        listen 443 ssl http2;
+        server_name hilaltechnologic.info;
+        
+        ssl_certificate /etc/ssl/cert.pem;
+        ssl_certificate_key /etc/ssl/key.pem;
+        
+        # Security configurations
+        location /login {
+            limit_req zone=login burst=5 nodelay;
+        }
+        
+        location /api/ {
+            limit_req zone=api burst=20 nodelay;
+        }
+        
+        # Block common attack patterns
+        location ~* \.(php|asp|aspx|jsp)$ {
+            return 444;
+        }
+        
+        location ~* /\. {
+            deny all;
+        }
+    }
+}
+```
+
+---
+
+## 🎯 Kesimpulan & Best Practices
+
+### ✅ **Security Checklist 2025**
+
+#### Foundation Security
+- [ ] **HTTPS implemented** dengan certificate valid
+- [ ] **HTTP to HTTPS redirect** dikonfigurasi
+- [ ] **HSTS header** dengan preload enabled
+- [ ] **Security headers** lengkap terpasang
+- [ ] **CSP policy** yang ketat diterapkan
+
+#### Application Security
+- [ ] **Input validation** di semua form
+- [ ] **Output encoding** untuk mencegah XSS
+- [ ] **Parameterized queries** untuk database
+- [ ] **CSRF protection** di state-changing requests
+- [ ] **Authentication & authorization** yang robust
+
+#### Infrastructure Security
+- [ ] **Server hardening** dan regular updates
+- [ ] **Firewall configuration** yang proper
+- [ ] **Rate limiting** untuk API endpoints
+- [ ] **Monitoring & alerting** system
+- [ ] **Backup & recovery** procedures
+
+#### Compliance & Governance
+- [ ] **Security policies** documented
+- [ ] **Regular security audits** scheduled
+- [ ] **Incident response plan** prepared
+- [ ] **Staff security training** conducted
+- [ ] **Compliance requirements** met
+
+### 🚀 **Implementation Roadmap**
+
+#### Week 1: Foundation
+- ✅ Setup HTTPS dengan Let's Encrypt
+- ✅ Configure basic security headers
+- ✅ Implement HTTP to HTTPS redirect
+- ✅ Setup basic CSP policy
+
+#### Week 2: Application Security
+- ✅ Add input validation & sanitization
+- ✅ Implement CSRF protection
+- ✅ Setup rate limiting
+- ✅ Add XSS protection measures
+
+#### Week 3: Advanced Security
+- ✅ Enhance CSP with nonces/hashes
+- ✅ Setup security monitoring
+- ✅ Implement anomaly detection
+- ✅ Configure alerting system
+
+#### Week 4: Testing & Maintenance
+- ✅ Run comprehensive security tests
+- ✅ Setup automated security scanning
+- ✅ Create incident response procedures
+- ✅ Document security policies
+
+### 📊 **Security Metrics to Track**
+
+```javascript
+// Security KPIs
+const securityMetrics = {
+  technical: {
+    sslGrade: "A+ rating on SSL Labs",
+    securityHeaders: "100% score on securityheaders.com",
+    vulnerabilities: "Zero critical vulnerabilities",
+    uptime: "99.9% availability",
+    responseTime: "< 200ms average"
+  },
+  
+  operational: {
+    incidentResponse: "< 1 hour detection time",
+    patchManagement: "Critical patches within 24 hours",
+    backupRecovery: "< 4 hours RTO",
+    staffTraining: "100% completion rate",
+    complianceAudits: "Pass all required audits"
+  },
+  
+  business: {
+    customerTrust: "Zero security-related churn",
+    brandReputation: "No negative security incidents",
+    legalCompliance: "100% regulatory compliance",
+    insuranceCoverage: "Adequate cyber insurance",
+    competitiveAdvantage: "Security as differentiator"
+  }
+};
+```
+
+### 🔮 **Future of Web Security**
+
+#### Emerging Threats 2025+
+- **AI-powered attacks** - Machine learning untuk bypass security
+- **Quantum computing** - Threat terhadap current encryption
+- **IoT vulnerabilities** - Expanded attack surface
+- **Supply chain attacks** - Third-party dependency risks
+- **Social engineering 2.0** - Deepfakes dan AI manipulation
+
+#### Next-Generation Security
+- **Zero Trust Architecture** - Never trust, always verify
+- **Behavioral Analytics** - AI-powered anomaly detection
+- **Quantum-resistant Cryptography** - Post-quantum algorithms
+- **Automated Response** - AI-driven incident response
+- **Privacy-preserving Technologies** - Homomorphic encryption
+
+### 🛡️ **Security Culture**
+
+```javascript
+// Building Security Culture
+const securityCulture = {
+  principles: [
+    "Security is everyone's responsibility",
+    "Fail securely by default",
+    "Defense in depth strategy",
+    "Continuous improvement mindset",
+    "Transparency in security practices"
+  ],
+  
+  practices: [
+    "Regular security training",
+    "Security code reviews",
+    "Threat modeling sessions",
+    "Incident response drills",
+    "Security champions program"
+  ],
+  
+  tools: [
+    "Security-focused development tools",
+    "Automated security testing",
+    "Real-time monitoring dashboards",
+    "Incident management systems",
+    "Knowledge sharing platforms"
+  ]
+};
+```
+
+## 🔗 **Resources & Further Reading**
+
+### Essential Reading
+- [OWASP Top 10 2021](https://owasp.org/Top10/) - Web application security risks
+- [Mozilla Web Security Guidelines](https://infosec.mozilla.org/guidelines/web_security) - Comprehensive security guide
+- [Google Web Fundamentals Security](https://developers.google.com/web/fundamentals/security) - Security best practices
+
+### Tools & Testing
+- [SSL Labs SSL Test](https://www.ssllabs.com/ssltest/) - SSL configuration testing
+- [Security Headers](https://securityheaders.com/) - Security headers analysis
+- [Mozilla Observatory](https://observatory.mozilla.org/) - Website security assessment
+
+### Compliance & Standards
+- [NIST Cybersecurity Framework](https://www.nist.gov/cyberframework) - Cybersecurity framework
+- [ISO 27001](https://www.iso.org/isoiec-27001-information-security.html) - Information security management
+- [PCI DSS](https://www.pcisecuritystandards.org/) - Payment card industry standards
+
+### Community & Updates
+- [OWASP Community](https://owasp.org/) - Open Web Application Security Project
+- [CVE Database](https://cve.mitre.org/) - Common vulnerabilities and exposures
+- [Security Advisories](https://github.com/advisories) - GitHub security advisories
+
+## 🔗 **Artikel Terkait:**
+
+- [Progressive Web Apps (PWA) 2025: Panduan Lengkap](https://hilaltechnologic.info/blog/progressive-web-apps-pwa-2025-panduan-lengkap)
+- [Core Web Vitals 2025: Panduan Optimasi Google Ranking](https://hilaltechnologic.info/blog/core-web-vitals-2025-panduan-optimasi-google)
+- [Tips Optimasi Website Loading Cepat](https://hilaltechnologic.info/blog/tips-optimasi-website-loading-cepat)
+
+---
+
+Web security bukan hanya tentang teknologi, tapi juga tentang mindset dan culture. Dengan mengimplementasikan panduan ini, Anda sudah selangkah lebih maju dalam membangun website yang aman dan terpercaya di era digital 2025.
+
+Ingat: **Security is not a destination, but a journey**. Terus update pengetahuan dan praktik keamanan Anda!
+
+> Ditulis dengan ❤️ oleh [Hilal Technologic](https://hilaltechnologic.info)
