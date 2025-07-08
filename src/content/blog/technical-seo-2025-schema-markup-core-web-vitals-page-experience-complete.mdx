@@ -1,0 +1,1379 @@
+---
+title: "Technical SEO 2025: Schema Markup, Core Web Vitals, dan Page Experience - Developer's Guide to Ranking Higher"
+description: "Panduan lengkap Technical SEO untuk developer. Schema markup, Core Web Vitals optimization, page experience signals, dan teknik SEO yang actually work di 2025."
+publishedDate: 2025-01-08
+author:
+  name: "Hilal Technologic"
+  url: "https://hilaltechnologic.info/author/admin"
+tags: ["technical-seo", "schema-markup", "core-web-vitals", "page-experience", "seo-optimization", "structured-data", "web-performance"]
+image: "/images/blog/technical-seo-2025-cover.webp"
+imageAlt: "Technical SEO 2025 Developer Guide Cover"
+featured: true
+draft: false
+readingTime: "25 menit baca"
+---
+
+# 🔍 Technical SEO 2025: Schema Markup, Core Web Vitals, dan Page Experience - Developer's Guide to Ranking Higher
+
+Lo tau gak sih, dulu gue mikir SEO itu cuma urusan content writer. "Ah, gue kan developer, yang penting website jalan cepet, ranking urusan marketing team." Ternyata... gue salah besar. 😅
+
+Pas pertama kali website company gue turun ranking drastis gara-gara technical issues, bos langsung nanya: "Kenapa traffic organic turun 60%?" Dan gue cuma bisa jawab: "Eh... mungkin algoritma Google berubah?" 
+
+Plot twist: ternyata masalahnya di technical implementation yang gue abaikan. Schema markup berantakan, Core Web Vitals jelek, dan page experience signals diabaikan total. Lesson learned: **Technical SEO is a developer's responsibility**.
+
+> "SEO is not something you do, it's what happens when you do everything else right." - Chad Pollitt
+
+---
+
+## 🤔 Kenapa Developer Harus Peduli sama Technical SEO?
+
+Sebelum kita dive ke implementation, gue mau jelasin dulu kenapa technical SEO itu crucial banget buat developer di 2025.
+
+### The Reality Check
+
+```javascript
+// Conversation yang sering terjadi:
+const typicalScenario = {
+  marketing: "Website traffic turun 40% bulan ini!",
+  developer: "Tapi website kan jalan normal, loading cepet juga...",
+  marketing: "Google Console bilang ada masalah technical SEO",
+  developer: "Technical SEO? Itu apaan?" // 😰
+};
+
+// Yang seharusnya terjadi:
+const betterScenario = {
+  marketing: "Website traffic turun 40% bulan ini!",
+  developer: "Let me check... Oh, CLS score jelek gara-gara ads layout shift. Dan schema markup-nya broken. Give me 2 hours to fix.",
+  marketing: "You're a lifesaver!" // 😎
+};
+```
+
+### Technical SEO Impact di 2025
+
+```javascript
+const technicalSEOImpact = {
+  coreWebVitals: {
+    impact: "Direct ranking factor since 2021",
+    weight: "Increasingly important in 2025",
+    metrics: ["LCP", "INP", "CLS"],
+    businessImpact: "1 second delay = 7% conversion drop"
+  },
+  
+  schemaMarkup: {
+    impact: "Rich snippets & featured snippets",
+    visibility: "Up to 30% higher CTR",
+    aiSearch: "Critical for AI search engines (Bard, ChatGPT)",
+    voiceSearch: "Essential for voice search optimization"
+  },
+  
+  pageExperience: {
+    mobileFirst: "Mobile-first indexing is default",
+    https: "Required for ranking",
+    intrusive: "Intrusive interstitials penalty",
+    safeBrowsing: "Malware/phishing detection"
+  }
+};
+```
+
+---
+
+## 🚀 Schema Markup: Making Your Content Understandable
+
+Schema markup itu kayak ngasih "subtitle" ke Google tentang content lo. Tanpa schema, Google harus "nebak" apa isi website lo.
+
+### Basic Schema Implementation
+
+```html
+<!-- Article Schema - Basic Implementation -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Technical SEO 2025: Developer's Guide",
+  "description": "Panduan lengkap Technical SEO untuk developer",
+  "image": "https://hilaltechnologic.info/images/blog/technical-seo-2025-cover.webp",
+  "author": {
+    "@type": "Person",
+    "name": "Hilal Technologic",
+    "url": "https://hilaltechnologic.info/author/admin"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Hilal Technologic",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://hilaltechnologic.info/images/logo.png"
+    }
+  },
+  "datePublished": "2025-01-08",
+  "dateModified": "2025-01-08",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://hilaltechnologic.info/blog/technical-seo-2025"
+  }
+}
+</script>
+```
+
+### Advanced Schema Implementation
+
+```javascript
+// Schema generator utility
+class SchemaGenerator {
+  constructor(baseUrl, organizationData) {
+    this.baseUrl = baseUrl;
+    this.organization = organizationData;
+  }
+
+  // Article schema
+  generateArticleSchema(article) {
+    return {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": article.title,
+      "description": article.description,
+      "image": article.image ? `${this.baseUrl}${article.image}` : null,
+      "author": {
+        "@type": "Person",
+        "name": article.author.name,
+        "url": article.author.url
+      },
+      "publisher": this.organization,
+      "datePublished": article.publishedDate,
+      "dateModified": article.modifiedDate || article.publishedDate,
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": `${this.baseUrl}${article.slug}`
+      },
+      "wordCount": article.wordCount,
+      "keywords": article.tags?.join(", "),
+      "articleSection": article.category,
+      "inLanguage": "id-ID"
+    };
+  }
+
+  // FAQ schema
+  generateFAQSchema(faqs) {
+    return {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": faqs.map(faq => ({
+        "@type": "Question",
+        "name": faq.question,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": faq.answer
+        }
+      }))
+    };
+  }
+
+  // HowTo schema
+  generateHowToSchema(tutorial) {
+    return {
+      "@context": "https://schema.org",
+      "@type": "HowTo",
+      "name": tutorial.title,
+      "description": tutorial.description,
+      "image": tutorial.image ? `${this.baseUrl}${tutorial.image}` : null,
+      "totalTime": tutorial.duration,
+      "estimatedCost": {
+        "@type": "MonetaryAmount",
+        "currency": "USD",
+        "value": tutorial.cost || "0"
+      },
+      "step": tutorial.steps.map((step, index) => ({
+        "@type": "HowToStep",
+        "position": index + 1,
+        "name": step.title,
+        "text": step.description,
+        "image": step.image ? `${this.baseUrl}${step.image}` : null,
+        "url": `${this.baseUrl}${tutorial.slug}#step-${index + 1}`
+      }))
+    };
+  }
+
+  // Breadcrumb schema
+  generateBreadcrumbSchema(breadcrumbs) {
+    return {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": breadcrumbs.map((crumb, index) => ({
+        "@type": "ListItem",
+        "position": index + 1,
+        "name": crumb.name,
+        "item": `${this.baseUrl}${crumb.url}`
+      }))
+    };
+  }
+}
+```
+
+### React/Next.js Schema Implementation
+
+```jsx
+// components/SchemaMarkup.jsx
+import Head from 'next/head';
+
+const SchemaMarkup = ({ schema }) => {
+  return (
+    <Head>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(schema, null, 2)
+        }}
+      />
+    </Head>
+  );
+};
+
+// hooks/useSchema.js
+import { useMemo } from 'react';
+import { useRouter } from 'next/router';
+
+export const useSchema = () => {
+  const router = useRouter();
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+
+  const generateArticleSchema = useMemo(() => (article) => {
+    return {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": article.title,
+      "description": article.description,
+      "image": article.image ? `${baseUrl}${article.image}` : null,
+      "author": {
+        "@type": "Person",
+        "name": article.author.name,
+        "url": article.author.url
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Hilal Technologic",
+        "logo": {
+          "@type": "ImageObject",
+          "url": `${baseUrl}/images/logo.png`
+        }
+      },
+      "datePublished": article.publishedDate,
+      "dateModified": article.modifiedDate || article.publishedDate,
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": `${baseUrl}${router.asPath}`
+      }
+    };
+  }, [baseUrl, router.asPath]);
+
+  return { generateArticleSchema };
+};
+```
+
+---
+
+## ⚡ Core Web Vitals Optimization
+
+Core Web Vitals adalah ranking factor yang gak bisa diabaikan di 2025.
+
+### LCP (Largest Contentful Paint) Optimization
+
+```javascript
+// LCP optimization strategies
+const LCPOptimization = {
+  // 1. Preload critical resources
+  preloadCriticalResources: () => {
+    // Preload LCP image
+    const link = document.createElement('link');
+    link.rel = 'preload';
+    link.as = 'image';
+    link.href = '/images/hero-image.webp';
+    link.fetchPriority = 'high';
+    document.head.appendChild(link);
+  },
+
+  // 2. Optimize images
+  optimizeImages: {
+    // Use modern formats
+    webp: '<img src="hero.webp" alt="Hero" fetchpriority="high">',
+    avif: '<picture><source srcset="hero.avif" type="image/avif"><img src="hero.webp" alt="Hero"></picture>',
+    
+    // Proper sizing
+    responsive: `
+      <img 
+        src="hero-800.webp"
+        srcset="hero-400.webp 400w, hero-800.webp 800w, hero-1200.webp 1200w"
+        sizes="(max-width: 768px) 100vw, 50vw"
+        alt="Hero"
+        fetchpriority="high"
+      >
+    `
+  },
+
+  // 3. Critical CSS inlining
+  inlineCriticalCSS: `
+    <style>
+      /* Critical CSS for above-the-fold content */
+      .hero { height: 60vh; background: #f0f0f0; }
+      .nav { height: 60px; background: white; }
+    </style>
+  `,
+
+  // 4. Resource hints
+  resourceHints: `
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://api.example.com">
+    <link rel="dns-prefetch" href="https://analytics.google.com">
+  `
+};
+```
+
+### CLS (Cumulative Layout Shift) Prevention
+
+```css
+/* CLS prevention strategies */
+
+/* 1. Reserve space for images */
+.image-container {
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  overflow: hidden;
+}
+
+.image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 2. Font loading optimization */
+@font-face {
+  font-family: 'CustomFont';
+  src: url('font.woff2') format('woff2');
+  font-display: swap;
+  size-adjust: 100.06%;
+  ascent-override: 105%;
+  descent-override: 35%;
+}
+
+/* 3. Reserve space for ads */
+.ad-container {
+  width: 100%;
+  height: 250px;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 4. Skeleton loading */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+```
+
+---
+
+## 📱 Page Experience Signals
+
+Page Experience adalah kombinasi dari berbagai signals yang menentukan user experience di website lo.
+
+### Mobile-First Indexing
+
+```html
+<!-- Responsive meta tag (wajib) -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Responsive images -->
+<picture>
+  <source media="(max-width: 768px)" srcset="mobile-image.webp">
+  <source media="(max-width: 1024px)" srcset="tablet-image.webp">
+  <img src="desktop-image.webp" alt="Responsive Image">
+</picture>
+
+<!-- Responsive typography -->
+<style>
+  h1 {
+    font-size: clamp(1.5rem, 4vw, 3rem);
+    line-height: 1.2;
+  }
+  
+  .container {
+    width: min(90%, 1200px);
+    margin: 0 auto;
+  }
+</style>
+```
+
+### HTTPS Implementation
+
+```javascript
+// Security headers implementation
+const securityHeaders = {
+  // Content Security Policy
+  csp: `
+    Content-Security-Policy: 
+    default-src 'self'; 
+    script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; 
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; 
+    img-src 'self' data: https:; 
+    font-src 'self' https://fonts.gstatic.com;
+  `,
+  
+  // HTTP Strict Transport Security
+  hsts: 'Strict-Transport-Security: max-age=31536000; includeSubDomains; preload',
+  
+  // X-Frame-Options
+  frameOptions: 'X-Frame-Options: DENY',
+  
+  // X-Content-Type-Options
+  contentType: 'X-Content-Type-Options: nosniff',
+  
+  // Referrer Policy
+  referrer: 'Referrer-Policy: strict-origin-when-cross-origin'
+};
+
+// Next.js security headers
+// next.config.js
+module.exports = {
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY'
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff'
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin'
+          },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=31536000; includeSubDomains; preload'
+          }
+        ]
+      }
+    ];
+  }
+};
+```
+
+---
+
+## 🛠️ Technical SEO Tools & Monitoring
+
+### SEO Monitoring Dashboard
+
+```javascript
+// Technical SEO monitoring
+class TechnicalSEOMonitor {
+  constructor() {
+    this.metrics = new Map();
+    this.issues = [];
+  }
+
+  // Monitor Core Web Vitals
+  monitorCoreWebVitals() {
+    // LCP monitoring
+    new PerformanceObserver((list) => {
+      const entries = list.getEntries();
+      const lastEntry = entries[entries.length - 1];
+      
+      this.metrics.set('lcp', {
+        value: lastEntry.startTime,
+        rating: lastEntry.startTime <= 2500 ? 'good' : 
+                lastEntry.startTime <= 4000 ? 'needs-improvement' : 'poor',
+        timestamp: Date.now()
+      });
+      
+      if (lastEntry.startTime > 2500) {
+        this.issues.push({
+          type: 'performance',
+          metric: 'LCP',
+          value: lastEntry.startTime,
+          severity: lastEntry.startTime > 4000 ? 'high' : 'medium',
+          recommendation: 'Optimize LCP element loading'
+        });
+      }
+    }).observe({ entryTypes: ['largest-contentful-paint'] });
+
+    // CLS monitoring
+    let clsValue = 0;
+    new PerformanceObserver((list) => {
+      const entries = list.getEntries();
+      entries.forEach(entry => {
+        if (!entry.hadRecentInput) {
+          clsValue += entry.value;
+        }
+      });
+      
+      this.metrics.set('cls', {
+        value: clsValue,
+        rating: clsValue <= 0.1 ? 'good' : 
+                clsValue <= 0.25 ? 'needs-improvement' : 'poor',
+        timestamp: Date.now()
+      });
+      
+      if (clsValue > 0.1) {
+        this.issues.push({
+          type: 'layout',
+          metric: 'CLS',
+          value: clsValue,
+          severity: clsValue > 0.25 ? 'high' : 'medium',
+          recommendation: 'Fix layout shift issues'
+        });
+      }
+    }).observe({ entryTypes: ['layout-shift'] });
+  }
+
+  // Check schema markup
+  validateSchemaMarkup() {
+    const scripts = document.querySelectorAll('script[type="application/ld+json"]');
+    
+    scripts.forEach((script, index) => {
+      try {
+        const schema = JSON.parse(script.textContent);
+        
+        // Basic validation
+        if (!schema['@context'] || !schema['@type']) {
+          this.issues.push({
+            type: 'schema',
+            element: `script[${index}]`,
+            severity: 'medium',
+            recommendation: 'Add required @context and @type properties'
+          });
+        }
+        
+        // Validate required properties for Article
+        if (schema['@type'] === 'Article') {
+          const requiredProps = ['headline', 'author', 'datePublished'];
+          requiredProps.forEach(prop => {
+            if (!schema[prop]) {
+              this.issues.push({
+                type: 'schema',
+                element: `Article schema`,
+                property: prop,
+                severity: 'medium',
+                recommendation: `Add required property: ${prop}`
+              });
+            }
+          });
+        }
+        
+      } catch (error) {
+        this.issues.push({
+          type: 'schema',
+          element: `script[${index}]`,
+          severity: 'high',
+          error: error.message,
+          recommendation: 'Fix JSON syntax error in schema markup'
+        });
+      }
+    });
+  }
+
+  // Check meta tags
+  validateMetaTags() {
+    const requiredMeta = [
+      { name: 'viewport', required: true },
+      { property: 'og:title', required: true },
+      { property: 'og:description', required: true },
+      { property: 'og:image', required: true },
+      { name: 'description', required: true }
+    ];
+
+    requiredMeta.forEach(meta => {
+      const selector = meta.name ? 
+        `meta[name="${meta.name}"]` : 
+        `meta[property="${meta.property}"]`;
+      
+      const element = document.querySelector(selector);
+      
+      if (!element && meta.required) {
+        this.issues.push({
+          type: 'meta',
+          tag: meta.name || meta.property,
+          severity: 'medium',
+          recommendation: `Add required meta tag: ${meta.name || meta.property}`
+        });
+      }
+    });
+  }
+
+  // Generate report
+  generateReport() {
+    return {
+      timestamp: new Date().toISOString(),
+      metrics: Object.fromEntries(this.metrics),
+      issues: this.issues,
+      summary: {
+        totalIssues: this.issues.length,
+        highSeverity: this.issues.filter(i => i.severity === 'high').length,
+        mediumSeverity: this.issues.filter(i => i.severity === 'medium').length,
+        lowSeverity: this.issues.filter(i => i.severity === 'low').length
+      }
+    };
+  }
+
+  // Send report to analytics
+  sendReport() {
+    const report = this.generateReport();
+    
+    // Send to your analytics endpoint
+    fetch('/api/seo-monitoring', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(report)
+    }).catch(error => {
+      console.error('Failed to send SEO report:', error);
+    });
+  }
+}
+
+// Initialize monitoring
+const seoMonitor = new TechnicalSEOMonitor();
+seoMonitor.monitorCoreWebVitals();
+seoMonitor.validateSchemaMarkup();
+seoMonitor.validateMetaTags();
+
+// Send report every 5 minutes
+setInterval(() => {
+  seoMonitor.sendReport();
+}, 5 * 60 * 1000);
+```
+
+---
+
+## 🎯 SEO Automation & CI/CD Integration
+
+### Lighthouse CI untuk SEO
+
+```yaml
+# .github/workflows/seo-audit.yml
+name: SEO Audit
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  seo-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Build project
+        run: npm run build
+        
+      - name: Run Lighthouse CI
+        run: |
+          npm install -g @lhci/cli@0.12.x
+          lhci autorun
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+```
+
+```javascript
+// lighthouserc.js
+module.exports = {
+  ci: {
+    collect: {
+      url: ['http://localhost:3000'],
+      startServerCommand: 'npm start',
+      numberOfRuns: 3
+    },
+    assert: {
+      assertions: {
+        'categories:seo': ['error', { minScore: 0.9 }],
+        'categories:accessibility': ['error', { minScore: 0.9 }],
+        'categories:best-practices': ['error', { minScore: 0.9 }],
+        'categories:performance': ['error', { minScore: 0.8 }],
+        
+        // SEO specific assertions
+        'meta-description': 'error',
+        'document-title': 'error',
+        'html-has-lang': 'error',
+        'meta-viewport': 'error',
+        'structured-data': 'warn',
+        
+        // Performance assertions
+        'first-contentful-paint': ['error', { maxNumericValue: 2000 }],
+        'largest-contentful-paint': ['error', { maxNumericValue: 2500 }],
+        'cumulative-layout-shift': ['error', { maxNumericValue: 0.1 }]
+      }
+    },
+    upload: {
+      target: 'temporary-public-storage'
+    }
+  }
+};
+```
+
+---
+
+## 🔍 Advanced SEO Techniques
+
+### Dynamic Schema Generation
+
+```javascript
+// Dynamic schema based on page content
+class DynamicSchemaGenerator {
+  constructor(pageData) {
+    this.pageData = pageData;
+    this.baseUrl = 'https://hilaltechnologic.info';
+  }
+
+  generatePageSchema() {
+    const schemas = [];
+
+    // Always add website schema
+    schemas.push(this.generateWebsiteSchema());
+
+    // Add breadcrumb if available
+    if (this.pageData.breadcrumbs) {
+      schemas.push(this.generateBreadcrumbSchema());
+    }
+
+    // Page-specific schemas
+    switch (this.pageData.type) {
+      case 'article':
+        schemas.push(this.generateArticleSchema());
+        break;
+      case 'product':
+        schemas.push(this.generateProductSchema());
+        break;
+      case 'faq':
+        schemas.push(this.generateFAQSchema());
+        break;
+      case 'howto':
+        schemas.push(this.generateHowToSchema());
+        break;
+    }
+
+    return schemas;
+  }
+
+  generateWebsiteSchema() {
+    return {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Hilal Technologic",
+      "url": this.baseUrl,
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": `${this.baseUrl}/search?q={search_term_string}`
+        },
+        "query-input": "required name=search_term_string"
+      }
+    };
+  }
+
+  generateArticleSchema() {
+    return {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": this.pageData.title,
+      "description": this.pageData.description,
+      "image": this.pageData.image ? `${this.baseUrl}${this.pageData.image}` : null,
+      "author": {
+        "@type": "Person",
+        "name": this.pageData.author.name,
+        "url": this.pageData.author.url
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Hilal Technologic",
+        "logo": {
+          "@type": "ImageObject",
+          "url": `${this.baseUrl}/images/logo.png`
+        }
+      },
+      "datePublished": this.pageData.publishedDate,
+      "dateModified": this.pageData.modifiedDate || this.pageData.publishedDate,
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": `${this.baseUrl}${this.pageData.slug}`
+      }
+    };
+  }
+
+  injectSchemas() {
+    const schemas = this.generatePageSchema();
+    
+    schemas.forEach(schema => {
+      const script = document.createElement('script');
+      script.type = 'application/ld+json';
+      script.textContent = JSON.stringify(schema, null, 2);
+      document.head.appendChild(script);
+    });
+  }
+}
+
+// Usage
+const pageData = {
+  type: 'article',
+  title: 'Technical SEO 2025',
+  description: 'Panduan lengkap Technical SEO',
+  slug: '/blog/technical-seo-2025',
+  author: {
+    name: 'Hilal Technologic',
+    url: 'https://hilaltechnologic.info/author/admin'
+  },
+  publishedDate: '2025-01-08',
+  breadcrumbs: [
+    { name: 'Home', url: '/' },
+    { name: 'Blog', url: '/blog' },
+    { name: 'Technical SEO 2025', url: '/blog/technical-seo-2025' }
+  ]
+};
+
+const schemaGenerator = new DynamicSchemaGenerator(pageData);
+schemaGenerator.injectSchemas();
+```
+
+---
+
+## 📊 SEO Performance Tracking
+
+### Custom SEO Metrics Dashboard
+
+```javascript
+// SEO performance tracking
+class SEOPerformanceTracker {
+  constructor() {
+    this.metrics = {
+      technical: {},
+      content: {},
+      performance: {}
+    };
+  }
+
+  // Track technical SEO metrics
+  trackTechnicalMetrics() {
+    // Schema markup coverage
+    const schemas = document.querySelectorAll('script[type="application/ld+json"]');
+    this.metrics.technical.schemaCount = schemas.length;
+
+    // Meta tags coverage
+    const metaTags = {
+      title: !!document.querySelector('title'),
+      description: !!document.querySelector('meta[name="description"]'),
+      viewport: !!document.querySelector('meta[name="viewport"]'),
+      ogTitle: !!document.querySelector('meta[property="og:title"]'),
+      ogDescription: !!document.querySelector('meta[property="og:description"]'),
+      ogImage: !!document.querySelector('meta[property="og:image"]')
+    };
+    
+    this.metrics.technical.metaCoverage = 
+      Object.values(metaTags).filter(Boolean).length / Object.keys(metaTags).length;
+
+    // HTTPS check
+    this.metrics.technical.isHTTPS = location.protocol === 'https:';
+
+    // Mobile-friendly check
+    this.metrics.technical.hasMobileViewport = !!document.querySelector('meta[name="viewport"]');
+  }
+
+  // Track content metrics
+  trackContentMetrics() {
+    // Heading structure
+    const headings = {
+      h1: document.querySelectorAll('h1').length,
+      h2: document.querySelectorAll('h2').length,
+      h3: document.querySelectorAll('h3').length,
+      h4: document.querySelectorAll('h4').length,
+      h5: document.querySelectorAll('h5').length,
+      h6: document.querySelectorAll('h6').length
+    };
+    
+    this.metrics.content.headingStructure = headings;
+    this.metrics.content.hasH1 = headings.h1 === 1; // Should have exactly one H1
+
+    // Image optimization
+    const images = document.querySelectorAll('img');
+    const imagesWithAlt = document.querySelectorAll('img[alt]');
+    this.metrics.content.imageAltCoverage = 
+      images.length > 0 ? imagesWithAlt.length / images.length : 1;
+
+    // Internal links
+    const internalLinks = document.querySelectorAll(`a[href^="/"], a[href^="${location.origin}"]`);
+    this.metrics.content.internalLinkCount = internalLinks.length;
+
+    // Word count
+    const textContent = document.body.innerText || document.body.textContent || '';
+    this.metrics.content.wordCount = textContent.split(/\s+/).length;
+  }
+
+  // Track performance metrics
+  trackPerformanceMetrics() {
+    // Core Web Vitals
+    if ('PerformanceObserver' in window) {
+      // LCP
+      new PerformanceObserver((list) => {
+        const entries = list.getEntries();
+        const lastEntry = entries[entries.length - 1];
+        this.metrics.performance.lcp = lastEntry.startTime;
+      }).observe({ entryTypes: ['largest-contentful-paint'] });
+
+      // CLS
+      let clsValue = 0;
+      new PerformanceObserver((list) => {
+        const entries = list.getEntries();
+        entries.forEach(entry => {
+          if (!entry.hadRecentInput) {
+            clsValue += entry.value;
+          }
+        });
+        this.metrics.performance.cls = clsValue;
+      }).observe({ entryTypes: ['layout-shift'] });
+    }
+
+    // Page load metrics
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const navigation = performance.getEntriesByType('navigation')[0];
+        this.metrics.performance.loadTime = navigation.loadEventEnd - navigation.navigationStart;
+        this.metrics.performance.domContentLoaded = navigation.domContentLoadedEventEnd - navigation.navigationStart;
+      }, 0);
+    });
+  }
+
+  // Generate SEO score
+  calculateSEOScore() {
+    let score = 0;
+    let maxScore = 0;
+
+    // Technical SEO (40% weight)
+    const technicalWeight = 0.4;
+    let technicalScore = 0;
+    
+    if (this.metrics.technical.isHTTPS) technicalScore += 10;
+    if (this.metrics.technical.hasMobileViewport) technicalScore += 10;
+    if (this.metrics.technical.metaCoverage >= 0.8) technicalScore += 15;
+    if (this.metrics.technical.schemaCount > 0) technicalScore += 15;
+    
+    score += technicalScore * technicalWeight;
+    maxScore += 50 * technicalWeight;
+
+    // Content SEO (30% weight)
+    const contentWeight = 0.3;
+    let contentScore = 0;
+    
+    if (this.metrics.content.hasH1) contentScore += 10;
+    if (this.metrics.content.imageAltCoverage >= 0.9) contentScore += 10;
+    if (this.metrics.content.wordCount >= 300) contentScore += 10;
+    if (this.metrics.content.internalLinkCount >= 3) contentScore += 10;
+    
+    score += contentScore * contentWeight;
+    maxScore += 40 * contentWeight;
+
+    // Performance SEO (30% weight)
+    const performanceWeight = 0.3;
+    let performanceScore = 0;
+    
+    if (this.metrics.performance.lcp <= 2500) performanceScore += 15;
+    if (this.metrics.performance.cls <= 0.1) performanceScore += 15;
+    if (this.metrics.performance.loadTime <= 3000) performanceScore += 10;
+    
+    score += performanceScore * performanceWeight;
+    maxScore += 40 * performanceWeight;
+
+    return Math.round((score / maxScore) * 100);
+  }
+
+  // Generate comprehensive report
+  generateReport() {
+    this.trackTechnicalMetrics();
+    this.trackContentMetrics();
+    this.trackPerformanceMetrics();
+
+    const seoScore = this.calculateSEOScore();
+
+    return {
+      timestamp: new Date().toISOString(),
+      url: window.location.href,
+      seoScore: seoScore,
+      metrics: this.metrics,
+      recommendations: this.generateRecommendations()
+    };
+  }
+
+  generateRecommendations() {
+    const recommendations = [];
+
+    // Technical recommendations
+    if (!this.metrics.technical.isHTTPS) {
+      recommendations.push({
+        type: 'technical',
+        priority: 'high',
+        issue: 'Not using HTTPS',
+        recommendation: 'Implement SSL certificate and redirect HTTP to HTTPS'
+      });
+    }
+
+    if (this.metrics.technical.metaCoverage < 0.8) {
+      recommendations.push({
+        type: 'technical',
+        priority: 'medium',
+        issue: 'Missing meta tags',
+        recommendation: 'Add missing meta tags (title, description, og tags)'
+      });
+    }
+
+    if (this.metrics.technical.schemaCount === 0) {
+      recommendations.push({
+        type: 'technical',
+        priority: 'medium',
+        issue: 'No schema markup',
+        recommendation: 'Add structured data markup for better search visibility'
+      });
+    }
+
+    // Content recommendations
+    if (!this.metrics.content.hasH1) {
+      recommendations.push({
+        type: 'content',
+        priority: 'high',
+        issue: 'Missing or multiple H1 tags',
+        recommendation: 'Use exactly one H1 tag per page'
+      });
+    }
+
+    if (this.metrics.content.imageAltCoverage < 0.9) {
+      recommendations.push({
+        type: 'content',
+        priority: 'medium',
+        issue: 'Images missing alt text',
+        recommendation: 'Add descriptive alt text to all images'
+      });
+    }
+
+    // Performance recommendations
+    if (this.metrics.performance.lcp > 2500) {
+      recommendations.push({
+        type: 'performance',
+        priority: 'high',
+        issue: 'Poor LCP score',
+        recommendation: 'Optimize largest contentful paint element'
+      });
+    }
+
+    if (this.metrics.performance.cls > 0.1) {
+      recommendations.push({
+        type: 'performance',
+        priority: 'high',
+        issue: 'Layout shift issues',
+        recommendation: 'Fix cumulative layout shift problems'
+      });
+    }
+
+    return recommendations;
+  }
+}
+
+// Initialize SEO tracking
+const seoTracker = new SEOPerformanceTracker();
+const seoReport = seoTracker.generateReport();
+console.log('SEO Report:', seoReport);
+```
+
+---
+
+## 🎯 SEO Best Practices Checklist
+
+### Technical SEO Checklist
+
+```javascript
+const technicalSEOChecklist = {
+  // Core Technical Requirements
+  coreRequirements: {
+    https: "✅ Website uses HTTPS",
+    mobileViewport: "✅ Mobile viewport meta tag present",
+    robotsTxt: "✅ Robots.txt file exists and is properly configured",
+    sitemap: "✅ XML sitemap exists and is submitted to search engines",
+    canonicalTags: "✅ Canonical tags implemented correctly"
+  },
+
+  // Meta Tags
+  metaTags: {
+    title: "✅ Unique title tags on every page (50-60 characters)",
+    description: "✅ Meta descriptions on every page (150-160 characters)",
+    ogTags: "✅ Open Graph tags for social sharing",
+    twitterCards: "✅ Twitter Card meta tags",
+    viewport: "✅ Viewport meta tag for mobile"
+  },
+
+  // Schema Markup
+  schemaMarkup: {
+    organization: "✅ Organization schema on homepage",
+    website: "✅ Website schema with search action",
+    breadcrumbs: "✅ Breadcrumb schema on relevant pages",
+    article: "✅ Article schema on blog posts",
+    faq: "✅ FAQ schema where applicable"
+  },
+
+  // Performance
+  performance: {
+    coreWebVitals: "✅ Core Web Vitals scores in 'Good' range",
+    imageOptimization: "✅ Images optimized (WebP/AVIF format)",
+    criticalCSS: "✅ Critical CSS inlined",
+    resourceHints: "✅ Preload/preconnect for critical resources",
+    compression: "✅ Gzip/Brotli compression enabled"
+  },
+
+  // Accessibility & UX
+  accessibility: {
+    altText: "✅ Alt text on all images",
+    headingStructure: "✅ Proper heading hierarchy (H1-H6)",
+    focusManagement: "✅ Keyboard navigation support",
+    colorContrast: "✅ Sufficient color contrast ratios",
+    skipLinks: "✅ Skip navigation links"
+  }
+};
+```
+
+### SEO Monitoring Script
+
+```javascript
+// Automated SEO monitoring
+class SEOMonitor {
+  constructor() {
+    this.checks = [];
+    this.init();
+  }
+
+  init() {
+    this.runAllChecks();
+    this.scheduleRegularChecks();
+  }
+
+  runAllChecks() {
+    this.checkHTTPS();
+    this.checkMetaTags();
+    this.checkSchemaMarkup();
+    this.checkImages();
+    this.checkHeadingStructure();
+    this.checkInternalLinks();
+    this.checkPageSpeed();
+  }
+
+  checkHTTPS() {
+    const isHTTPS = location.protocol === 'https:';
+    this.addCheck('HTTPS', isHTTPS, 'Website should use HTTPS');
+  }
+
+  checkMetaTags() {
+    const title = document.querySelector('title');
+    const description = document.querySelector('meta[name="description"]');
+    const viewport = document.querySelector('meta[name="viewport"]');
+
+    this.addCheck('Title Tag', !!title, 'Page should have a title tag');
+    this.addCheck('Meta Description', !!description, 'Page should have a meta description');
+    this.addCheck('Viewport Meta', !!viewport, 'Page should have viewport meta tag');
+
+    if (title) {
+      const titleLength = title.textContent.length;
+      this.addCheck('Title Length', titleLength >= 30 && titleLength <= 60, 
+        'Title should be 30-60 characters');
+    }
+
+    if (description) {
+      const descLength = description.content.length;
+      this.addCheck('Description Length', descLength >= 120 && descLength <= 160, 
+        'Meta description should be 120-160 characters');
+    }
+  }
+
+  checkSchemaMarkup() {
+    const schemas = document.querySelectorAll('script[type="application/ld+json"]');
+    this.addCheck('Schema Markup', schemas.length > 0, 'Page should have schema markup');
+
+    schemas.forEach((schema, index) => {
+      try {
+        JSON.parse(schema.textContent);
+        this.addCheck(`Schema ${index + 1} Valid`, true, 'Schema markup should be valid JSON');
+      } catch (error) {
+        this.addCheck(`Schema ${index + 1} Valid`, false, 'Schema markup should be valid JSON');
+      }
+    });
+  }
+
+  checkImages() {
+    const images = document.querySelectorAll('img');
+    const imagesWithAlt = document.querySelectorAll('img[alt]');
+    
+    if (images.length > 0) {
+      const altCoverage = imagesWithAlt.length / images.length;
+      this.addCheck('Image Alt Text', altCoverage >= 0.95, 
+        'At least 95% of images should have alt text');
+    }
+  }
+
+  checkHeadingStructure() {
+    const h1s = document.querySelectorAll('h1');
+    this.addCheck('Single H1', h1s.length === 1, 'Page should have exactly one H1');
+
+    const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+    let previousLevel = 0;
+    let structureValid = true;
+
+    headings.forEach(heading => {
+      const currentLevel = parseInt(heading.tagName.charAt(1));
+      if (currentLevel > previousLevel + 1) {
+        structureValid = false;
+      }
+      previousLevel = currentLevel;
+    });
+
+    this.addCheck('Heading Structure', structureValid, 
+      'Headings should follow proper hierarchy');
+  }
+
+  checkInternalLinks() {
+    const internalLinks = document.querySelectorAll(`a[href^="/"], a[href^="${location.origin}"]`);
+    this.addCheck('Internal Links', internalLinks.length >= 3, 
+      'Page should have at least 3 internal links');
+  }
+
+  checkPageSpeed() {
+    // This would typically integrate with real performance monitoring
+    if ('PerformanceObserver' in window) {
+      new PerformanceObserver((list) => {
+        const entries = list.getEntries();
+        const lastEntry = entries[entries.length - 1];
+        this.addCheck('LCP Performance', lastEntry.startTime <= 2500, 
+          'LCP should be under 2.5 seconds');
+      }).observe({ entryTypes: ['largest-contentful-paint'] });
+    }
+  }
+
+  addCheck(name, passed, description) {
+    this.checks.push({
+      name,
+      passed,
+      description,
+      timestamp: new Date().toISOString()
+    });
+  }
+
+  generateReport() {
+    const passedChecks = this.checks.filter(check => check.passed).length;
+    const totalChecks = this.checks.length;
+    const score = Math.round((passedChecks / totalChecks) * 100);
+
+    return {
+      score,
+      passedChecks,
+      totalChecks,
+      checks: this.checks,
+      recommendations: this.checks
+        .filter(check => !check.passed)
+        .map(check => ({
+          issue: check.name,
+          recommendation: check.description
+        }))
+    };
+  }
+
+  scheduleRegularChecks() {
+    // Run checks every 5 minutes
+    setInterval(() => {
+      this.checks = [];
+      this.runAllChecks();
+      
+      const report = this.generateReport();
+      console.log('SEO Health Check:', report);
+      
+      // Send to monitoring service
+      this.sendToMonitoring(report);
+    }, 5 * 60 * 1000);
+  }
+
+  sendToMonitoring(report) {
+    fetch('/api/seo-monitoring', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        url: window.location.href,
+        report: report,
+        timestamp: new Date().toISOString()
+      })
+    }).catch(error => {
+      console.error('Failed to send SEO monitoring data:', error);
+    });
+  }
+}
+
+// Initialize SEO monitoring
+const seoMonitor = new SEOMonitor();
+```
+
+---
+
+## 🎯 Kesimpulan
+
+Technical SEO di 2025 bukan lagi optional - dia essential buat ranking dan user experience. Sebagai developer, lo punya power buat significantly impact SEO performance website.
+
+### Key Takeaways:
+
+1. **Schema Markup is King** - Structured data crucial buat AI search dan rich snippets
+2. **Core Web Vitals Matter** - Performance directly affects ranking
+3. **Mobile-First is Default** - Optimize untuk mobile experience
+4. **Automation is Key** - Setup monitoring dan automated checks
+5. **Holistic Approach** - Technical SEO harus integrated dengan development workflow
+
+### Action Plan:
+
+**Week 1**: Audit current technical SEO status
+**Week 2**: Implement schema markup dan fix critical issues  
+**Week 3**: Optimize Core Web Vitals
+**Week 4**: Setup monitoring dan automation
+
+### Essential Tools:
+
+- **Google Search Console** - Monitor search performance
+- **PageSpeed Insights** - Check Core Web Vitals
+- **Schema Markup Validator** - Validate structured data
+- **Lighthouse** - Comprehensive auditing
+- **Web Vitals Extension** - Real-time performance monitoring
+
+Technical SEO bukan cuma tentang ranking - dia tentang creating better user experience. When you optimize for search engines, you're actually optimizing for users. And that's a win-win situation.
+
+Start implementing these techniques today, dan lo bakal surprised betapa significant impact-nya ke organic traffic dan user engagement!
+
+## 🔗 **Artikel Terkait:**
+
+- [Google Analytics 4 untuk Developer: Setup, Custom Events, dan Reporting](https://hilaltechnologic.info/blog/google-analytics-4-developer-setup-custom-events-reporting)
+- [A/B Testing untuk Developer: Optimizely vs Google Optimize vs Split](https://hilaltechnologic.info/blog/ab-testing-developer-optimizely-google-optimize-split)
+- [Core Web Vitals 2025: Panduan Optimasi Google Ranking](https://hilaltechnologic.info/blog/core-web-vitals-2025-panduan-optimasi-google)
+
+---
+
+> Ditulis dengan ❤️ (dan obsesi terhadap perfect SEO score) oleh [Hilal Technologic](https://hilaltechnologic.info)

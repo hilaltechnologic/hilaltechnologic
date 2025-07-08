@@ -987,4 +987,576 @@ class GA4Reporter {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
-          'Content-Type':
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(reportRequest)
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`GA4 API error: ${response.status}`);
+    }
+
+    return await response.json();
+  }
+
+  // Get basic metrics
+  async getBasicMetrics(startDate, endDate) {
+    const reportRequest = {
+      dimensions: [
+        { name: 'date' },
+        { name: 'pagePath' }
+      ],
+      metrics: [
+        { name: 'sessions' },
+        { name: 'users' },
+        { name: 'pageviews' },
+        { name: 'bounceRate' },
+        { name: 'sessionDuration' }
+      ],
+      dateRanges: [{
+        startDate: startDate,
+        endDate: endDate
+      }],
+      orderBys: [{
+        dimension: { dimensionName: 'date' },
+        desc: true
+      }]
+    };
+
+    return await this.runReport(reportRequest);
+  }
+
+  // Get conversion data
+  async getConversionData(startDate, endDate) {
+    const reportRequest = {
+      dimensions: [
+        { name: 'eventName' },
+        { name: 'source' },
+        { name: 'medium' }
+      ],
+      metrics: [
+        { name: 'eventCount' },
+        { name: 'conversions' },
+        { name: 'totalRevenue' }
+      ],
+      dateRanges: [{
+        startDate: startDate,
+        endDate: endDate
+      }],
+      dimensionFilter: {
+        filter: {
+          fieldName: 'eventName',
+          inListFilter: {
+            values: ['purchase', 'sign_up', 'subscribe']
+          }
+        }
+      }
+    };
+
+    return await this.runReport(reportRequest);
+  }
+
+  // Get user behavior flow
+  async getUserFlow(startDate, endDate) {
+    const reportRequest = {
+      dimensions: [
+        { name: 'pagePath' },
+        { name: 'previousPagePath' }
+      ],
+      metrics: [
+        { name: 'sessions' },
+        { name: 'users' }
+      ],
+      dateRanges: [{
+        startDate: startDate,
+        endDate: endDate
+      }],
+      orderBys: [{
+        metric: { metricName: 'sessions' },
+        desc: true
+      }],
+      limit: 100
+    };
+
+    return await this.runReport(reportRequest);
+  }
+}
+
+// Usage example
+const reporter = new GA4Reporter('properties/123456789', {
+  access_token: 'your-access-token'
+});
+
+// Get last 30 days data
+const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+  .toISOString().split('T')[0];
+const today = new Date().toISOString().split('T')[0];
+
+reporter.getBasicMetrics(thirtyDaysAgo, today)
+  .then(data => {
+    console.log('Basic metrics:', data);
+  })
+  .catch(error => {
+    console.error('Error fetching data:', error);
+  });
+```
+
+### Dashboard Implementation
+
+```javascript
+// Simple dashboard untuk monitoring GA4 data
+class GA4Dashboard {
+  constructor(containerId, reporter) {
+    this.container = document.getElementById(containerId);
+    this.reporter = reporter;
+    this.refreshInterval = 5 * 60 * 1000; // 5 minutes
+  }
+
+  async init() {
+    await this.loadData();
+    this.render();
+    this.startAutoRefresh();
+  }
+
+  async loadData() {
+    const endDate = new Date().toISOString().split('T')[0];
+    const startDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+      .toISOString().split('T')[0];
+
+    try {
+      this.data = {
+        metrics: await this.reporter.getBasicMetrics(startDate, endDate),
+        conversions: await this.reporter.getConversionData(startDate, endDate),
+        userFlow: await this.reporter.getUserFlow(startDate, endDate)
+      };
+    } catch (error) {
+      console.error('Error loading dashboard data:', error);
+      this.data = null;
+    }
+  }
+
+  render() {
+    if (!this.data) {
+      this.container.innerHTML = '<div class="error">Error loading data</div>';
+      return;
+    }
+
+    const metrics = this.processMetrics(this.data.metrics);
+    const conversions = this.processConversions(this.data.conversions);
+
+    this.container.innerHTML = `
+      <div class="dashboard">
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <h3>Total Users</h3>
+            <div class="metric-value">${metrics.totalUsers.toLocaleString()}</div>
+            <div class="metric-change ${metrics.userGrowth >= 0 ? 'positive' : 'negative'}">
+              ${metrics.userGrowth >= 0 ? '+' : ''}${metrics.userGrowth.toFixed(1)}%
+            </div>
+          </div>
+          
+          <div class="metric-card">
+            <h3>Total Sessions</h3>
+            <div class="metric-value">${metrics.totalSessions.toLocaleString()}</div>
+            <div class="metric-change ${metrics.sessionGrowth >= 0 ? 'positive' : 'negative'}">
+              ${metrics.sessionGrowth >= 0 ? '+' : ''}${metrics.sessionGrowth.toFixed(1)}%
+            </div>
+          </div>
+          
+          <div class="metric-card">
+            <h3>Bounce Rate</h3>
+            <div class="metric-value">${metrics.bounceRate.toFixed(1)}%</div>
+            <div class="metric-change ${metrics.bounceRateChange <= 0 ? 'positive' : 'negative'}">
+              ${metrics.bounceRateChange >= 0 ? '+' : ''}${metrics.bounceRateChange.toFixed(1)}%
+            </div>
+          </div>
+          
+          <div class="metric-card">
+            <h3>Avg Session Duration</h3>
+            <div class="metric-value">${this.formatDuration(metrics.avgSessionDuration)}</div>
+            <div class="metric-change ${metrics.durationChange >= 0 ? 'positive' : 'negative'}">
+              ${metrics.durationChange >= 0 ? '+' : ''}${metrics.durationChange.toFixed(1)}%
+            </div>
+          </div>
+        </div>
+        
+        <div class="conversions-section">
+          <h3>Top Conversions (Last 7 Days)</h3>
+          <div class="conversions-list">
+            ${conversions.map(conv => `
+              <div class="conversion-item">
+                <span class="event-name">${conv.eventName}</span>
+                <span class="event-count">${conv.count.toLocaleString()}</span>
+                <span class="event-revenue">$${conv.revenue.toLocaleString()}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        
+        <div class="chart-section">
+          <h3>Daily Users Trend</h3>
+          <canvas id="users-chart" width="400" height="200"></canvas>
+        </div>
+      </div>
+    `;
+
+    this.renderChart(metrics.dailyData);
+  }
+
+  processMetrics(rawData) {
+    // Process raw GA4 data into dashboard metrics
+    const rows = rawData.rows || [];
+    
+    let totalUsers = 0;
+    let totalSessions = 0;
+    let totalBounceRate = 0;
+    let totalDuration = 0;
+    const dailyData = [];
+
+    rows.forEach(row => {
+      const date = row.dimensionValues[0].value;
+      const users = parseInt(row.metricValues[1].value);
+      const sessions = parseInt(row.metricValues[0].value);
+      const bounceRate = parseFloat(row.metricValues[3].value);
+      const duration = parseFloat(row.metricValues[4].value);
+
+      totalUsers += users;
+      totalSessions += sessions;
+      totalBounceRate += bounceRate;
+      totalDuration += duration;
+
+      dailyData.push({
+        date: date,
+        users: users,
+        sessions: sessions
+      });
+    });
+
+    return {
+      totalUsers: totalUsers,
+      totalSessions: totalSessions,
+      bounceRate: totalBounceRate / rows.length,
+      avgSessionDuration: totalDuration / rows.length,
+      userGrowth: this.calculateGrowth(dailyData, 'users'),
+      sessionGrowth: this.calculateGrowth(dailyData, 'sessions'),
+      bounceRateChange: 0, // Calculate based on previous period
+      durationChange: 0, // Calculate based on previous period
+      dailyData: dailyData
+    };
+  }
+
+  processConversions(rawData) {
+    const rows = rawData.rows || [];
+    
+    return rows.map(row => ({
+      eventName: row.dimensionValues[0].value,
+      source: row.dimensionValues[1].value,
+      medium: row.dimensionValues[2].value,
+      count: parseInt(row.metricValues[0].value),
+      conversions: parseInt(row.metricValues[1].value),
+      revenue: parseFloat(row.metricValues[2].value || 0)
+    })).sort((a, b) => b.conversions - a.conversions);
+  }
+
+  calculateGrowth(data, metric) {
+    if (data.length < 2) return 0;
+    
+    const recent = data.slice(-3).reduce((sum, day) => sum + day[metric], 0) / 3;
+    const previous = data.slice(0, 3).reduce((sum, day) => sum + day[metric], 0) / 3;
+    
+    return previous > 0 ? ((recent - previous) / previous) * 100 : 0;
+  }
+
+  formatDuration(seconds) {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  }
+
+  renderChart(dailyData) {
+    // Simple chart implementation (you can use Chart.js or similar)
+    const canvas = document.getElementById('users-chart');
+    const ctx = canvas.getContext('2d');
+    
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw simple line chart
+    const maxUsers = Math.max(...dailyData.map(d => d.users));
+    const padding = 40;
+    const chartWidth = canvas.width - 2 * padding;
+    const chartHeight = canvas.height - 2 * padding;
+    
+    ctx.strokeStyle = '#007bff';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    
+    dailyData.forEach((day, index) => {
+      const x = padding + (index / (dailyData.length - 1)) * chartWidth;
+      const y = padding + (1 - day.users / maxUsers) * chartHeight;
+      
+      if (index === 0) {
+        ctx.moveTo(x, y);
+      } else {
+        ctx.lineTo(x, y);
+      }
+    });
+    
+    ctx.stroke();
+  }
+
+  startAutoRefresh() {
+    setInterval(async () => {
+      await this.loadData();
+      this.render();
+    }, this.refreshInterval);
+  }
+}
+
+// Usage
+const dashboard = new GA4Dashboard('dashboard-container', reporter);
+dashboard.init();
+```
+
+---
+
+## 🎯 Best Practices & Common Pitfalls
+
+### Do's and Don'ts
+
+```javascript
+// ✅ DO: Consistent event naming
+const goodEventNaming = {
+  pattern: 'object_action',
+  examples: [
+    'button_click',
+    'form_submit',
+    'video_play',
+    'product_view',
+    'user_signup'
+  ]
+};
+
+// ❌ DON'T: Inconsistent naming
+const badEventNaming = [
+  'click',
+  'Button Click',
+  'form_submission',
+  'PRODUCT_VIEWED',
+  'userSignUp'
+];
+
+// ✅ DO: Meaningful parameters
+gtag('event', 'purchase', {
+  transaction_id: 'TXN_123456',
+  value: 99.99,
+  currency: 'USD',
+  items: [{
+    item_id: 'SKU_001',
+    item_name: 'Premium Plan',
+    item_category: 'Subscription',
+    quantity: 1,
+    price: 99.99
+  }]
+});
+
+// ❌ DON'T: Vague parameters
+gtag('event', 'purchase', {
+  id: '123',
+  amount: 99.99
+});
+
+// ✅ DO: Respect data privacy
+const privacyCompliantTracking = {
+  anonymizeIP: true,
+  respectDoNotTrack: true,
+  cookieConsent: true,
+  dataRetention: '26 months', // GA4 default
+  userDeletion: 'implemented' // GDPR compliance
+};
+
+// ❌ DON'T: Track PII
+gtag('event', 'user_signup', {
+  email: 'user@example.com', // DON'T DO THIS
+  phone: '+1234567890', // DON'T DO THIS
+  name: 'John Doe' // DON'T DO THIS
+});
+```
+
+### Performance Optimization
+
+```javascript
+// Optimize GA4 loading untuk better performance
+const optimizeGA4Performance = {
+  // 1. Load GA4 asynchronously
+  asyncLoading: () => {
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
+    document.head.appendChild(script);
+  },
+
+  // 2. Batch events when possible
+  eventBatching: (() => {
+    let eventQueue = [];
+    let batchTimeout;
+
+    return (eventName, parameters) => {
+      eventQueue.push({ eventName, parameters });
+
+      clearTimeout(batchTimeout);
+      batchTimeout = setTimeout(() => {
+        // Send batched events
+        eventQueue.forEach(event => {
+          gtag('event', event.eventName, event.parameters);
+        });
+        eventQueue = [];
+      }, 100); // 100ms delay
+    };
+  })(),
+
+  // 3. Use requestIdleCallback for non-critical tracking
+  idleTracking: (eventName, parameters) => {
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(() => {
+        gtag('event', eventName, parameters);
+      });
+    } else {
+      setTimeout(() => {
+        gtag('event', eventName, parameters);
+      }, 0);
+    }
+  },
+
+  // 4. Implement sampling for high-volume events
+  sampledTracking: (eventName, parameters, sampleRate = 0.1) => {
+    if (Math.random() < sampleRate) {
+      gtag('event', eventName, {
+        ...parameters,
+        sampled: true,
+        sample_rate: sampleRate
+      });
+    }
+  }
+};
+```
+
+---
+
+## 🔗 Integration dengan Tools Lain
+
+### GA4 + Google Tag Manager
+
+```javascript
+// GTM integration untuk advanced tracking
+const gtmIntegration = {
+  // Setup GTM with GA4
+  setupGTM: (gtmId, ga4Id) => {
+    // GTM script
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer', gtmId);
+
+    // Configure GA4 through GTM
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      'gtm.start': new Date().getTime(),
+      'event': 'gtm.js'
+    });
+  },
+
+  // Push custom events to dataLayer
+  pushEvent: (eventName, eventData) => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      'event': eventName,
+      ...eventData
+    });
+  },
+
+  // Enhanced ecommerce through GTM
+  pushEcommerce: (action, ecommerceData) => {
+    window.dataLayer.push({
+      'event': 'ecommerce_event',
+      'ecommerce_action': action,
+      'ecommerce': ecommerceData
+    });
+  }
+};
+
+// Usage
+gtmIntegration.pushEvent('custom_signup', {
+  'signup_method': 'email',
+  'user_type': 'premium',
+  'campaign_source': 'google_ads'
+});
+```
+
+### GA4 + Data Studio/Looker Studio
+
+```javascript
+// Prepare data untuk Data Studio reporting
+const dataStudioIntegration = {
+  // Custom dimensions untuk better reporting
+  setupCustomDimensions: () => {
+    gtag('config', GA_MEASUREMENT_ID, {
+      'custom_map': {
+        'custom_parameter_1': 'user_segment',
+        'custom_parameter_2': 'traffic_source',
+        'custom_parameter_3': 'device_category',
+        'custom_parameter_4': 'experiment_variant'
+      }
+    });
+  },
+
+  // Consistent event structure untuk reporting
+  trackForReporting: (category, action, label, value) => {
+    gtag('event', action, {
+      'event_category': category,
+      'event_label': label,
+      'value': value,
+      'custom_parameter_1': getUserSegment(),
+      'custom_parameter_2': getTrafficSource(),
+      'custom_parameter_3': getDeviceCategory(),
+      'custom_parameter_4': getExperimentVariant()
+    });
+  }
+};
+```
+
+---
+
+## 🎯 Kesimpulan
+
+GA4 memang initially overwhelming, tapi setelah lo understand the concepts dan implement dengan benar, dia bisa jadi powerful tool buat understand user behavior dan optimize product.
+
+### Key Takeaways:
+
+1. **Start Simple** - Mulai dengan basic page views, lalu gradually add custom events
+2. **Be Consistent** - Pake naming convention yang konsisten buat events dan parameters
+3. **Think User-Centric** - Focus pada user journey, bukan cuma page views
+4. **Respect Privacy** - Always comply dengan data privacy regulations
+5. **Test Everything** - Use debug mode dan validate events sebelum production
+6. **Automate Reporting** - Build dashboards dan automated reports buat stakeholders
+
+### Action Plan:
+
+**Week 1**: Setup basic GA4 tracking
+**Week 2**: Implement custom events untuk key user actions
+**Week 3**: Add enhanced ecommerce tracking (if applicable)
+**Week 4**: Build reporting dashboard dan setup automated alerts
+
+GA4 bukan cuma tool buat marketing team - dia essential buat developer yang mau build data-driven products. Start implementing sekarang, dan lo bakal surprised betapa valuable-nya insights yang lo dapet!
+
+## 🔗 **Artikel Terkait:**
+
+- [Technical SEO 2025: Schema Markup, Core Web Vitals, dan Page Experience](https://hilaltechnologic.info/blog/technical-seo-2025-schema-markup-core-web-vitals-page-experience)
+- [A/B Testing untuk Developer: Optimizely vs Google Optimize vs Split](https://hilaltechnologic.info/blog/ab-testing-developer-optimizely-google-optimize-split)
+- [Core Web Vitals 2025: Panduan Optimasi Google Ranking](https://hilaltechnologic.info/blog/core-web-vitals-2025-panduan-optimasi-google)
+
+---
+
+> Ditulis dengan ❤️ (dan banyak trial & error) oleh [Hilal Technologic](https://hilaltechnologic.info)
