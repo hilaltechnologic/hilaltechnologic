@@ -1,0 +1,990 @@
+---
+title: "Google Analytics 4 untuk Developer: Setup, Custom Events, dan Reporting - Gak Seribet yang Lo Kira!"
+description: "Panduan lengkap Google Analytics 4 untuk developer. Setup GA4, custom events, enhanced ecommerce, dan reporting yang actionable. Plus tips debugging yang bikin hidup lo lebih mudah."
+publishedDate: 2025-01-08
+author:
+  name: "Hilal Technologic"
+  url: "https://hilaltechnologic.info/author/admin"
+tags: ["google-analytics-4", "ga4", "web-analytics", "tracking", "custom-events", "developer-tools", "seo", "data-analysis"]
+image: "/images/blog/google-analytics-4-developer-cover.webp"
+imageAlt: "Google Analytics 4 untuk Developer Cover"
+featured: true
+draft: false
+readingTime: "22 menit baca"
+---
+
+# 📊 Google Analytics 4 untuk Developer: Setup, Custom Events, dan Reporting - Gak Seribet yang Lo Kira!
+
+Lo tau gak sih, dulu gue mikir Google Analytics itu cuma urusan marketing team. "Ah, gue kan developer, yang penting website jalan, traffic urusan mereka." Ternyata... gue salah besar. 😅
+
+Pas pertama kali diminta setup GA4 di project company, gue sampe begadang 3 hari. Dokumentasinya ribet, error message-nya gak jelas, dan yang paling nyebelin: data gak masuk-masuk padahal kode udah bener. Rasanya kayak debug JavaScript yang gak ada console.log-nya.
+
+Sekarang, setelah setup GA4 di puluhan project, gue mau share everything yang gue pelajari. From zero to hero, dengan gaya bahasa yang gak bikin pusing.
+
+> "Data is the new oil, but only if you know how to refine it." - Wise Data Analyst (probably)
+
+---
+
+## 🤔 Kenapa Developer Harus Peduli sama GA4?
+
+Sebelum kita dive ke technical stuff, gue mau jelasin dulu kenapa lo sebagai developer harus care sama analytics.
+
+### The Reality Check
+
+```javascript
+// Conversation yang sering terjadi:
+const clientMeeting = {
+  client: "Website traffic turun 30% bulan ini, kenapa?",
+  developer: "Eh... website kan jalan normal, mungkin masalah marketing?",
+  client: "Tapi kan lo yang bikin website-nya...",
+  developer: "😰" // Internal panic
+};
+
+// Yang seharusnya terjadi:
+const betterConversation = {
+  client: "Website traffic turun 30% bulan ini, kenapa?",
+  developer: "Let me check GA4... Oh, ada issue di checkout flow. User drop 40% di step 2. Kemarin ada update payment gateway, mungkin ada bug.",
+  client: "Wah, good catch! Fix dong.",
+  developer: "😎" // Hero moment
+};
+```
+
+### Benefits untuk Developer
+
+```javascript
+const developerBenefits = {
+  debugging: {
+    realUserData: "Tau user behavior yang real, bukan asumsi",
+    performanceInsights: "Detect performance issues dari user perspective",
+    errorTracking: "Track JavaScript errors dan failed interactions"
+  },
+  
+  productDecisions: {
+    featureUsage: "Tau fitur mana yang actually dipake user",
+    userJourney: "Understand user flow dan pain points",
+    conversionOptimization: "Data-driven improvements"
+  },
+  
+  careerGrowth: {
+    fullStackMindset: "Gak cuma coding, tapi understand business impact",
+    dataLiteracy: "Skill yang makin valuable di 2025",
+    stakeholderCommunication: "Bisa ngomong pake data, bukan feeling"
+  }
+};
+```
+
+---
+
+## 🚀 GA4 Setup: From Zero to Tracking
+
+### Step 1: Create GA4 Property
+
+```javascript
+// Buat yang belum punya GA4 account
+const setupSteps = {
+  step1: "Go to analytics.google.com",
+  step2: "Create Account (if needed)",
+  step3: "Create Property",
+  step4: "Choose 'Web' platform",
+  step5: "Get Measurement ID (G-XXXXXXXXXX)"
+};
+
+// Pro tip: Bikin separate property untuk dev/staging
+const environmentSetup = {
+  production: "G-PROD123456",
+  staging: "G-STAGING789",
+  development: "G-DEV000111" // Optional, bisa skip buat dev
+};
+```
+
+### Step 2: Install gtag (The Traditional Way)
+
+```html
+<!-- Method 1: Direct gtag installation -->
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX', {
+      // Basic config
+      page_title: document.title,
+      page_location: window.location.href,
+      
+      // Enhanced ecommerce (if needed)
+      send_page_view: true,
+      
+      // Custom parameters
+      custom_map: {
+        'custom_parameter_1': 'user_type',
+        'custom_parameter_2': 'subscription_plan'
+      }
+    });
+  </script>
+</head>
+```
+
+### Step 3: Modern Setup dengan Environment Variables
+
+```javascript
+// config/analytics.js
+const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 
+                         process.env.VITE_GA_MEASUREMENT_ID ||
+                         process.env.REACT_APP_GA_MEASUREMENT_ID;
+
+export const initGA = () => {
+  // Only initialize in production or staging
+  if (!GA_MEASUREMENT_ID || process.env.NODE_ENV === 'development') {
+    console.log('GA4 not initialized - missing ID or dev environment');
+    return;
+  }
+
+  // Load gtag script
+  const script = document.createElement('script');
+  script.async = true;
+  script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
+  document.head.appendChild(script);
+
+  // Initialize dataLayer
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function() {
+    window.dataLayer.push(arguments);
+  };
+
+  // Configure GA4
+  window.gtag('js', new Date());
+  window.gtag('config', GA_MEASUREMENT_ID, {
+    page_title: document.title,
+    page_location: window.location.href,
+    send_page_view: true,
+    
+    // Privacy settings
+    anonymize_ip: true,
+    allow_google_signals: false, // Set true if you want Google Signals
+    allow_ad_personalization_signals: false,
+    
+    // Debug mode (only in non-production)
+    debug_mode: process.env.NODE_ENV !== 'production'
+  });
+
+  console.log('GA4 initialized with ID:', GA_MEASUREMENT_ID);
+};
+
+// Helper function untuk check if GA is loaded
+export const isGALoaded = () => {
+  return typeof window !== 'undefined' && 
+         typeof window.gtag === 'function' && 
+         GA_MEASUREMENT_ID;
+};
+```
+
+### Step 4: React/Next.js Integration
+
+```jsx
+// hooks/useAnalytics.js
+import { useEffect } from 'react';
+import { useRouter } from 'next/router'; // Next.js
+// import { useLocation } from 'react-router-dom'; // React Router
+
+export const useAnalytics = () => {
+  const router = useRouter();
+  // const location = useLocation(); // For React Router
+
+  useEffect(() => {
+    // Initialize GA4 on mount
+    initGA();
+  }, []);
+
+  useEffect(() => {
+    // Track page views on route change
+    const handleRouteChange = (url) => {
+      if (isGALoaded()) {
+        window.gtag('config', GA_MEASUREMENT_ID, {
+          page_path: url,
+          page_title: document.title,
+          page_location: window.location.href
+        });
+      }
+    };
+
+    router.events.on('routeChangeComplete', handleRouteChange);
+    
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange);
+    };
+  }, [router.events]);
+
+  // Return tracking functions
+  return {
+    trackEvent: (eventName, parameters = {}) => {
+      if (isGALoaded()) {
+        window.gtag('event', eventName, parameters);
+      }
+    },
+    
+    trackPurchase: (transactionData) => {
+      if (isGALoaded()) {
+        window.gtag('event', 'purchase', transactionData);
+      }
+    },
+    
+    setUserProperties: (properties) => {
+      if (isGALoaded()) {
+        window.gtag('config', GA_MEASUREMENT_ID, {
+          user_properties: properties
+        });
+      }
+    }
+  };
+};
+
+// App.js atau _app.js
+import { useAnalytics } from '../hooks/useAnalytics';
+
+function MyApp({ Component, pageProps }) {
+  const analytics = useAnalytics();
+
+  return <Component {...pageProps} analytics={analytics} />;
+}
+```
+
+### Step 5: Vue.js Integration
+
+```javascript
+// plugins/analytics.js (Nuxt.js)
+export default ({ app, $config }, inject) => {
+  const GA_ID = $config.gaId;
+  
+  if (!GA_ID) {
+    console.warn('GA4 ID not found');
+    return;
+  }
+
+  // Initialize GA4
+  const initGA = () => {
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
+    document.head.appendChild(script);
+
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function() {
+      window.dataLayer.push(arguments);
+    };
+
+    window.gtag('js', new Date());
+    window.gtag('config', GA_ID);
+  };
+
+  // Analytics object
+  const analytics = {
+    init: initGA,
+    
+    trackEvent(eventName, parameters = {}) {
+      if (typeof window !== 'undefined' && window.gtag) {
+        window.gtag('event', eventName, parameters);
+      }
+    },
+    
+    trackPage(path) {
+      if (typeof window !== 'undefined' && window.gtag) {
+        window.gtag('config', GA_ID, {
+          page_path: path
+        });
+      }
+    }
+  };
+
+  // Inject into Vue instance
+  inject('analytics', analytics);
+  
+  // Auto-initialize
+  if (process.client) {
+    analytics.init();
+  }
+};
+
+// nuxt.config.js
+export default {
+  plugins: [
+    { src: '~/plugins/analytics.js', mode: 'client' }
+  ],
+  
+  publicRuntimeConfig: {
+    gaId: process.env.GA_MEASUREMENT_ID
+  }
+};
+```
+
+---
+
+## 📈 Custom Events: Track What Matters
+
+Ini bagian yang paling penting dan sering diabaikan. Default GA4 tracking cuma ngasih basic page views. Real insights datang dari custom events.
+
+### Event Naming Convention
+
+```javascript
+// ❌ Bad naming - gak konsisten
+gtag('event', 'click');
+gtag('event', 'Button Click');
+gtag('event', 'user_signup');
+gtag('event', 'PURCHASE_COMPLETED');
+
+// ✅ Good naming - konsisten dan descriptive
+gtag('event', 'button_click', {
+  button_name: 'cta_signup',
+  page_section: 'hero'
+});
+
+gtag('event', 'user_signup', {
+  signup_method: 'email',
+  user_type: 'free_trial'
+});
+
+gtag('event', 'purchase_completed', {
+  transaction_id: 'TXN_123456',
+  value: 99.99,
+  currency: 'USD'
+});
+```
+
+### Essential Events untuk Web App
+
+```javascript
+// User engagement events
+const trackUserEngagement = {
+  // Scroll tracking
+  trackScroll: (percentage) => {
+    gtag('event', 'scroll', {
+      scroll_depth: percentage,
+      page_path: window.location.pathname
+    });
+  },
+
+  // Time on page
+  trackTimeOnPage: (seconds) => {
+    gtag('event', 'time_on_page', {
+      engagement_time_msec: seconds * 1000,
+      page_path: window.location.pathname
+    });
+  },
+
+  // File downloads
+  trackDownload: (fileName, fileType) => {
+    gtag('event', 'file_download', {
+      file_name: fileName,
+      file_extension: fileType,
+      link_url: window.location.href
+    });
+  },
+
+  // External link clicks
+  trackExternalLink: (url) => {
+    gtag('event', 'click', {
+      link_url: url,
+      link_domain: new URL(url).hostname,
+      outbound: true
+    });
+  }
+};
+
+// Form tracking
+const trackForms = {
+  formStart: (formName) => {
+    gtag('event', 'form_start', {
+      form_name: formName,
+      page_path: window.location.pathname
+    });
+  },
+
+  formSubmit: (formName, success = true) => {
+    gtag('event', 'form_submit', {
+      form_name: formName,
+      success: success,
+      page_path: window.location.pathname
+    });
+  },
+
+  formError: (formName, errorField, errorMessage) => {
+    gtag('event', 'form_error', {
+      form_name: formName,
+      error_field: errorField,
+      error_message: errorMessage
+    });
+  }
+};
+
+// Search tracking
+const trackSearch = {
+  searchPerformed: (query, resultsCount) => {
+    gtag('event', 'search', {
+      search_term: query,
+      search_results: resultsCount,
+      page_path: window.location.pathname
+    });
+  },
+
+  searchResultClick: (query, resultPosition, resultUrl) => {
+    gtag('event', 'select_content', {
+      content_type: 'search_result',
+      search_term: query,
+      content_id: resultUrl,
+      index: resultPosition
+    });
+  }
+};
+```
+
+### E-commerce Events (Enhanced Ecommerce)
+
+```javascript
+// E-commerce tracking yang comprehensive
+const ecommerceTracking = {
+  // View item
+  viewItem: (item) => {
+    gtag('event', 'view_item', {
+      currency: 'USD',
+      value: item.price,
+      items: [{
+        item_id: item.id,
+        item_name: item.name,
+        item_category: item.category,
+        item_variant: item.variant,
+        price: item.price,
+        quantity: 1
+      }]
+    });
+  },
+
+  // Add to cart
+  addToCart: (item, quantity = 1) => {
+    gtag('event', 'add_to_cart', {
+      currency: 'USD',
+      value: item.price * quantity,
+      items: [{
+        item_id: item.id,
+        item_name: item.name,
+        item_category: item.category,
+        price: item.price,
+        quantity: quantity
+      }]
+    });
+  },
+
+  // Remove from cart
+  removeFromCart: (item, quantity = 1) => {
+    gtag('event', 'remove_from_cart', {
+      currency: 'USD',
+      value: item.price * quantity,
+      items: [{
+        item_id: item.id,
+        item_name: item.name,
+        item_category: item.category,
+        price: item.price,
+        quantity: quantity
+      }]
+    });
+  },
+
+  // Begin checkout
+  beginCheckout: (cartItems, cartValue) => {
+    gtag('event', 'begin_checkout', {
+      currency: 'USD',
+      value: cartValue,
+      items: cartItems.map(item => ({
+        item_id: item.id,
+        item_name: item.name,
+        item_category: item.category,
+        price: item.price,
+        quantity: item.quantity
+      }))
+    });
+  },
+
+  // Purchase
+  purchase: (transactionData) => {
+    gtag('event', 'purchase', {
+      transaction_id: transactionData.id,
+      value: transactionData.total,
+      currency: 'USD',
+      tax: transactionData.tax,
+      shipping: transactionData.shipping,
+      items: transactionData.items.map(item => ({
+        item_id: item.id,
+        item_name: item.name,
+        item_category: item.category,
+        price: item.price,
+        quantity: item.quantity
+      }))
+    });
+  },
+
+  // Refund
+  refund: (transactionId, refundValue, refundedItems = []) => {
+    gtag('event', 'refund', {
+      transaction_id: transactionId,
+      value: refundValue,
+      currency: 'USD',
+      items: refundedItems.map(item => ({
+        item_id: item.id,
+        quantity: item.quantity
+      }))
+    });
+  }
+};
+```
+
+### Real-World Implementation Example
+
+```javascript
+// Contoh implementasi di React component
+import React, { useEffect } from 'react';
+import { useAnalytics } from '../hooks/useAnalytics';
+
+const ProductPage = ({ product }) => {
+  const { trackEvent } = useAnalytics();
+
+  useEffect(() => {
+    // Track product view
+    trackEvent('view_item', {
+      currency: 'USD',
+      value: product.price,
+      items: [{
+        item_id: product.id,
+        item_name: product.name,
+        item_category: product.category,
+        price: product.price,
+        quantity: 1
+      }]
+    });
+  }, [product.id]);
+
+  const handleAddToCart = () => {
+    // Add to cart logic
+    addToCart(product);
+    
+    // Track add to cart
+    trackEvent('add_to_cart', {
+      currency: 'USD',
+      value: product.price,
+      items: [{
+        item_id: product.id,
+        item_name: product.name,
+        item_category: product.category,
+        price: product.price,
+        quantity: 1
+      }]
+    });
+  };
+
+  const handleShareProduct = (platform) => {
+    // Share logic
+    shareProduct(product, platform);
+    
+    // Track share
+    trackEvent('share', {
+      method: platform,
+      content_type: 'product',
+      content_id: product.id,
+      item_id: product.id
+    });
+  };
+
+  return (
+    <div>
+      <h1>{product.name}</h1>
+      <p>${product.price}</p>
+      
+      <button onClick={handleAddToCart}>
+        Add to Cart
+      </button>
+      
+      <button onClick={() => handleShareProduct('facebook')}>
+        Share on Facebook
+      </button>
+      
+      <button onClick={() => handleShareProduct('twitter')}>
+        Share on Twitter
+      </button>
+    </div>
+  );
+};
+```
+
+---
+
+## 🔍 Advanced Tracking Techniques
+
+### User Properties & Custom Dimensions
+
+```javascript
+// Set user properties untuk segmentation
+const setUserProperties = (user) => {
+  gtag('config', GA_MEASUREMENT_ID, {
+    user_properties: {
+      user_type: user.subscription_plan, // 'free', 'premium', 'enterprise'
+      signup_date: user.signup_date,
+      user_ltv: user.lifetime_value,
+      preferred_language: user.language,
+      user_segment: user.segment, // 'new', 'returning', 'power_user'
+      company_size: user.company_size // For B2B apps
+    }
+  });
+};
+
+// Custom parameters untuk events
+const trackWithCustomDimensions = (eventName, baseParams, customDimensions) => {
+  gtag('event', eventName, {
+    ...baseParams,
+    // Custom dimensions
+    custom_parameter_1: customDimensions.feature_flag,
+    custom_parameter_2: customDimensions.ab_test_variant,
+    custom_parameter_3: customDimensions.user_cohort,
+    custom_parameter_4: customDimensions.traffic_source
+  });
+};
+
+// Example usage
+trackWithCustomDimensions('button_click', {
+  button_name: 'upgrade_cta',
+  page_section: 'pricing'
+}, {
+  feature_flag: 'new_pricing_ui',
+  ab_test_variant: 'variant_b',
+  user_cohort: 'march_2025',
+  traffic_source: 'google_ads'
+});
+```
+
+### Error Tracking
+
+```javascript
+// JavaScript error tracking
+const trackJavaScriptErrors = () => {
+  window.addEventListener('error', (event) => {
+    gtag('event', 'exception', {
+      description: `${event.error.name}: ${event.error.message}`,
+      fatal: false,
+      error_file: event.filename,
+      error_line: event.lineno,
+      error_column: event.colno,
+      stack_trace: event.error.stack
+    });
+  });
+
+  // Promise rejection tracking
+  window.addEventListener('unhandledrejection', (event) => {
+    gtag('event', 'exception', {
+      description: `Unhandled Promise Rejection: ${event.reason}`,
+      fatal: false,
+      error_type: 'promise_rejection'
+    });
+  });
+};
+
+// API error tracking
+const trackAPIErrors = (endpoint, method, statusCode, errorMessage) => {
+  gtag('event', 'api_error', {
+    api_endpoint: endpoint,
+    http_method: method,
+    status_code: statusCode,
+    error_message: errorMessage,
+    page_path: window.location.pathname
+  });
+};
+
+// Usage example
+fetch('/api/users')
+  .then(response => {
+    if (!response.ok) {
+      trackAPIErrors('/api/users', 'GET', response.status, 'Failed to fetch users');
+      throw new Error('API Error');
+    }
+    return response.json();
+  })
+  .catch(error => {
+    trackAPIErrors('/api/users', 'GET', 0, error.message);
+  });
+```
+
+### Performance Tracking
+
+```javascript
+// Core Web Vitals tracking
+const trackWebVitals = () => {
+  // Largest Contentful Paint
+  new PerformanceObserver((list) => {
+    const entries = list.getEntries();
+    const lastEntry = entries[entries.length - 1];
+    
+    gtag('event', 'web_vitals', {
+      metric_name: 'LCP',
+      metric_value: Math.round(lastEntry.startTime),
+      metric_rating: lastEntry.startTime <= 2500 ? 'good' : 
+                    lastEntry.startTime <= 4000 ? 'needs_improvement' : 'poor'
+    });
+  }).observe({ entryTypes: ['largest-contentful-paint'] });
+
+  // First Input Delay
+  new PerformanceObserver((list) => {
+    const entries = list.getEntries();
+    entries.forEach(entry => {
+      gtag('event', 'web_vitals', {
+        metric_name: 'FID',
+        metric_value: Math.round(entry.processingStart - entry.startTime),
+        metric_rating: entry.processingStart - entry.startTime <= 100 ? 'good' : 
+                      entry.processingStart - entry.startTime <= 300 ? 'needs_improvement' : 'poor'
+      });
+    });
+  }).observe({ entryTypes: ['first-input'] });
+
+  // Cumulative Layout Shift
+  let clsValue = 0;
+  new PerformanceObserver((list) => {
+    const entries = list.getEntries();
+    entries.forEach(entry => {
+      if (!entry.hadRecentInput) {
+        clsValue += entry.value;
+      }
+    });
+    
+    gtag('event', 'web_vitals', {
+      metric_name: 'CLS',
+      metric_value: Math.round(clsValue * 1000) / 1000,
+      metric_rating: clsValue <= 0.1 ? 'good' : 
+                    clsValue <= 0.25 ? 'needs_improvement' : 'poor'
+    });
+  }).observe({ entryTypes: ['layout-shift'] });
+};
+
+// Page load performance
+const trackPagePerformance = () => {
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      const navigation = performance.getEntriesByType('navigation')[0];
+      
+      gtag('event', 'page_performance', {
+        dns_time: Math.round(navigation.domainLookupEnd - navigation.domainLookupStart),
+        connect_time: Math.round(navigation.connectEnd - navigation.connectStart),
+        response_time: Math.round(navigation.responseEnd - navigation.requestStart),
+        dom_load_time: Math.round(navigation.domContentLoadedEventEnd - navigation.navigationStart),
+        window_load_time: Math.round(navigation.loadEventEnd - navigation.navigationStart)
+      });
+    }, 0);
+  });
+};
+```
+
+---
+
+## 🛠️ Debugging & Testing
+
+### GA4 Debug Mode
+
+```javascript
+// Enable debug mode
+gtag('config', GA_MEASUREMENT_ID, {
+  debug_mode: true
+});
+
+// Custom debug helper
+const debugGA = {
+  isDebugMode: () => {
+    return new URLSearchParams(window.location.search).has('ga_debug') ||
+           localStorage.getItem('ga_debug') === 'true';
+  },
+
+  enableDebug: () => {
+    localStorage.setItem('ga_debug', 'true');
+    console.log('GA4 Debug mode enabled');
+  },
+
+  disableDebug: () => {
+    localStorage.removeItem('ga_debug');
+    console.log('GA4 Debug mode disabled');
+  },
+
+  logEvent: (eventName, parameters) => {
+    if (debugGA.isDebugMode()) {
+      console.group(`🔍 GA4 Event: ${eventName}`);
+      console.log('Parameters:', parameters);
+      console.log('Timestamp:', new Date().toISOString());
+      console.groupEnd();
+    }
+  }
+};
+
+// Enhanced tracking function dengan debug
+const trackEventWithDebug = (eventName, parameters = {}) => {
+  debugGA.logEvent(eventName, parameters);
+  
+  if (isGALoaded()) {
+    gtag('event', eventName, parameters);
+  } else {
+    console.warn('GA4 not loaded, event not sent:', eventName);
+  }
+};
+```
+
+### Testing Tools
+
+```javascript
+// GA4 Event Validator
+const validateEvent = (eventName, parameters) => {
+  const errors = [];
+  
+  // Check event name
+  if (!eventName || typeof eventName !== 'string') {
+    errors.push('Event name is required and must be a string');
+  }
+  
+  if (eventName.length > 40) {
+    errors.push('Event name must be 40 characters or less');
+  }
+  
+  // Check parameters
+  if (parameters) {
+    Object.keys(parameters).forEach(key => {
+      if (key.length > 40) {
+        errors.push(`Parameter name "${key}" must be 40 characters or less`);
+      }
+      
+      if (typeof parameters[key] === 'string' && parameters[key].length > 100) {
+        errors.push(`Parameter value for "${key}" must be 100 characters or less`);
+      }
+    });
+    
+    if (Object.keys(parameters).length > 25) {
+      errors.push('Maximum 25 custom parameters allowed per event');
+    }
+  }
+  
+  return {
+    isValid: errors.length === 0,
+    errors: errors
+  };
+};
+
+// Usage
+const validation = validateEvent('purchase', {
+  transaction_id: 'TXN_123456',
+  value: 99.99,
+  currency: 'USD'
+});
+
+if (!validation.isValid) {
+  console.error('Event validation failed:', validation.errors);
+} else {
+  trackEventWithDebug('purchase', parameters);
+}
+```
+
+### Real-Time Testing
+
+```javascript
+// Real-time event monitor
+class GA4Monitor {
+  constructor() {
+    this.events = [];
+    this.isMonitoring = false;
+  }
+
+  start() {
+    this.isMonitoring = true;
+    this.interceptGtag();
+    console.log('🔍 GA4 Monitor started');
+  }
+
+  stop() {
+    this.isMonitoring = false;
+    console.log('🔍 GA4 Monitor stopped');
+  }
+
+  interceptGtag() {
+    const originalGtag = window.gtag;
+    
+    window.gtag = (...args) => {
+      if (this.isMonitoring && args[0] === 'event') {
+        this.logEvent(args[1], args[2]);
+      }
+      
+      return originalGtag.apply(window, args);
+    };
+  }
+
+  logEvent(eventName, parameters) {
+    const event = {
+      name: eventName,
+      parameters: parameters,
+      timestamp: new Date().toISOString(),
+      page: window.location.pathname
+    };
+    
+    this.events.push(event);
+    
+    console.group(`📊 GA4 Event: ${eventName}`);
+    console.log('Parameters:', parameters);
+    console.log('Page:', window.location.pathname);
+    console.log('Time:', event.timestamp);
+    console.groupEnd();
+  }
+
+  getEvents() {
+    return this.events;
+  }
+
+  exportEvents() {
+    const dataStr = JSON.stringify(this.events, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `ga4-events-${Date.now()}.json`;
+    link.click();
+  }
+}
+
+// Usage
+const monitor = new GA4Monitor();
+monitor.start();
+
+// Stop monitoring and export events
+// monitor.stop();
+// monitor.exportEvents();
+```
+
+---
+
+## 📊 Reporting & Data Analysis
+
+### Custom Reports dengan GA4 API
+
+```javascript
+// GA4 Reporting API integration
+class GA4Reporter {
+  constructor(propertyId, credentials) {
+    this.propertyId = propertyId;
+    this.credentials = credentials;
+    this.baseUrl = 'https://analyticsdata.googleapis.com/v1beta';
+  }
+
+  async getAccessToken() {
+    // Implement OAuth2 or Service Account authentication
+    // This is simplified - use proper auth in production
+    return this.credentials.access_token;
+  }
+
+  async runReport(reportRequest) {
+    const token = await this.getAccessToken();
+    
+    const response = await fetch(
+      `${this.baseUrl}/properties/${this.propertyId}:runReport`,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type':

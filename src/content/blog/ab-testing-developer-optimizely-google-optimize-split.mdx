@@ -1,0 +1,954 @@
+---
+title: "A/B Testing untuk Developer: Optimizely vs Google Optimize vs Split - Data-Driven Development yang Gak Bikin Pusing"
+description: "Panduan lengkap A/B testing untuk developer. Implementasi Optimizely, Google Optimize, Split.io, dan custom A/B testing. Plus statistical significance yang actually make sense."
+publishedDate: 2025-01-08
+author:
+  name: "Hilal Technologic"
+  url: "https://hilaltechnologic.info/author/admin"
+tags: ["ab-testing", "optimizely", "google-optimize", "split-io", "conversion-optimization", "data-driven-development", "experimentation"]
+image: "/images/blog/ab-testing-developer-2025-cover.webp"
+imageAlt: "A/B Testing untuk Developer 2025 Cover"
+featured: true
+draft: false
+readingTime: "21 menit baca"
+---
+
+# 🧪 A/B Testing untuk Developer: Optimizely vs Google Optimize vs Split - Data-Driven Development yang Gak Bikin Pusing
+
+Lo pernah gak sih ngalamin situasi kayak gini: lo udah spend 2 minggu bikin fitur baru yang lo yakin bakal naikin conversion, eh ternyata malah bikin conversion turun? Gue pernah. Dan rasanya kayak di-judge sama seluruh universe. 😅
+
+Dulu gue mikir, "Ah, gue kan developer yang udah berpengalaman, pasti tau mana UI/UX yang bagus." Ternyata... user behavior itu unpredictable banget. Yang gue pikir "obviously better" malah bikin user confused.
+
+Sekarang, setelah implement A/B testing di puluhan project, gue gak pernah lagi deploy fitur baru tanpa test dulu. Data beats opinion, always.
+
+> "In God we trust. All others must bring data." - W. Edwards Deming
+
+---
+
+## 🤔 Kenapa Developer Harus Peduli sama A/B Testing?
+
+Sebelum kita dive ke tools dan implementation, gue mau jelasin dulu kenapa A/B testing itu crucial buat developer di 2025.
+
+### The Reality Check
+
+```javascript
+// Scenario yang sering terjadi:
+const typicalDevelopment = {
+  developer: "Gue bikin button baru yang lebih keren!",
+  designer: "Warna biru lebih bagus daripada hijau",
+  pm: "Menurut gue form ini terlalu panjang",
+  ceo: "Competitor pake carousel, kita juga harus pake",
+  result: "Conversion turun 15%" // 😰
+};
+
+// A/B testing approach:
+const dataDrivernDevelopment = {
+  hypothesis: "Button hijau akan increase conversion karena psychology color",
+  test: "50% user lihat button hijau, 50% lihat button biru",
+  duration: "2 weeks, 1000+ conversions per variant",
+  result: "Button biru menang 23% higher conversion",
+  decision: "Deploy button biru, save button hijau for future test" // 😎
+};
+```
+
+### Benefits untuk Developer
+
+```javascript
+const developerBenefits = {
+  decisionMaking: {
+    dataBasedDecisions: "Gak perlu argue based on opinion",
+    riskMitigation: "Test before full rollout",
+    featureValidation: "Validate fitur sebelum invest banyak waktu"
+  },
+  
+  careerGrowth: {
+    businessImpact: "Bisa prove impact dengan data",
+    stakeholderTrust: "Stakeholder trust karena lo data-driven",
+    productMindset: "Develop product thinking, bukan cuma coding"
+  },
+  
+  technicalSkills: {
+    statisticalLiteracy: "Understand statistical significance",
+    experimentationFramework: "Build robust testing infrastructure",
+    performanceOptimization: "Optimize based on real user behavior"
+  }
+};
+```
+
+---
+
+## 🛠️ A/B Testing Tools Comparison
+
+### 1. Google Optimize (RIP 2023, but lessons learned)
+
+Google Optimize udah discontinued, tapi masih worth it buat dipelajari karena banyak konsep yang applicable ke tools lain.
+
+```javascript
+// Google Optimize implementation (historical reference)
+const googleOptimizeSetup = {
+  // Basic setup
+  containerId: 'GTM-XXXXXXX',
+  
+  // Experiment configuration
+  experiment: {
+    id: 'EXPERIMENT_ID',
+    variants: [
+      { id: '0', name: 'Original' },
+      { id: '1', name: 'Variant A' },
+      { id: '2', name: 'Variant B' }
+    ],
+    objective: 'MAXIMIZE',
+    metric: 'conversion_rate'
+  },
+  
+  // Implementation
+  implementation: `
+    <!-- Google Optimize snippet -->
+    <script src="https://www.googleoptimize.com/optimize.js?id=OPT-XXXXXXX"></script>
+    
+    <script>
+      gtag('config', 'GA_MEASUREMENT_ID', {
+        optimize_id: 'OPT-XXXXXXX'
+      });
+    </script>
+  `
+};
+
+// Lessons learned from Google Optimize
+const lessonsLearned = {
+  pros: [
+    "Free tier available",
+    "Easy integration with Google Analytics",
+    "Visual editor for non-technical users",
+    "Good for simple tests"
+  ],
+  
+  cons: [
+    "Limited customization",
+    "Performance impact (render-blocking)",
+    "Flicker effect on page load",
+    "Limited statistical features"
+  ],
+  
+  keyTakeaways: [
+    "Always implement anti-flicker snippet",
+    "Use server-side testing for better performance",
+    "Statistical significance ≠ practical significance",
+    "Test duration matters more than sample size"
+  ]
+};
+```
+
+### 2. Optimizely - The Enterprise Champion
+
+```javascript
+// Optimizely implementation
+class OptimizelyManager {
+  constructor(sdkKey, userId) {
+    this.optimizely = require('@optimizely/optimizely-sdk');
+    this.client = this.optimizely.createInstance({
+      sdkKey: sdkKey,
+      datafileOptions: {
+        autoUpdate: true,
+        updateInterval: 5 * 60 * 1000 // 5 minutes
+      }
+    });
+    this.userId = userId;
+  }
+
+  // Get variation for a feature flag
+  getVariation(experimentKey, userAttributes = {}) {
+    try {
+      const variation = this.client.activate(
+        experimentKey, 
+        this.userId, 
+        userAttributes
+      );
+      
+      console.log(`User ${this.userId} bucketed into variation: ${variation}`);
+      return variation;
+    } catch (error) {
+      console.error('Optimizely error:', error);
+      return null; // Fallback to control
+    }
+  }
+
+  // Track conversion event
+  trackEvent(eventKey, userAttributes = {}, eventTags = {}) {
+    try {
+      this.client.track(
+        eventKey,
+        this.userId,
+        userAttributes,
+        eventTags
+      );
+      
+      console.log(`Event ${eventKey} tracked for user ${this.userId}`);
+    } catch (error) {
+      console.error('Optimizely tracking error:', error);
+    }
+  }
+
+  // Get feature flag value
+  getFeatureFlag(featureKey, userAttributes = {}) {
+    try {
+      const isEnabled = this.client.isFeatureEnabled(
+        featureKey,
+        this.userId,
+        userAttributes
+      );
+      
+      const variables = this.client.getAllFeatureVariables(
+        featureKey,
+        this.userId,
+        userAttributes
+      );
+      
+      return {
+        enabled: isEnabled,
+        variables: variables
+      };
+    } catch (error) {
+      console.error('Feature flag error:', error);
+      return { enabled: false, variables: {} };
+    }
+  }
+}
+
+// React implementation
+import React, { useState, useEffect } from 'react';
+
+const useOptimizely = (userId, userAttributes = {}) => {
+  const [optimizely, setOptimizely] = useState(null);
+  
+  useEffect(() => {
+    const manager = new OptimizelyManager(
+      process.env.REACT_APP_OPTIMIZELY_SDK_KEY,
+      userId
+    );
+    setOptimizely(manager);
+  }, [userId]);
+
+  const getVariation = (experimentKey) => {
+    if (!optimizely) return null;
+    return optimizely.getVariation(experimentKey, userAttributes);
+  };
+
+  const trackEvent = (eventKey, eventTags = {}) => {
+    if (!optimizely) return;
+    optimizely.trackEvent(eventKey, userAttributes, eventTags);
+  };
+
+  const getFeatureFlag = (featureKey) => {
+    if (!optimizely) return { enabled: false, variables: {} };
+    return optimizely.getFeatureFlag(featureKey, userAttributes);
+  };
+
+  return { getVariation, trackEvent, getFeatureFlag };
+};
+
+// Component usage
+const CheckoutButton = ({ userId, userType }) => {
+  const { getVariation, trackEvent } = useOptimizely(userId, { userType });
+  const buttonVariation = getVariation('checkout_button_test');
+
+  const handleClick = () => {
+    trackEvent('checkout_button_click', {
+      variation: buttonVariation,
+      timestamp: Date.now()
+    });
+    
+    // Proceed with checkout
+    proceedToCheckout();
+  };
+
+  const getButtonProps = () => {
+    switch (buttonVariation) {
+      case 'large_green':
+        return {
+          className: 'btn-large btn-green',
+          text: 'Complete Purchase Now!'
+        };
+      case 'small_blue':
+        return {
+          className: 'btn-small btn-blue',
+          text: 'Buy Now'
+        };
+      default:
+        return {
+          className: 'btn-default',
+          text: 'Checkout'
+        };
+    }
+  };
+
+  const buttonProps = getButtonProps();
+
+  return (
+    <button 
+      className={buttonProps.className}
+      onClick={handleClick}
+    >
+      {buttonProps.text}
+    </button>
+  );
+};
+```
+
+### 3. Split.io - The Developer-Friendly Choice
+
+```javascript
+// Split.io implementation
+import { SplitFactory } from '@splitsoftware/splitio';
+
+class SplitManager {
+  constructor(apiKey, userId) {
+    this.factory = SplitFactory({
+      core: {
+        authorizationKey: apiKey,
+        key: userId
+      },
+      startup: {
+        readyTimeout: 5000 // 5 seconds
+      },
+      features: {
+        localhost: {
+          enabled: process.env.NODE_ENV === 'development'
+        }
+      }
+    });
+    
+    this.client = this.factory.client();
+    this.manager = this.factory.manager();
+  }
+
+  async initialize() {
+    return new Promise((resolve, reject) => {
+      this.client.on(this.client.Event.SDK_READY, () => {
+        console.log('Split.io SDK ready');
+        resolve();
+      });
+      
+      this.client.on(this.client.Event.SDK_READY_TIMED_OUT, () => {
+        console.warn('Split.io SDK ready timeout');
+        resolve(); // Continue with default treatments
+      });
+      
+      this.client.on(this.client.Event.SDK_UPDATE, () => {
+        console.log('Split.io SDK updated');
+      });
+    });
+  }
+
+  // Get treatment (variation)
+  getTreatment(splitName, attributes = {}) {
+    try {
+      const treatment = this.client.getTreatment(splitName, attributes);
+      
+      console.log(`Split ${splitName} treatment: ${treatment}`);
+      return treatment;
+    } catch (error) {
+      console.error('Split.io error:', error);
+      return 'control'; // Default fallback
+    }
+  }
+
+  // Get multiple treatments
+  getTreatments(splitNames, attributes = {}) {
+    try {
+      const treatments = this.client.getTreatments(splitNames, attributes);
+      return treatments;
+    } catch (error) {
+      console.error('Split.io error:', error);
+      return splitNames.reduce((acc, name) => {
+        acc[name] = 'control';
+        return acc;
+      }, {});
+    }
+  }
+
+  // Track events
+  track(eventType, value = null, properties = {}) {
+    try {
+      const result = this.client.track(eventType, value, properties);
+      
+      if (result) {
+        console.log(`Event ${eventType} tracked successfully`);
+      } else {
+        console.warn(`Event ${eventType} tracking failed`);
+      }
+      
+      return result;
+    } catch (error) {
+      console.error('Split.io tracking error:', error);
+      return false;
+    }
+  }
+
+  // Destroy client
+  destroy() {
+    this.client.destroy();
+  }
+}
+
+// React Hook
+import { useState, useEffect, useContext, createContext } from 'react';
+
+const SplitContext = createContext();
+
+export const SplitProvider = ({ apiKey, userId, children }) => {
+  const [splitManager, setSplitManager] = useState(null);
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    const manager = new SplitManager(apiKey, userId);
+    
+    manager.initialize().then(() => {
+      setSplitManager(manager);
+      setIsReady(true);
+    });
+
+    return () => {
+      if (manager) {
+        manager.destroy();
+      }
+    };
+  }, [apiKey, userId]);
+
+  return (
+    <SplitContext.Provider value={{ splitManager, isReady }}>
+      {children}
+    </SplitContext.Provider>
+  );
+};
+
+export const useSplit = () => {
+  const context = useContext(SplitContext);
+  
+  if (!context) {
+    throw new Error('useSplit must be used within SplitProvider');
+  }
+
+  const { splitManager, isReady } = context;
+
+  const getTreatment = (splitName, attributes = {}) => {
+    if (!isReady || !splitManager) return 'control';
+    return splitManager.getTreatment(splitName, attributes);
+  };
+
+  const track = (eventType, value, properties) => {
+    if (!isReady || !splitManager) return false;
+    return splitManager.track(eventType, value, properties);
+  };
+
+  return { getTreatment, track, isReady };
+};
+
+// Component usage
+const PricingPage = () => {
+  const { getTreatment, track } = useSplit();
+  const pricingLayout = getTreatment('pricing_page_layout', {
+    userType: 'premium',
+    country: 'ID'
+  });
+
+  const handlePlanSelect = (planType) => {
+    track('plan_selected', null, {
+      plan: planType,
+      layout: pricingLayout,
+      timestamp: Date.now()
+    });
+    
+    // Proceed with plan selection
+    selectPlan(planType);
+  };
+
+  const renderPricingLayout = () => {
+    switch (pricingLayout) {
+      case 'three_columns':
+        return <ThreeColumnPricing onPlanSelect={handlePlanSelect} />;
+      case 'single_column':
+        return <SingleColumnPricing onPlanSelect={handlePlanSelect} />;
+      case 'comparison_table':
+        return <ComparisonTablePricing onPlanSelect={handlePlanSelect} />;
+      default:
+        return <DefaultPricing onPlanSelect={handlePlanSelect} />;
+    }
+  };
+
+  return (
+    <div className="pricing-page">
+      <h1>Choose Your Plan</h1>
+      {renderPricingLayout()}
+    </div>
+  );
+};
+```
+
+### 4. Custom A/B Testing Implementation
+
+```javascript
+// Custom A/B testing framework
+class CustomABTesting {
+  constructor(config = {}) {
+    this.config = {
+      storageKey: 'ab_tests',
+      trackingEndpoint: '/api/analytics/track',
+      defaultDuration: 30 * 24 * 60 * 60 * 1000, // 30 days
+      ...config
+    };
+    
+    this.storage = this.getStorage();
+    this.experiments = new Map();
+  }
+
+  getStorage() {
+    try {
+      return window.localStorage;
+    } catch {
+      // Fallback for environments without localStorage
+      return {
+        getItem: () => null,
+        setItem: () => {},
+        removeItem: () => {}
+      };
+    }
+  }
+
+  // Define experiment
+  defineExperiment(experimentId, config) {
+    const experiment = {
+      id: experimentId,
+      variants: config.variants || ['control', 'treatment'],
+      weights: config.weights || null, // Equal distribution if null
+      duration: config.duration || this.config.defaultDuration,
+      targeting: config.targeting || (() => true),
+      startDate: config.startDate || new Date(),
+      endDate: config.endDate || new Date(Date.now() + (config.duration || this.config.defaultDuration))
+    };
+
+    this.experiments.set(experimentId, experiment);
+    return experiment;
+  }
+
+  // Get user's variant for experiment
+  getVariant(experimentId, userId, userAttributes = {}) {
+    const experiment = this.experiments.get(experimentId);
+    
+    if (!experiment) {
+      console.warn(`Experiment ${experimentId} not found`);
+      return null;
+    }
+
+    // Check if experiment is active
+    const now = new Date();
+    if (now < experiment.startDate || now > experiment.endDate) {
+      return null;
+    }
+
+    // Check targeting
+    if (!experiment.targeting(userAttributes)) {
+      return null;
+    }
+
+    // Check if user already has assignment
+    const storageKey = `${this.config.storageKey}_${experimentId}_${userId}`;
+    const existingAssignment = this.storage.getItem(storageKey);
+    
+    if (existingAssignment) {
+      const assignment = JSON.parse(existingAssignment);
+      
+      // Check if assignment is still valid
+      if (assignment.expiresAt > Date.now()) {
+        return assignment.variant;
+      }
+    }
+
+    // Assign new variant
+    const variant = this.assignVariant(experiment, userId);
+    
+    // Store assignment
+    const assignment = {
+      variant: variant,
+      assignedAt: Date.now(),
+      expiresAt: Date.now() + experiment.duration
+    };
+    
+    this.storage.setItem(storageKey, JSON.stringify(assignment));
+    
+    // Track assignment
+    this.trackEvent('experiment_assignment', {
+      experimentId: experimentId,
+      variant: variant,
+      userId: userId,
+      userAttributes: userAttributes
+    });
+
+    return variant;
+  }
+
+  // Assign variant based on user ID and weights
+  assignVariant(experiment, userId) {
+    const { variants, weights } = experiment;
+    
+    // Use consistent hashing for stable assignment
+    const hash = this.hashUserId(userId + experiment.id);
+    const normalizedHash = hash / 0xffffffff; // Normalize to 0-1
+    
+    if (weights) {
+      // Weighted assignment
+      const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
+      let cumulativeWeight = 0;
+      
+      for (let i = 0; i < variants.length; i++) {
+        cumulativeWeight += weights[i] / totalWeight;
+        if (normalizedHash <= cumulativeWeight) {
+          return variants[i];
+        }
+      }
+    }
+    
+    // Equal distribution
+    const variantIndex = Math.floor(normalizedHash * variants.length);
+    return variants[variantIndex];
+  }
+
+  // Simple hash function for consistent assignment
+  hashUserId(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32-bit integer
+    }
+    return Math.abs(hash);
+  }
+
+  // Track conversion event
+  trackConversion(experimentId, userId, eventType, value = null, properties = {}) {
+    const variant = this.getVariant(experimentId, userId);
+    
+    if (!variant) return;
+
+    this.trackEvent('conversion', {
+      experimentId: experimentId,
+      variant: variant,
+      userId: userId,
+      eventType: eventType,
+      value: value,
+      properties: properties
+    });
+  }
+
+  // Generic event tracking
+  trackEvent(eventType, data) {
+    const payload = {
+      eventType: eventType,
+      timestamp: Date.now(),
+      ...data
+    };
+
+    // Send to analytics endpoint
+    fetch(this.config.trackingEndpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    }).catch(error => {
+      console.error('Tracking error:', error);
+    });
+
+    console.log('AB Test Event:', payload);
+  }
+
+  // Get experiment results (for admin/analytics)
+  async getExperimentResults(experimentId) {
+    try {
+      const response = await fetch(`/api/experiments/${experimentId}/results`);
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching experiment results:', error);
+      return null;
+    }
+  }
+}
+
+// Usage example
+const abTesting = new CustomABTesting({
+  trackingEndpoint: '/api/analytics/ab-test'
+});
+
+// Define experiment
+abTesting.defineExperiment('checkout_flow_v2', {
+  variants: ['control', 'simplified', 'one_page'],
+  weights: [0.4, 0.3, 0.3], // 40% control, 30% each variant
+  targeting: (user) => user.country === 'ID' && user.signupDate > '2024-01-01'
+});
+
+// React hook
+const useABTest = (experimentId, userId, userAttributes = {}) => {
+  const [variant, setVariant] = useState(null);
+
+  useEffect(() => {
+    const assignedVariant = abTesting.getVariant(experimentId, userId, userAttributes);
+    setVariant(assignedVariant);
+  }, [experimentId, userId]);
+
+  const trackConversion = (eventType, value, properties) => {
+    abTesting.trackConversion(experimentId, userId, eventType, value, properties);
+  };
+
+  return { variant, trackConversion };
+};
+
+// Component usage
+const CheckoutFlow = ({ user }) => {
+  const { variant, trackConversion } = useABTest('checkout_flow_v2', user.id, {
+    country: user.country,
+    signupDate: user.signupDate
+  });
+
+  const handleCheckoutComplete = (orderValue) => {
+    trackConversion('purchase', orderValue, {
+      orderId: generateOrderId(),
+      paymentMethod: 'credit_card'
+    });
+  };
+
+  const renderCheckoutFlow = () => {
+    switch (variant) {
+      case 'simplified':
+        return <SimplifiedCheckout onComplete={handleCheckoutComplete} />;
+      case 'one_page':
+        return <OnePageCheckout onComplete={handleCheckoutComplete} />;
+      default:
+        return <DefaultCheckout onComplete={handleCheckoutComplete} />;
+    }
+  };
+
+  if (!variant) {
+    return <CheckoutSkeleton />; // Loading state
+  }
+
+  return (
+    <div className="checkout-container">
+      {renderCheckoutFlow()}
+    </div>
+  );
+};
+```
+
+---
+
+## 📊 Statistical Significance & Analysis
+
+Understanding statistics adalah crucial buat A/B testing yang meaningful.
+
+### Statistical Concepts untuk Developer
+
+```javascript
+// Statistical significance calculator
+class StatisticalAnalysis {
+  constructor() {
+    this.zTable = {
+      0.90: 1.645, // 90% confidence
+      0.95: 1.96,  // 95% confidence
+      0.99: 2.576  // 99% confidence
+    };
+  }
+
+  // Calculate conversion rate
+  calculateConversionRate(conversions, visitors) {
+    if (visitors === 0) return 0;
+    return conversions / visitors;
+  }
+
+  // Calculate standard error
+  calculateStandardError(conversionRate, sampleSize) {
+    return Math.sqrt((conversionRate * (1 - conversionRate)) / sampleSize);
+  }
+
+  // Calculate z-score
+  calculateZScore(controlRate, treatmentRate, controlSE, treatmentSE) {
+    const pooledSE = Math.sqrt(controlSE ** 2 + treatmentSE ** 2);
+    return (treatmentRate - controlRate) / pooledSE;
+  }
+
+  // Calculate p-value (simplified)
+  calculatePValue(zScore) {
+    // Simplified p-value calculation
+    const absZ = Math.abs(zScore);
+    
+    if (absZ >= 2.576) return 0.01;   // p < 0.01
+    if (absZ >= 1.96) return 0.05;    // p < 0.05
+    if (absZ >= 1.645) return 0.10;   // p < 0.10
+    
+    return 0.20; // p >= 0.10
+  }
+
+  // Check statistical significance
+  isStatisticallySignificant(controlData, treatmentData, confidenceLevel = 0.95) {
+    const controlRate = this.calculateConversionRate(
+      controlData.conversions, 
+      controlData.visitors
+    );
+    
+    const treatmentRate = this.calculateConversionRate(
+      treatmentData.conversions, 
+      treatmentData.visitors
+    );
+
+    const controlSE = this.calculateStandardError(controlRate, controlData.visitors);
+    const treatmentSE = this.calculateStandardError(treatmentRate, treatmentData.visitors);
+
+    const zScore = this.calculateZScore(controlRate, treatmentRate, controlSE, treatmentSE);
+    const criticalValue = this.zTable[confidenceLevel];
+
+    return {
+      isSignificant: Math.abs(zScore) >= criticalValue,
+      zScore: zScore,
+      pValue: this.calculatePValue(zScore),
+      controlRate: controlRate,
+      treatmentRate: treatmentRate,
+      lift: ((treatmentRate - controlRate) / controlRate) * 100,
+      confidenceLevel: confidenceLevel
+    };
+  }
+
+  // Calculate minimum sample size
+  calculateMinimumSampleSize(baselineRate, minimumDetectableEffect, power = 0.8, alpha = 0.05) {
+    // Simplified sample size calculation
+    const zAlpha = this.zTable[1 - alpha];
+    const zBeta = 0.84; // 80% power
+    
+    const p1 = baselineRate;
+    const p2 = baselineRate * (1 + minimumDetectableEffect);
+    
+    const pooledP = (p1 + p2) / 2;
+    const numerator = (zAlpha + zBeta) ** 2 * 2 * pooledP * (1 - pooledP);
+    const denominator = (p2 - p1) ** 2;
+    
+    return Math.ceil(numerator / denominator);
+  }
+
+  // Generate experiment report
+  generateReport(experimentData) {
+    const analysis = this.isStatisticallySignificant(
+      experimentData.control,
+      experimentData.treatment
+    );
+
+    return {
+      experimentId: experimentData.experimentId,
+      duration: experimentData.duration,
+      analysis: analysis,
+      recommendation: this.getRecommendation(analysis),
+      confidence: this.getConfidenceDescription(analysis.pValue),
+      sampleSizes: {
+        control: experimentData.control.visitors,
+        treatment: experimentData.treatment.visitors,
+        total: experimentData.control.visitors + experimentData.treatment.visitors
+      }
+    };
+  }
+
+  getRecommendation(analysis) {
+    if (!analysis.isSignificant) {
+      return "No significant difference detected. Consider running the test longer or increasing sample size.";
+    }
+
+    if (analysis.lift > 0) {
+      return `Treatment variant shows ${analysis.lift.toFixed(2)}% improvement. Recommend implementing the treatment.`;
+    } else {
+      return `Treatment variant shows ${Math.abs(analysis.lift).toFixed(2)}% decrease. Recommend keeping the control.`;
+    }
+  }
+
+  getConfidenceDescription(pValue) {
+    if (pValue <= 0.01) return "Very high confidence (p ≤ 0.01)";
+    if (pValue <= 0.05) return "High confidence (p ≤ 0.05)";
+    if (pValue <= 0.10) return "Moderate confidence (p ≤ 0.10)";
+    return "Low confidence (p > 0.10)";
+  }
+}
+
+// Usage example
+const stats = new StatisticalAnalysis();
+
+const experimentData = {
+  experimentId: 'checkout_button_test',
+  duration: '14 days',
+  control: {
+    visitors: 5000,
+    conversions: 250
+  },
+  treatment: {
+    visitors: 5100,
+    conversions: 280
+  }
+};
+
+const report = stats.generateReport(experimentData);
+console.log('Experiment Report:', report);
+
+// Sample size calculator
+const requiredSampleSize = stats.calculateMinimumSampleSize(
+  0.05,  // 5% baseline conversion rate
+  0.20,  // 20% minimum detectable effect (relative)
+  0.8,   // 80% power
+  0.05   // 5% significance level
+);
+
+console.log(`Required sample size per variant: ${requiredSampleSize}`);
+```
+
+### Real-Time Monitoring Dashboard
+
+```javascript
+// A/B Test monitoring dashboard
+class ABTestDashboard {
+  constructor(apiEndpoint) {
+    this.apiEndpoint = apiEndpoint;
+    this.stats = new StatisticalAnalysis();
+    this.refreshInterval = 60000; // 1 minute
+  }
+
+  async fetchExperimentData(experimentId) {
+    try {
+      const response = await fetch(`${this.apiEndpoint}/experiments/${experimentId}`);
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching experiment data:', error);
+      return null;
+    }
+  }
+
+  async updateDashboard(experimentId) {
+    const data = await this.fetchExperimentData(experimentId);
+    
+    if (!data) return;
+
+    const report = this.stats.generateReport(data);
+    this.renderDashboard(report);
+  }
+
+  renderDashboard(report) {
+    const dashboard = document.getElementById('ab-test-dashboard');
+    
+    dashboard.innerHTML = `
+      <div class="experiment-summary">
+        <h2>Experiment: ${report.experimentId}</h2>
+        <p>Duration: ${report.duration}</p>
+        <p>Total Sample Size: ${report.sampleSizes.total.toLocaleString()}</p>
+      </div>
+      
+      <div class="results-grid">
+        <div class="variant-card control">
+          <h3>Control</h3>
+          <div class="metric">
+            <span class="value">${(report.analysis.controlRate * 100).toFixed(2)}%</span>
+            <span class="label">Conversion Rate</span>
+          </div>
+          <div class="sample-size">
+            ${report.sampleSizes
