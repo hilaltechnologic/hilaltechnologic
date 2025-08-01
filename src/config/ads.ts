@@ -2,7 +2,7 @@
 export const ADS_CONFIG = {
   // Google AdSense
   adsense: {
-    enabled: true, // Diaktifkan untuk Google AdSense
+    enabled: false, // Diaktifkan untuk Google AdSense
     publisherId: 'ca-pub-5573623649456971', // Publisher ID Anda
     slots: {
       header: 'auto',     // Menggunakan format auto untuk adaptive ads
