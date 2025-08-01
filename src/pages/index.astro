@@ -30,7 +30,7 @@ const seo = generatePageSEO(
   '/',
   {
     type: 'website',
-    keywords: ['Hilal Technologic','blog', 'teknologi', 'web development', 'framework astro', 'tailwind css', 'HTML', 'CSS', 'JavaScript', 'frontend', 'UI/UX', 'coding', 'website modern', 'SEO', 'template website', 'desain web', 'developer Indonesia', 'open source', 'performance web', 'tips coding', 'artikel teknologi', 'update teknologi']
+    keywords: ['Hilal Technologic', 'Hilal Technology', 'Hilal Technologi', 'Hilal Teknologi', 'Technologic Hilal', 'Technology Hilal', 'blog', 'teknologi', 'web development', 'framework astro', 'tailwind css', 'HTML', 'CSS', 'JavaScript', 'frontend', 'UI/UX', 'coding', 'website modern', 'SEO', 'template website', 'desain web', 'developer Indonesia', 'open source', 'performance web', 'tips coding', 'artikel teknologi', 'update teknologi']
   }
 );
 
@@ -51,64 +51,81 @@ const formatDate = (date: Date) => {
 
   <main>
     <!-- Hero Section -->
-    <section class="bg-gradient-to-br from-primary-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 py-20">
-      <div class="container mx-auto px-4 text-center">
-        <h1 class="text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
-          Selamat Datang di <span class="text-primary-600">Hilal Technologic</span>
-        </h1>
-        <div class="max-w-5xl mx-auto text-left space-y-6 mb-8">
-          <p class="text-xl text-gray-800 dark:text-gray-100 leading-relaxed">
-            Di era digital yang terus berkembang, teknologi bukan lagi sesuatu yang asing atau hanya milik segelintir orang. Ia telah menjadi bagian dari kehidupan sehari-hari—dari cara kita bekerja, belajar, berkomunikasi, hingga menghibur diri. Namun, sering kali, informasi tentang teknologi terasa terlalu rumit, teknis, dan tidak ramah bagi pemula. Di sinilah <strong>HilalTechnologic.info</strong> hadir sebagai jembatan: membawa teknologi lebih dekat kepada semua orang, tanpa ribet, tanpa jargon yang membingungkan.
+    <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <!-- Background with gradient and pattern -->
+      <div class="absolute inset-0 bg-gradient-to-br from-primary-50 via-secondary-50 to-accent-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900"></div>
+      
+      <div class="container mx-auto px-4 text-center relative z-10">
+        <!-- Main Hero Content -->
+        <div class="max-w-4xl mx-auto mb-16">
+          <div class="inline-flex items-center px-4 py-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-full border border-primary-200/50 dark:border-primary-700/50 mb-8 animate-fade-in">
+            <span class="w-2 h-2 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full mr-3 animate-pulse"></span>
+            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Selamat datang di masa depan teknologi</span>
+          </div>
+          
+          <h1 class="font-display font-bold text-gray-900 dark:text-white mb-8 animate-slide-up">
+            Jelajahi Dunia <br />
+            <span class="bg-gradient-to-r from-primary-600 via-secondary-600 to-accent-600 bg-clip-text text-transparent">
+              Teknologi Modern
+            </span>
+          </h1>
+          
+          <p class="text-xl md:text-2xl text-gray-700 dark:text-gray-300 leading-relaxed mb-12 animate-slide-up">
+            Temukan wawasan, tutorial, dan inovasi terbaru dalam dunia teknologi. 
+            Dari AI hingga web development, kami hadirkan konten berkualitas untuk semua level.
           </p>
           
-          <p class="text-lg text-gray-700 dark:text-gray-200 leading-relaxed">
-            HilalTechnologic.info adalah blog teknologi yang dirancang untuk memberikan wawasan, tutorial, ulasan, dan informasi terkini seputar dunia digital dan inovasi teknologi. Tujuan utama kami adalah membuat dunia teknologi bisa diakses dan dipahami oleh siapa saja—baik pelajar, mahasiswa, pekerja kantoran, guru, hingga pengusaha muda yang ingin lebih akrab dengan perkembangan zaman.
-          </p>
-
-          <p class="text-lg text-gray-700 dark:text-gray-200 leading-relaxed">
-            Kami percaya bahwa teknologi bukan hanya untuk para "tech-savvy" atau orang-orang yang menguasai coding. Teknologi adalah alat yang bisa membantu siapa pun menjadi lebih produktif, kreatif, dan terhubung. Karena itu, semua konten di situs ini ditulis dengan gaya bahasa yang ringan, komunikatif, dan membumi—tanpa mengorbankan akurasi informasi dan kedalaman materi.
-          </p>
-
-          <div class="bg-primary-50 dark:bg-gray-800 p-6 rounded-lg">
-            <h3 class="text-2xl font-bold text-primary-800 dark:text-primary-300 mb-4">Apa yang Bisa Kamu Temukan di HilalTechnologic.info?</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700 dark:text-gray-200">
-              <div>
-                <h4 class="font-semibold text-primary-700 dark:text-primary-300 mb-2">📚 Tutorial Teknologi Praktis</h4>
-                <p class="text-sm">Panduan langkah demi langkah menggunakan aplikasi, software, atau perangkat digital populer—mulai dari Microsoft Office, Canva, AI tools, hingga cara setting router WiFi di rumah.</p>
-              </div>
-              <div>
-                <h4 class="font-semibold text-primary-700 dark:text-primary-300 mb-2">📱 Ulasan Gadget dan Aplikasi</h4>
-                <p class="text-sm">Review jujur dan mendalam tentang smartphone, laptop, aksesori, serta aplikasi yang sedang naik daun—membantumu membuat keputusan yang lebih bijak sebelum membeli.</p>
-              </div>
-              <div>
-                <h4 class="font-semibold text-primary-700 dark:text-primary-300 mb-2">🚀 Berita & Tren Teknologi Terkini</h4>
-                <p class="text-sm">Update tentang inovasi terbaru dari dunia teknologi, termasuk kecerdasan buatan (AI), Internet of Things (IoT), perkembangan startup, hingga teknologi pendidikan.</p>
-              </div>
-              <div>
-                <h4 class="font-semibold text-primary-700 dark:text-primary-300 mb-2">💼 Karir & Pendidikan Teknologi</h4>
-                <p class="text-sm">Tips belajar coding, peluang karir di bidang teknologi, serta panduan mengikuti kursus online terbaik untuk meningkatkan skill digitalmu.</p>
-              </div>
-            </div>
+          <div class="flex flex-col sm:flex-row gap-6 justify-center items-center animate-slide-up">
+            <a href="/blog" class="btn-primary text-lg px-8 py-4 group">
+              <span class="mr-2">Mulai Eksplorasi</span>
+              <svg class="w-5 h-5 inline-block group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+              </svg>
+            </a>
+            <a href="/tentang" class="btn-secondary text-lg px-8 py-4">
+              Tentang Kami
+            </a>
           </div>
-
-          <p class="text-lg text-gray-700 dark:text-gray-200 leading-relaxed">
-            Blog ini dibuat untuk <em>kamu</em> yang ingin memahami dan mengikuti perkembangan teknologi, tetapi merasa dunia digital terlalu cepat bergerak dan kadang membingungkan. Entah kamu seorang pelajar yang ingin belajar dasar-dasar coding, seorang guru yang ingin memanfaatkan teknologi di kelas, atau seorang karyawan yang ingin memaksimalkan produktivitas kerja—<strong>HilalTechnologic.info adalah tempat belajar yang ramah dan terbuka.</strong>
-          </p>
-
-          <p class="text-lg text-gray-700 dark:text-gray-200 leading-relaxed">
-            Kami juga menargetkan komunitas pembelajar sepanjang hayat yang percaya bahwa kemampuan digital adalah kebutuhan masa kini. Di sini, tidak ada istilah "terlambat belajar". Yang ada hanyalah semangat untuk terus tumbuh dan berkembang di tengah gelombang teknologi yang terus berubah. Melalui artikel-artikel yang informatif dan inspiratif, kami berharap bisa membantu masyarakat tidak hanya menjadi pengguna teknologi yang pasif, tapi juga menjadi kreator yang aktif—menciptakan solusi, membangun proyek, atau bahkan memulai bisnis digital sendiri.
-          </p>
         </div>
-        
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-          <a href="/blog" class="btn-primary text-lg px-8 py-3">
-            Jelajahi Blog
-          </a>
-          <a href="/tentang" class="btn-secondary text-lg px-8 py-3">
-            Tentang Kami
-          </a>
+
+        <!-- Feature Cards Preview -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto animate-slide-up">
+          <div class="card p-6 text-center group hover:shadow-glow">
+            <div class="w-16 h-16 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Tutorial Praktis</h3>
+            <p class="text-gray-600 dark:text-gray-400">Panduan step-by-step untuk menguasai teknologi terbaru</p>
+          </div>
+          
+          <div class="card p-6 text-center group hover:shadow-glow">
+            <div class="w-16 h-16 bg-gradient-to-br from-secondary-500 to-accent-500 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364-.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Inovasi Terbaru</h3>
+            <p class="text-gray-600 dark:text-gray-400">Update terkini tentang perkembangan teknologi dunia</p>
+          </div>
+          
+          <div class="card p-6 text-center group hover:shadow-glow">
+            <div class="w-16 h-16 bg-gradient-to-br from-accent-500 to-primary-500 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Performa Tinggi</h3>
+            <p class="text-gray-600 dark:text-gray-400">Website cepat dengan teknologi Astro dan optimasi modern</p>
+          </div>
         </div>
       </div>
+      
+      <!-- Floating elements -->
+      <div class="absolute top-20 left-10 w-20 h-20 bg-gradient-to-br from-primary-400/20 to-secondary-400/20 rounded-full animate-float"></div>
+      <div class="absolute bottom-20 right-10 w-32 h-32 bg-gradient-to-br from-accent-400/20 to-primary-400/20 rounded-full animate-float"></div>
+      <div class="absolute top-1/2 right-20 w-16 h-16 bg-gradient-to-br from-secondary-400/20 to-accent-400/20 rounded-full animate-float"></div>
     </section>
 
     <!-- Iklan Header -->
